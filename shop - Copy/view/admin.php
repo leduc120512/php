@@ -191,10 +191,12 @@
                                                     </table>
                                                 </div>
                                                 <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
+                                                <p>đs</p>
+                                                <form action="?controller=order&action=exportExcel" method="post">
+                                                    <button type="submit" class="btn btn-success">Xuất Excel</button>
+                                                </form>
                                             </div>
-                                            <form action="?controller=order&action=exportExcel" method="post">
-                                                <button type="submit" class="btn btn-success">Xuất Excel</button>
-                                            </form>
+
 
                                         </div>
                                     </div>
