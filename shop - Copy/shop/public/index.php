@@ -33,6 +33,7 @@ switch ($controller) {
         elseif ($action === 'admin') $ctrl->admin();
         elseif ($action === 'updateStatus' && $order_id) $ctrl->updateStatus($order_id);
         elseif ($action === 'myOrders') $ctrl->myOrders(); // Thêm dòng này
+        elseif ($action === 'exportExcel') $ctrl->exportExcel();
         break;
     default:
         header("Location: ?controller=product&action=index");

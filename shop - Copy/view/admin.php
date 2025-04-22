@@ -217,12 +217,10 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                                 </div>
                                                 <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
                                                 <p>đs</p>
-                                                <form action="?controller=order&action=exportExcel" method="post">
-                                                    <button type="submit" class="btn btn-success">Xuất Excel</button>
-                                                </form>
                                                 <form action="?controller=order&action=exportExcel" method="get">
                                                     <button type="submit" class="btn btn-success">Xuất Excel</button>
                                                 </form>
+
                                             </div>
 
 

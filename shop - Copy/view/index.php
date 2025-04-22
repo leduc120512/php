@@ -169,7 +169,7 @@
               <a class="nav-link" href="shop.html"> Shop </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="why.html"> Why Us </a>
+              <a href="?controller=order&action=viewCart">Giỏ hàng</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="testimonial.html"> Testimonial </a>
@@ -179,9 +179,9 @@
             </li>
           </ul>
           <div class="user_option">
-            <a href="">
+            <a href="?controller=auth&action=logout">
               <i class="fa fa-user" aria-hidden="true"></i>
-              <span> Login </span>
+              <span> Logout </span>
             </a>
             <a href="">
               <i class="fa fa-shopping-bag" aria-hidden="true"></i>
@@ -319,6 +319,11 @@
   <section class="shop_section layout_padding">
     <div class="container">
       <div class="heading_container heading_center">
+        <li class="nav-item">
+          <?php if (isset($_SESSION['user_id'])): ?>
+            <a class="nav-link" href="?controller=order&action=myOrders">Xem đơn hàng của tôi</a>
+          <?php endif; ?>
+        </li>
         <h2>Top 3 sản phẩm mới nhất</h2>
       </div>
       <div class="row">
@@ -341,8 +346,9 @@
                 </div>
               </a>
               <!-- Form chuyển hướng đến trang chi tiết sản phẩm -->
-              <form class="buy-form" method="GET" action="?controller=product&action=detail">
-                <input type="hidden" name="id" value="<?php echo $product['ID']; ?>">
+              <form class="buy-form" method="POST" action="?controller=order&action=buy">
+                <input type="hidden" name="product_id" value="<?php echo $product['ID']; ?>">
+                <input type="hidden" name="quantity" value="1" class="quantity-input">
                 <button type="submit" class="btn btn-primary buy-btn">Buy Now</button>
               </form>
             </div>
@@ -842,7 +848,7 @@
       <div class="heading_container heading_center">
         <h2>Sản phẩm của chúng tôi</h2>
       </div>
-      <div class="row">
+      <div class="row" id="productList">
         <?php foreach ($allProducts as $product): ?>
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="box">
@@ -856,11 +862,18 @@
                     Price
                     <span><?php echo number_format($product['price']); ?> VND</span>
                   </h6>
+                  <p><?php echo htmlspecialchars($product['description']); ?></p>
+                  <p>Ngày: <?php echo $product['created_at'] ?? 'N/A'; ?></p>
                 </div>
                 <div class="new">
                   <span>New</span>
                 </div>
               </a>
+              <form class="buy-form" method="POST" action="?controller=order&action=buy">
+                <input type="hidden" name="product_id" value="<?php echo $product['ID']; ?>">
+                <input type="hidden" name="quantity" value="1" class="quantity-input">
+                <button type="submit" class="btn btn-primary buy-btn">Buy Now</button>
+              </form>
             </div>
           </div>
         <?php endforeach; ?>
@@ -952,6 +965,7 @@
         </div>
       </div>
     </div>
+
     <!-- footer section -->
     <footer class="footer_section">
       <div class="container">
@@ -999,22 +1013,32 @@
             productList.innerHTML = '';
             data.products.forEach(product => {
               productList.innerHTML += `
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="../public/img/${product.img}" class="card-img-top" alt="${product.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">${product.description}</p>
-                                <p class="card-text">${Number(product.price).toLocaleString()} VND</p>
-                                <p class="card-text">Ngày: ${product.created_at || 'N/A'}</p>
-                                <form class="buy-form" method="POST" action="?controller=order&action=buy">
-                                    <input type="hidden" name="product_id" value="${product.ID}">
-                                    <input type="hidden" name="quantity" value="1" class="quantity-input">
-                                    <button type="button" class="btn btn-primary buy-btn">Buy Now</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+              
+                <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="box">
+        <a href="?controller=product&action=detail&id=${product.ID}">
+            <div class="img-box">
+                <img src="../public/img/${product.img}" alt="${product.name}">
+            </div>
+            <div class="detail-box">
+                <h6>${product.name}</h6>
+             
+                <h6>
+                    Price
+                    <span>${Number(product.price).toLocaleString()} VND</span>
+                </h6>
+            </div>
+            <div class="new">
+                <span>New</span>
+            </div>
+        </a>
+        <form class="buy-form" method="POST" action="?controller=order&action=buy">
+            <input type="hidden" name="product_id" value="${product.ID}">
+            <input type="hidden" name="quantity" value="1" class="quantity-input">
+            <button type="submit" class="btn btn-primary buy-btn">Buy Now</button>
+        </form>
+    </div>
+</div>
                 `;
             });
 

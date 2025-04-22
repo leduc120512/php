@@ -23,7 +23,7 @@ switch ($controller) {
         elseif ($action === 'add') $ctrl->add();
         elseif ($action === 'edit' && $id) $ctrl->edit($id);
         elseif ($action === 'delete' && $id) $ctrl->delete($id);
-        elseif ($action === 'detail' && $id) $ctrl->detail();
+        elseif ($action === 'detail' && $id) $ctrl->detail($id);
         elseif ($action === 'manage') $ctrl->manage();
         elseif ($action === 'searchAjax') $ctrl->searchAjax();
         break;

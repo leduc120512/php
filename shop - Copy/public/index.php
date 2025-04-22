@@ -43,8 +43,12 @@ switch ($controller) {
         elseif ($action === 'admin') $ctrl->admin();
         elseif ($action === 'updateStatus' && $order_id) $ctrl->updateStatus($order_id);
         elseif ($action === 'myOrders') $ctrl->myOrders();
-        elseif ($action === 'exportExcel') $ctrl->exportExcel(); // Add this line
-        break;
+        elseif ($action === 'exportExcel') $ctrl->exportExcel();
+        elseif ($action === 'viewCart') $ctrl->viewCart();
+        elseif ($action === 'removeFromCart' && $id) $ctrl->removeFromCart();
+        elseif ($action === 'checkout') $ctrl->checkout();
+        break; // Add this line
+       
     default:
         header("Location: ?controller=product&action=index");
         exit;
