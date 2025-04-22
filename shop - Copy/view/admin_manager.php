@@ -56,7 +56,7 @@
                             <li><a href="icons.html"><i class="fa fa-bug"></i>Icons</a></li>
                             <li><a href="wizard.html"><i class="fa fa-bug"></i>Wizard</a></li>
                             <li><a href="typography.html"><i class="fa fa-edit"></i>Typography</a></li>
-                            <li><a href="http://localhost/php%20template/shop/public/index.php?controller=order&action=admin"><i class="fa fa-list"></i> Quản lý đơn hàng</a></li>
+                            <li><a href="http://localhost/php%20template/shop/public/index.php?controller=order&action=admin"><i class="fa fa-list"></i> Quản lý đơn h1àng</a></li>
                             <li><a href="grid.html"><i class="fa fa-eyedropper"></i>Grid</a></li>
                         </ul>
                     </li>

@@ -30,26 +30,81 @@
     <!-- responsive style -->
     <link href="../view/css/responsive.css" rel="stylesheet" />
     <style>
-        .order-table {
+        .cart-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
-        .order-table th,
-        .order-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+        .cart-table th,
+        .cart-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
         }
 
-        .order-table th {
-            background-color: #f2f2f2;
+        .cart-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #343a40;
+        }
+
+        .cart-table td {
+            vertical-align: middle;
         }
 
         .product-image {
-            max-width: 100px;
-            height: auto;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .no-items {
+            text-align: center;
+            font-size: 18px;
+            color: #6c757d;
+            margin: 20px 0;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -116,7 +171,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <?php if (isset($_SESSION['user_id'])): ?>
-                                        <a class="nav-link" href="?controller=order&action=myOrders">Xem đơn hàng của tôi</a>
+                                        <a class="nav-link" href="?controller=order&action=myOrders">Xem giỏ hàng của tôi</a>
                                     <?php endif; ?>
                                 </li>
                                 <li class="nav-item">
@@ -199,6 +254,70 @@
     <!-- end shop section -->
 
     <!-- about section -->
+    <div class="container-fluid">
+        <div class="fruit_container">
+            <main class="container mt-5">
+                <section class="cart-section">
+                    <div class="cart-container">
+                        <h2 class="text-center mb-4" style="font-family: 'Baloo Chettan', sans-serif; color: #343a40;">Giỏ hàng của tôi</h2>
+
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <p class="error-message text-center"><?php echo $_SESSION['error'];
+                                                                    unset($_SESSION['error']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (isset($_SESSION['success'])): ?>
+                            <p class="success-message text-center"><?php echo $_SESSION['success'];
+                                                                    unset($_SESSION['success']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (empty($cart_items)): ?>
+                            <p class="no-items">Giỏ hàng của bạn đang trống.</p>
+                        <?php else: ?>
+                            <table class="cart-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Hình ảnh</th>
+                                        <th>Số lượng</th>
+                                        <th>Giá</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Ngày thêm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($cart_items as $item): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($item['product_name']); ?></td>
+                                            <td>
+                                                <img src="../public/img/<?php echo htmlspecialchars($item['product_image']); ?>"
+                                                    class="product-image"
+                                                    alt="<?php echo htmlspecialchars($item['product_name']); ?>">
+                                            </td>
+                                            <td><?php echo htmlspecialchars($item['quantity']); ?></td>
+                                            <td><?php echo number_format($item['price'], 0, ',', '.') . ' VNĐ'; ?></td>
+                                            <td><?php echo number_format($item['price'] * $item['quantity'], 0, ',', '.') . ' VNĐ'; ?></td>
+                                            <td><?php echo htmlspecialchars($item['created_at']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+
+                            <div class="text-center mt-4">
+                                <form method="POST" action="?controller=order&action=buyFromCart">
+                                    <button type="submit" class="btn btn-primary">Đặt hàng ngay</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+
+                        <a href="?controller=product&action=index" class="btn-back">Quay lại mua sắm</a>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+
     <section class="about_section">
         <div class="container-fluid">
             <div class="row">

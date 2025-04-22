@@ -12,7 +12,35 @@ class AuthController
         $this->user = new User($db->getConnection());
     }
 
-    
+    public function login()
+    {
+        if (isset($_POST['login'])) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+
+            // In ra các input
+            echo "Username: " . htmlspecialchars($username) . "<br>";
+            echo "Password: " . htmlspecialchars($password) . "<br>";
+
+            $user = $this->user->login($username, $password);
+
+            if ($user) {
+                $_SESSION['user_id'] = $user['ID'];
+                $_SESSION['role'] = $user['role'];
+
+                if ($user['role'] === 'admin') {
+                    header("Location: http://localhost:3000/bs-advance-admin/advance-admin/index.php");
+                } else {
+                    header("Location: ?controller=product&action=index");
+                }
+                exit;
+            } else {
+                $error = "Sai thông tin đăng nhập!";
+                echo $error . "<br>";
+            }
+        }
+        require dirname(__DIR__) . '/view/login.php';
+    }
 
     public function register()
     {

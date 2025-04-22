@@ -3,12 +3,14 @@ require_once '../config/database.php';
 require_once '../models/Order.php';
 require_once '../models/Product.php';
 require_once '../models/User.php';
+require_once '../models/Cart.php';
 
 class OrderController
 {
     private $order;
     private $product;
     private $user;
+    private $cart;
 
     public function __construct()
     {
@@ -16,6 +18,109 @@ class OrderController
         $this->order = new Order($db->getConnection());
         $this->product = new Product($db->getConnection());
         $this->user = new User($db->getConnection());
+        $this->cart = new Cart($db->getConnection());
+    }
+
+    public function addToCart()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.";
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
+
+        if (isset($_POST['add_to_cart'])) {
+            $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
+            $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
+
+            if (!$product_id || !$quantity || $quantity < 1) {
+                $_SESSION['error'] = "Số lượng không hợp lệ.";
+                header("Location: ?controller=product&action=detail&id=$product_id");
+                exit;
+            }
+
+            $product = $this->product->getById($product_id);
+            if (!$product) {
+                $_SESSION['error'] = "Sản phẩm không tồn tại.";
+                header("Location: ?controller=product&action=index");
+                exit;
+            }
+
+            if ($quantity > $product['quantity']) {
+                $_SESSION['error'] = "Số lượng yêu cầu vượt quá tồn kho. Còn lại: " . $product['quantity'];
+                header("Location: ?controller=product&action=detail&id=$product_id");
+                exit;
+            }
+
+            $result = $this->cart->addToCart($_SESSION['user_id'], $product_id, $quantity);
+            if ($result) {
+                $_SESSION['success'] = "Sản phẩm đã được thêm vào giỏ hàng!";
+            } else {
+                $_SESSION['error'] = "Không thể thêm sản phẩm vào giỏ hàng.";
+            }
+            header("Location: ?controller=product&action=detail&id=$product_id");
+            exit;
+        }
+    }
+
+    public function viewCart()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = "Vui lòng đăng nhập để xem giỏ hàng của bạn.";
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
+
+        $cart_items = $this->cart->getCartByUserId($_SESSION['user_id']);
+        require '../view/cart.php';
+    }
+
+    public function buyFromCart()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = "Vui lòng đăng nhập để đặt hàng.";
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
+
+        $cart_items = $this->cart->getCartByUserId($_SESSION['user_id']);
+        if (empty($cart_items)) {
+            $_SESSION['error'] = "Giỏ hàng của bạn đang trống.";
+            header("Location: ?controller=order&action=viewCart");
+            exit;
+        }
+
+        foreach ($cart_items as $item) {
+            $product = $this->product->getById($item['product_id']);
+            if ($item['quantity'] > $product['quantity']) {
+                $_SESSION['error'] = "Số lượng sản phẩm {$product['name']} vượt quá tồn kho. Còn lại: " . $product['quantity'];
+                header("Location: ?controller=order&action=viewCart");
+                exit;
+            }
+
+            $total_price = $product['price'] * $item['quantity'];
+            $order_id = $this->order->create($_SESSION['user_id'], $item['product_id'], $item['quantity'], $total_price);
+
+            if ($order_id === false) {
+                $_SESSION['error'] = "Không thể tạo đơn hàng cho sản phẩm {$product['name']}.";
+                header("Location: ?controller=order&action=viewCart");
+                exit;
+            }
+
+            $new_quantity = $product['quantity'] - $item['quantity'];
+            $this->product->update($item['product_id'], $product['name'], $product['img'], $product['price'], $new_quantity, $product['description']);
+
+            $user = $this->user->getById($_SESSION['user_id']);
+            if ($user && isset($user['email'])) {
+                $this->sendOrderEmail($user['email'], $product['name'], $item['quantity'], $total_price, $order_id);
+            }
+        }
+
+        // Clear the cart after successful order
+        $this->cart->clearCart($_SESSION['user_id']);
+        $_SESSION['success'] = "Đơn hàng đã được tạo thành công từ giỏ hàng!";
+        header("Location: ?controller=order&action=myOrders");
+        exit;
     }
 
     public function myOrders()
@@ -29,6 +134,7 @@ class OrderController
         $orders = $this->order->getByUserId($_SESSION['user_id']);
         require '../view/my_orders.php';
     }
+  
 
     public function search()
     {
@@ -205,15 +311,16 @@ class OrderController
             $row++;
         }
 
+        // Set headers for download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="don_hang.xlsx"');
         header('Cache-Control: max-age=0');
 
+        // Create writer and output directly to the browser
         $writer = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $writer->save('php://output');
+        $writer->save('php://output'); // Output to browser instead of saving to a file
         exit;
     }
-
     public function admin()
     {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {

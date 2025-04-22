@@ -1,3 +1,22 @@
+<?php
+// Hàm tính tổng doanh thu
+function calculateTotalRevenue($orders)
+{
+    $totalRevenue = 0;
+
+    foreach ($orders as $order) {
+        if ($order['status'] === 'completed') {
+            $totalRevenue += $order['total_price'];
+        }
+    }
+
+    return $totalRevenue;
+}
+
+// Tính và hiển thị tổng doanh thu
+$revenue = calculateTotalRevenue($orders);
+echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
+?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -142,8 +161,8 @@
                             <div id="page-inner">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <h1 class="page-head-line">Quản lý đơn hàng</h1>
-                                        <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thống</h1>
+                                        <h1 class="page-head-line">Quản lý đơn hàng 1</h1>
+                                        <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thốn1g</h1>
                                     </div>
                                 </div>
 
@@ -151,7 +170,13 @@
                                     <div class="col-md-12">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
-                                                Danh sách đơn hàng
+                                                Danh sách đơn hàng le xuan duc
+                                            </div>
+                                            <div class="revenue-summary">
+                                                <?php
+                                                $revenue = calculateTotalRevenue($orders);
+                                                echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
+                                                ?>
                                             </div>
                                             <div class="panel-body">
                                                 <div class="table-responsive">
@@ -193,6 +218,9 @@
                                                 <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
                                                 <p>đs</p>
                                                 <form action="?controller=order&action=exportExcel" method="post">
+                                                    <button type="submit" class="btn btn-success">Xuất Excel</button>
+                                                </form>
+                                                <form action="?controller=order&action=exportExcel" method="get">
                                                     <button type="submit" class="btn btn-success">Xuất Excel</button>
                                                 </form>
                                             </div>

@@ -115,186 +115,189 @@
             </div>
         </nav>
         <div class="panel-body">
-          <div class="panel-body">
-    <div class="search-form" style="margin-bottom: 20px;">
-        <form id="searchForm" class="form-inline">
-            <div class="form-group">
-                <label for="orderId">Mã đơn hàng:</label>
-                <input type="text" class="form-control" id="orderId" name="order_id">
-            </div>
-            <div class="form-group">
-                <label for="startDate">Từ ngày:</label>
-                <input type="date" class="form-control" id="startDate" name="start_date">
-            </div>
-            <div class="form-group">
-                <label for="endDate">Đến ngày:</label>
-                <input type="date" class="form-control" id="endDate" name="end_date">
-            </div>
-            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-            <button type="button" class="btn btn-default" id="resetSearch">Reset</button>
-        </form>
-    </div>
-    <div class="table-responsive">
-        <!-- Table hiện tại của bạn giữ nguyên -->
-            <div class="table-responsive">
-                <!-- Table hiện tại của bạn giữ nguyên -->
-                <div id="page-wrapper">
-                    <div id="page-inner">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h1 class="page-head-line">Quản lý đơn hàng</h1>
-                                <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thống</h1>
-                            </div>
+            <div class="panel-body">
+                <div class="search-form" style="margin-bottom: 20px;">
+                    <form id="searchForm" class="form-inline">
+                        <div class="form-group">
+                            <label for="orderId">Mã đơn hàng:</label>
+                            <input type="text" class="form-control" id="orderId" name="order_id">
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        Danh sách đơn hàng
+                        <div class="form-group">
+                            <label for="startDate">Từ ngày:</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">Đến ngày:</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        <button type="button" class="btn btn-default" id="resetSearch">Reset</button>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <!-- Table hiện tại của bạn giữ nguyên -->
+                    <div class="table-responsive">
+                        <!-- Table hiện tại của bạn giữ nguyên -->
+                        <div id="page-wrapper">
+                            <div id="page-inner">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h1 class="page-head-line">Quản lý đơn hàng</h1>
+                                        <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thống</h1>
                                     </div>
-                                    <div class="panel-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped table-bordered table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Tên người dùng</th>
-                                                        <th>Tên sản phẩm</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Tổng tiền</th>
-                                                        <th>Trạng thái</th>
-                                                        <th>Hành động</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php foreach ($orders as $order): ?>
-                                                        <tr>
-                                                            <td><?php echo htmlspecialchars($order['username']); ?></td>
-                                                            <td><?php echo htmlspecialchars($order['product_name']); ?></td>
-                                                            <td><?php echo $order['quantity']; ?></td>
-                                                            <td><?php echo number_format($order['total_price']); ?> VND</td>
-                                                            <td><?php echo $order['status']; ?></td>
-                                                            <td>
-                                                                <form method="POST" class="update-status-form"
-                                                                    data-order-id="<?php echo $order['order_id']; ?>">
-                                                                    <select name="status" class="form-control d-inline-block" style="width: 120px; display: inline;">
-                                                                        <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
-                                                                        <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
-                                                                        <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
-                                                                    </select>
-                                                                    <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
-                                                                </form>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                Danh sách đơn hàng
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-bordered table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Tên người dùng</th>
+                                                                <th>Tên sản phẩm</th>
+                                                                <th>Số lượng</th>
+                                                                <th>Tổng tiền</th>
+                                                                <th>Trạng thái</th>
+                                                                <th>Hành động</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php foreach ($orders as $order): ?>
+                                                                <tr>
+                                                                    <td><?php echo htmlspecialchars($order['username']); ?></td>
+                                                                    <td><?php echo htmlspecialchars($order['product_name']); ?></td>
+                                                                    <td><?php echo $order['quantity']; ?></td>
+                                                                    <td><?php echo number_format($order['total_price']); ?> VND</td>
+                                                                    <td><?php echo $order['status']; ?></td>
+                                                                    <td>
+                                                                        <form method="POST" class="update-status-form"
+                                                                            data-order-id="<?php echo $order['order_id']; ?>">
+                                                                            <select name="status" class="form-control d-inline-block" style="width: 120px; display: inline;">
+                                                                                <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
+                                                                                <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
+                                                                                <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                                                            </select>
+                                                                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <form action="?controller=order&action=exportExcel" method="post">
+                                                    <button type="submit" class="btn btn-success">Xuất Excel</button>
+                                                </form>
+                                                <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
+                                            </div>
                                         </div>
-                                        <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div id="footer-sec">
+                            © 2014 YourCompany | Design By : <a href="http://www.binarytheme.com/" target="_blank">BinaryTheme.com</a>
+                        </div>
                     </div>
-                </div>
 
-                <div id="footer-sec">
-                    © 2014 YourCompany | Design By : <a href="http://www.binarytheme.com/" target="_blank">BinaryTheme.com</a>
-                </div>
-            </div>
+                    <!-- SCRIPTS - AT THE BOTTOM TO REDUCE LOAD TIME -->
+                    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery-1.10.2.js"></script>
+                    <script src="../../bs-advance-admin/advance-admin/assets/js/bootstrap.js"></script>
+                    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery.metisMenu.js"></script>
+                    <script src="../../bs-advance-admin/advance-admin/assets/js/custom.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            <!-- SCRIPTS - AT THE BOTTOM TO REDUCE LOAD TIME -->
-            <script src="../../bs-advance-admin/advance-admin/assets/js/jquery-1.10.2.js"></script>
-            <script src="../../bs-advance-admin/advance-admin/assets/js/bootstrap.js"></script>
-            <script src="../../bs-advance-admin/advance-admin/assets/js/jquery.metisMenu.js"></script>
-            <script src="../../bs-advance-admin/advance-admin/assets/js/custom.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+                        $(document).ready(function() {
+                            $('.update-status-form').on('submit', function(e) {
+                                e.preventDefault(); // Ngăn submit form mặc định
 
-            <script>
-                $(document).ready(function() {
-                    $('.update-status-form').on('submit', function(e) {
-                        e.preventDefault(); // Ngăn submit form mặc định
+                                let form = $(this);
+                                let orderId = form.data('order-id');
+                                let newStatus = form.find('select[name="status"]').val();
+                                let row = form.closest('tr');
+                                let productName = row.find('td:nth-child(2)').text();
 
-                        let form = $(this);
-                        let orderId = form.data('order-id');
-                        let newStatus = form.find('select[name="status"]').val();
-                        let row = form.closest('tr');
-                        let productName = row.find('td:nth-child(2)').text();
+                                // Gửi request AJAX để cập nhật trạng thái
+                                $.ajax({
+                                    url: '?controller=order&action=updateStatus',
+                                    method: 'POST',
+                                    data: {
+                                        order_id: orderId,
+                                        status: newStatus
+                                    },
+                                    success: function(response) {
+                                        // Cập nhật trạng thái hiển thị trong bảng
+                                        row.find('td:nth-child(5)').text(newStatus);
 
-                        // Gửi request AJAX để cập nhật trạng thái
-                        $.ajax({
-                            url: '?controller=order&action=updateStatus',
-                            method: 'POST',
-                            data: {
-                                order_id: orderId,
-                                status: newStatus
-                            },
-                            success: function(response) {
-                                // Cập nhật trạng thái hiển thị trong bảng
-                                row.find('td:nth-child(5)').text(newStatus);
-
-                                // Hiển thị SweetAlert thành công
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Cập nhật thành công!',
-                                    html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
-                                        `Trạng thái mới: <strong>${newStatus}</strong>`,
-                                    confirmButtonText: 'OK'
+                                        // Hiển thị SweetAlert thành công
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Cập nhật thành công!',
+                                            html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
+                                                `Trạng thái mới: <strong>${newStatus}</strong>`,
+                                            confirmButtonText: 'OK'
+                                        });
+                                    },
+                                    error: function() {
+                                        // Hiển thị SweetAlert lỗi
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Lỗi!',
+                                            text: 'Đã xảy ra lỗi khi cập nhật trạng thái. Vui lòng thử lại.',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
                                 });
-                            },
-                            error: function() {
-                                // Hiển thị SweetAlert lỗi
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Lỗi!',
-                                    text: 'Đã xảy ra lỗi khi cập nhật trạng thái. Vui lòng thử lại.',
-                                    confirmButtonText: 'OK'
-                                });
-                            }
+                            });
                         });
-                    });
-                });
-            </script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Xử lý submit form tìm kiếm
-                    document.getElementById('searchForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
+                    </script>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Xử lý submit form tìm kiếm
+                            document.getElementById('searchForm').addEventListener('submit', function(e) {
+                                e.preventDefault();
 
-                        const orderId = document.getElementById('orderId').value;
-                        const startDate = document.getElementById('startDate').value;
-                        const endDate = document.getElementById('endDate').value;
+                                const orderId = document.getElementById('orderId').value;
+                                const startDate = document.getElementById('startDate').value;
+                                const endDate = document.getElementById('endDate').value;
 
-                        fetchOrders(orderId, startDate, endDate);
-                    });
+                                fetchOrders(orderId, startDate, endDate);
+                            });
 
-                    // Xử lý nút reset
-                    document.getElementById('resetSearch').addEventListener('click', function() {
-                        document.getElementById('searchForm').reset();
-                        fetchOrders('', '', '');
-                    });
+                            // Xử lý nút reset
+                            document.getElementById('resetSearch').addEventListener('click', function() {
+                                document.getElementById('searchForm').reset();
+                                fetchOrders('', '', '');
+                            });
 
-                    function fetchOrders(orderId, startDate, endDate) {
-                        fetch('?controller=order&action=search', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                updateTable(data);
-                            })
-                            .catch(error => console.error('Error:', error));
-                    }
+                            function fetchOrders(orderId, startDate, endDate) {
+                                fetch('?controller=order&action=search', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        updateTable(data);
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
 
-                    function updateTable(orders) {
-                        const tbody = document.querySelector('tbody');
-                        tbody.innerHTML = ''; // Xóa nội dung cũ
+                            function updateTable(orders) {
+                                const tbody = document.querySelector('tbody');
+                                tbody.innerHTML = ''; // Xóa nội dung cũ
 
-                        orders.forEach(order => {
-                            const row = `
+                                orders.forEach(order => {
+                                    const row = `
                 <tr>
                     <td>${order.username}</td>
                     <td>${order.product_name}</td>
@@ -313,11 +316,11 @@
                     </td>
                 </tr>
             `;
-                            tbody.insertAdjacentHTML('beforeend', row);
+                                    tbody.insertAdjacentHTML('beforeend', row);
+                                });
+                            }
                         });
-                    }
-                });
-            </script>
+                    </script>
 </body>
 
 </html>

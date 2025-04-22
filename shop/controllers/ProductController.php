@@ -106,30 +106,23 @@ class ProductController
     }
     public function detail($id)
     {
-        // Kiểm tra đăng nhập
         if (!isset($_SESSION['user_id'])) {
-            $_SESSION['redirect_after_login'] = "?controller=product&action=detail&id=$id"; // Lưu URL để quay lại sau khi đăng nhập
+            $_SESSION['redirect_after_login'] = "?controller=product&action=detail&id=$id";
             header("Location: ?controller=auth&action=login");
             exit;
         }
-
-        // Kiểm tra ID hợp lệ
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if ($id === false || $id === null) {
             $_SESSION['error'] = "ID sản phẩm không hợp lệ.";
             header("Location: ?controller=product&action=index&redirected=1");
             exit;
         }
-
-        // Lấy thông tin sản phẩm
         $product = $this->product->getById($id);
         if (!$product) {
             $_SESSION['error'] = "Sản phẩm không tồn tại.";
             header("Location: ?controller=product&action=index&redirected=1");
             exit;
         }
-
-        // Yêu cầu file view đúng
         require_once '../view/detail.php';
     }
 

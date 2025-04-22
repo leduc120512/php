@@ -70,4 +70,12 @@ class User
         $stmt->bindParam(':email', $email);
         return $stmt->execute();
     }
+    public function getById($id)
+    {
+        $query = "SELECT * FROM users WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
