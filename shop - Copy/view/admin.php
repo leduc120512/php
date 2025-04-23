@@ -108,7 +108,7 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                         </ul>
                     </li>
                     <li>
-                        <a href="http://localhost/php%20template/shop/public/index.php?controller=product&action=manage"><i class="fa fa-bug"></i>Quản lý sản phẩm</a>
+                        <a href="http://localhost/php%20template/shop - Copy/public/index.php?controller=product&action=manage"><i class="fa fa-bug"></i>Quản lý sản phẩm</a>
                     </li>
                     <li>
                         <a href="login.html"><i class="fa fa-sign-in"></i>Login Page</a>
@@ -161,17 +161,21 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                             <div id="page-inner">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <h1 class="page-head-line">Quản lý đơn hàng 1</h1>
-                                        <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thốn1g</h1>
+                                        <h1 class="page-head-line">Quản lý đơn shop bán hoa</h1>
+                                        <h1 class="page-subhead-line">Danh sách tất cả các đơn hàng trong hệ thống</h1>
+
                                     </div>
+                                    <form action="/php template/shop - Copy/public/index.php" method="get">
+                                        <input type="hidden" name="controller" value="order">
+                                        <input type="hidden" name="action" value="exportExcel">
+                                        <button type="submit" class="btn btn-success">Xuất Excel</button>
+                                    </form>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                Danh sách đơn hàng le xuan duc
-                                            </div>
+
                                             <div class="revenue-summary">
                                                 <?php
                                                 $revenue = calculateTotalRevenue($orders);
@@ -180,13 +184,14 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                             </div>
                                             <div class="panel-body">
                                                 <div class="table-responsive">
-                                                    <table class="table table-striped table-bordered table-hover">
+                                                    <table class="table table-bordered">
                                                         <thead>
                                                             <tr>
                                                                 <th>Tên người dùng</th>
                                                                 <th>Tên sản phẩm</th>
                                                                 <th>Số lượng</th>
                                                                 <th>Tổng tiền</th>
+                                                                <th>Thời gian tạo</th>
                                                                 <th>Trạng thái</th>
                                                                 <th>Hành động</th>
                                                             </tr>
@@ -198,11 +203,11 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                                                     <td><?php echo htmlspecialchars($order['product_name']); ?></td>
                                                                     <td><?php echo $order['quantity']; ?></td>
                                                                     <td><?php echo number_format($order['total_price']); ?> VND</td>
-                                                                    <td><?php echo $order['status']; ?></td>
+                                                                    <td><?php echo date('H:i d/m/Y', strtotime($order['created_at'])); ?></td>
+                                                                    <td><?php echo htmlspecialchars($order['status']); ?></td>
                                                                     <td>
-                                                                        <form method="POST" class="update-status-form"
-                                                                            data-order-id="<?php echo $order['order_id']; ?>">
-                                                                            <select name="status" class="form-control d-inline-block" style="width: 120px; display: inline;">
+                                                                        <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
+                                                                            <select name="status" class="form-control d-inline-block" style="width: 120px;">
                                                                                 <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
                                                                                 <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
                                                                                 <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
@@ -216,10 +221,9 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                                     </table>
                                                 </div>
                                                 <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
-                                                <p>đs</p>
-                                                <form action="?controller=order&action=exportExcel" method="get">
-                                                    <button type="submit" class="btn btn-success">Xuất Excel</button>
-                                                </form>
+
+
+
 
                                             </div>
 
@@ -245,7 +249,7 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                     <script>
                         $(document).ready(function() {
                             $('.update-status-form').on('submit', function(e) {
-                                e.preventDefault(); // Ngăn submit form mặc định
+                                e.preventDefault();
 
                                 let form = $(this);
                                 let orderId = form.data('order-id');
@@ -253,7 +257,18 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                 let row = form.closest('tr');
                                 let productName = row.find('td:nth-child(2)').text();
 
-                                // Gửi request AJAX để cập nhật trạng thái
+                                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
+
+                                if (!orderId || !newStatus) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi!',
+                                        text: 'Dữ liệu không hợp lệ.',
+                                        confirmButtonText: 'OK'
+                                    });
+                                    return;
+                                }
+
                                 $.ajax({
                                     url: '?controller=order&action=updateStatus',
                                     method: 'POST',
@@ -261,27 +276,51 @@ echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
                                         order_id: orderId,
                                         status: newStatus
                                     },
-                                    success: function(response) {
-                                        // Cập nhật trạng thái hiển thị trong bảng
-                                        row.find('td:nth-child(5)').text(newStatus);
-
-                                        // Hiển thị SweetAlert thành công
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Cập nhật thành công!',
-                                            html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
-                                                `Trạng thái mới: <strong>${newStatus}</strong>`,
-                                            confirmButtonText: 'OK'
-                                        });
+                                    dataType: 'json',
+                                    beforeSend: function() {
+                                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
                                     },
-                                    error: function() {
-                                        // Hiển thị SweetAlert lỗi
+                                    success: function(response) {
+                                        console.log('AJAX Response:', response);
+                                        if (response.success) {
+                                            row.find('td:nth-child(6)').text(newStatus);
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Cập nhật thành công!',
+                                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
+                                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
+                                                confirmButtonText: 'OK'
+                                            });
+                                        } else {
+                                            console.log('Server error response:', response);
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Lỗi!',
+                                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
+                                                confirmButtonText: 'OK'
+                                            });
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
+                                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
+                                        try {
+                                            let response = JSON.parse(xhr.responseText);
+                                            if (response.message) {
+                                                errorMessage = response.message;
+                                            }
+                                        } catch (e) {
+                                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
+                                        }
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Lỗi!',
-                                            text: 'Đã xảy ra lỗi khi cập nhật trạng thái. Vui lòng thử lại.',
+                                            text: errorMessage,
                                             confirmButtonText: 'OK'
                                         });
+                                    },
+                                    complete: function() {
+                                        form.find('button').prop('disabled', false).text('Cập nhật');
                                     }
                                 });
                             });

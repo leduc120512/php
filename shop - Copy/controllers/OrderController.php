@@ -8,6 +8,10 @@ require_once '../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 
 class OrderController
 {
@@ -32,36 +36,85 @@ class OrderController
                 return '<div style="color: red; text-align: center;">Thất bại: Không có đơn hàng nào để xuất.</div>';
             }
 
-            $spreadsheet = new Spreadsheet();
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('A1', 'Tên người dùng');
-            $sheet->setCellValue('B1', 'Tên sản phẩm');
-            $sheet->setCellValue('C1', 'Số lượng');
-            $sheet->setCellValue('D1', 'Tổng tiền');
-            $sheet->setCellValue('E1', 'Trạng thái');
+            // Tiêu đề chính
+            $sheet->mergeCells('A1:F1');
+            $sheet->setCellValue('A1', 'Shop bán hoa');
+            $sheet->getStyle('A1')->applyFromArray([
+                'font' => ['bold' => true, 'size' => 16],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+            ]);
 
-            $row = 2;
+            // Header (từ dòng 2)
+            $headers = [
+                'A2' => 'Tên người dùng',
+                'B2' => 'Tên sản phẩm',
+                'C2' => 'Số lượng',
+                'D2' => 'Tổng tiền',
+                'E2' => 'Trạng thái',
+                'F2' => 'Thời gian tạo'
+            ];
+            foreach ($headers as $cell => $text) {
+                $sheet->setCellValue($cell, $text);
+            }
+
+            // Style header
+            $sheet->getStyle('A2:F2')->applyFromArray([
+                'font' => ['bold' => true],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+                'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['argb' => 'FFCCE5FF']
+                ]
+            ]);
+
+            // Dữ liệu
+            $row = 3;
             foreach ($orders as $order) {
-                $sheet->setCellValue('A' . $row, $order['username']);
-                $sheet->setCellValue('B' . $row, $order['product_name']);
-                $sheet->setCellValue('C' . $row, $order['quantity']);
-                $sheet->setCellValue('D' . $row, number_format($order['total_price']) . ' VND');
-                $sheet->setCellValue('E' . $row, $order['status']);
+                $sheet->setCellValue("A$row", $order['username']);
+                $sheet->setCellValue("B$row", $order['product_name']);
+                $sheet->setCellValue("C$row", $order['quantity']);
+                $sheet->setCellValue("D$row", $order['total_price']);
+                $sheet->setCellValue("E$row", $order['status']);
+
+                // Format thời gian tạo
+                $createdAtFormatted = date('H:i d/m/Y', strtotime($order['created_at']));
+                $sheet->setCellValue("F$row", $createdAtFormatted);
+
+                $sheet->getStyle("A$row:F$row")->applyFromArray([
+                    'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
+                    'alignment' => ['vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER],
+                ]);
                 $row++;
             }
 
+            // Format tiền
+            $sheet->getStyle("D3:D$row")->getNumberFormat()->setFormatCode('#,##0 \₫');
+
+            // Set chiều rộng
+            $sheet->getColumnDimension('A')->setWidth(25); // Tên người dùng
+            $sheet->getColumnDimension('B')->setWidth(30); // Tên sản phẩm
+            $sheet->getColumnDimension('C')->setWidth(15); // Số lượng
+            $sheet->getColumnDimension('D')->setWidth(20); // Tổng tiền
+            $sheet->getColumnDimension('E')->setWidth(20); // Trạng thái
+            $sheet->getColumnDimension('F')->setWidth(25); // Thời gian tạo
+
+            // Xuất file
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="orders.xlsx"');
+            header('Content-Disposition: attachment;filename="don_hang_shop_hoa.xlsx"');
             header('Cache-Control: max-age=0');
 
-            $writer = new Xlsx($spreadsheet);
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save('php://output');
-            exit; // Kết thúc sau khi xuất file thành công
+            exit;
         } catch (Exception $e) {
             return '<div style="color: red; text-align: center;">Thất bại: Lỗi khi xuất đơn hàng - ' . $e->getMessage() . '</div>';
         }
     }
+
     public function addToCart()
     {
         if (!isset($_SESSION['user_id'])) {
@@ -116,7 +169,7 @@ class OrderController
     public function viewCart()
     {
         error_log("viewCart method called"); // Log to error log
-        var_dump("viewCart method reached"); // Output to screen
+        // Output to screen
         $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
         include '../view/cart.php';
     }
@@ -408,12 +461,30 @@ class OrderController
         header("Location: ?controller=product&action=index");
         exit;
     }
-    public function updateStatus($order_id)
+
+    public function updateStatus($order_id, $status)
     {
-        if ($_SESSION['role'] === 'admin' && isset($_POST['status'])) {
-            $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
-            $this->order->updateStatus($order_id, $status);
+        ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        error_log("updateStatus called with order_id: $order_id, status: $status");
+
+        // Kiểm tra status hợp lệ
+        $valid_statuses = ['pending', 'completed', 'cancelled'];
+        if (!$status || !in_array($status, $valid_statuses)) {
+            error_log("Invalid or empty status: $status");
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid status']);
+            exit;
         }
-        header("Location: ?controller=order&action=admin");
+
+        // Cập nhật trạng thái
+        if ($this->order->updateStatus($order_id, $status)) {
+            echo json_encode(['success' => true, 'message' => 'Status updated successfully']);
+        } else {
+            error_log("Failed to update status for order_id: $order_id");
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to update status']);
+        }
+        exit;
     }
 }

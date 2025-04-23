@@ -168,14 +168,14 @@
             <li class="nav-item">
               <a class="nav-link" href="shop.html"> Shop </a>
             </li>
-            <li class="nav-item">
-              <a href="?controller=order&action=viewCart">Giỏ hàng</a>
-            </li>
+
             <li class="nav-item">
               <a class="nav-link" href="testimonial.html"> Testimonial </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="contact.html">Contact Us</a>
+              <?php if (isset($_SESSION['user_id'])): ?>
+                <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
+              <?php endif; ?>
             </li>
           </ul>
           <div class="user_option">
@@ -183,16 +183,20 @@
               <i class="fa fa-user" aria-hidden="true"></i>
               <span> Logout </span>
             </a>
-            <a href="">
-              <i class="fa fa-shopping-bag" aria-hidden="true"></i>
-            </a>
-            <form class="form-inline">
-              <button class="btn nav_search-btn" type="submit">
-                <i class="fa fa-search" aria-hidden="true"></i>
-              </button>
-            </form>
+            <div class="user_option">
+              <a href="?controller=order&action=viewCart">
+
+                <span> <i class="fa fa-shopping-bag" aria-hidden="true"></i> </span>
+              </a>
+
+
+              <form class="form-inline">
+                <button class="btn nav_search-btn" type="submit">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
       </nav>
     </header>
     <!-- end header section -->
@@ -320,9 +324,7 @@
     <div class="container">
       <div class="heading_container heading_center">
         <li class="nav-item">
-          <?php if (isset($_SESSION['user_id'])): ?>
-            <a class="nav-link" href="?controller=order&action=myOrders">Xem đơn hàng của tôi</a>
-          <?php endif; ?>
+
         </li>
         <h2>Top 3 sản phẩm mới nhất</h2>
       </div>

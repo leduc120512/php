@@ -111,7 +111,22 @@ class Order
 
     public function updateStatus($order_id, $status)
     {
-        $stmt = $this->conn->prepare("UPDATE orders SET status = ? WHERE order_id = ?"); // Changed id to order_id
-        return $stmt->execute([$status, $order_id]);
+        $valid_statuses = ['pending', 'completed', 'cancelled'];
+        if (!in_array($status, $valid_statuses)) {
+            error_log("Invalid status in Order: $status");
+            return false;
+        }
+
+        try {
+            $stmt = $this->conn->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+            $result = $stmt->execute([$status, $order_id]);
+            if (!$result) {
+                error_log("SQL Error: " . $stmt->error);
+            }
+            return $result;
+        } catch (Exception $e) {
+            error_log("Database error: " . $e->getMessage());
+            return false;
+        }
     }
 }

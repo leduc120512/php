@@ -106,94 +106,157 @@
         .btn-primary:hover {
             background-color: #0056b3;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Container tổng */
+        .order-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* Tiêu đề */
+        .order-container h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+        }
+
+        /* Thông báo lỗi */
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Không có đơn */
+        .no-orders {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+            margin-top: 20px;
+        }
+
+        /* Bảng đơn hàng */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        .order-table th,
+        .order-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .order-table thead {
+            background-color: #f1f3f5;
+        }
+
+        .order-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Ảnh sản phẩm */
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        /* Nút quay lại */
+        .btn-back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="brand_box">
-        <a class="navbar-brand" href="index.html">
-            <span>
-                Ninom
-            </span>
-        </a>
-    </div>
+
     <!-- end header section -->
-    <!-- slider section -->
-    <section class=" slider_section position-relative">
-        <div id="carouselExampleControls" class="carousel slide " data-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="img-box">
-                        <img src="../view/images/slider-img.jpg" alt="">
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="img-box">
-                        <img src="../view/images/slider-img.jpg" alt="">
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="img-box">
-                        <img src="../view/images/slider-img.jpg" alt="">
-                    </div>
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-    </section>
-    <!-- end slider section -->
-    </div>
 
     <!-- nav section -->
 
-    <section class="nav_section">
-        <div class="container">
-            <div class="custom_nav2">
-                <nav class="navbar navbar-expand custom_nav-container ">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+    <header class="header_section">
+        <nav class="navbar navbar-expand-lg custom_nav-container">
+            <a class="navbar-brand" href="index.html">
+                <span> Giftos </span>
+            </a>
 
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <div class="d-flex flex-column flex-lg-row align-items-center">
-                            <ul class="navbar-nav">
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="about.html">About</a>
-                                </li>
-                                <li class="nav-item">
-                                    <?php if (isset($_SESSION['user_id'])): ?>
-                                        <a class="nav-link" href="?controller=order&action=myOrders">Xem giỏ hàng của tôi</a>
-                                    <?php endif; ?>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="testimonial.html">Testimonial</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="contact.html">Contact Us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="?controller=auth&action=logout">Logout</a>
-                                </li>
-                            </ul>
-                            <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
-                                <button class="btn my-2 my-sm-0 nav_search-btn" type="submit"></button>
-                            </form>
-                        </div>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class=""></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html"> Shop </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="testimonial.html"> Testimonial </a>
+                    </li>
+                    <li class="nav-item">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
+                        <?php endif; ?>
+                    </li>
+                </ul>
+                <div class="user_option">
+                    <a href="?controller=auth&action=logout">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <span> Logout </span>
+                    </a>
+                    <div class="user_option">
+                        <a href="?controller=order&action=viewCart">
+
+                            <span> <i class="fa fa-shopping-bag" aria-hidden="true"></i> </span>
+                        </a>
+
+
+                        <form class="form-inline">
+                            <button class="btn nav_search-btn" type="submit">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </form>
                     </div>
-                </nav>
-            </div>
-        </div>
-    </section>
-
+                </div>
+        </nav>
+    </header>
     <!-- end nav section -->
 
     <!-- shop section -->
@@ -223,6 +286,7 @@
                                         <th>Tổng tiền</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày đặt</th>
+                                        <th>Hủy đơn hàng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -239,6 +303,16 @@
                                             <td><?php echo number_format($order['total_price'], 0, ',', '.') . ' VNĐ'; ?></td>
                                             <td><?php echo htmlspecialchars($order['status'] ?? 'Đang xử lý'); ?></td>
                                             <td><?php echo htmlspecialchars($order['created_at'] ?? date('Y-m-d H:i:s')); ?></td>
+                                            <td>
+                                                <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
+                                                    <select name="status"
+                                                        style="opacity: 0 !important; position: absolute !important; pointer-events: none !important;">
+                                                        <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                                    </select>
+
+                                                    <button type="submit" style=" height: 40px !important; width:100px;" class="btn btn-sm btn-danger">Hủy </button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -489,6 +563,86 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.update-status-form').on('submit', function(e) {
+                e.preventDefault();
+
+                let form = $(this);
+                let orderId = form.data('order-id');
+                let newStatus = form.find('select[name="status"]').val();
+                let row = form.closest('tr');
+                let productName = row.find('td:nth-child(2)').text();
+
+                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
+
+                if (!orderId || !newStatus) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Dữ liệu không hợp lệ.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: '?controller=product&action=updateStatusUser',
+                    method: 'POST',
+                    data: {
+                        order_id: orderId,
+                        status: newStatus
+                    },
+                    dataType: 'json',
+                    beforeSend: function() {
+                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
+                    },
+                    success: function(response) {
+                        console.log('AJAX Response:', response);
+                        if (response.success) {
+                            row.find('td:nth-child(6)').text(newStatus);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cập nhật thành công!',
+                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
+                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            console.log('Server error response:', response);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
+                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
+                        try {
+                            let response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: errorMessage,
+                            confirmButtonText: 'OK'
+                        });
+                    },
+                    complete: function() {
+                        form.find('button').prop('disabled', false).text('Cập nhật');
+                    }
+                });
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
 
