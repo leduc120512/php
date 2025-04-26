@@ -124,13 +124,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                                 <a href="message-task.html"><i class="fa fa-recycle "></i>Messages & Tasks</a>
                             </li>
 
-                            C:\xampp\htdocs\php template\shop\view\admin.php
-                        </ul>shop\view\admin.php
+
+                        </ul>
 
                     </li>
                     <li>
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a href="http://localhost/php template/shop - Copy/public/index.php?controller=order&action=admin"><i class="fa fa-flash "></i>Quản lí sản phẩm </a>
+                            <a href="http://localhost/php template/shop - Copy/public/index.php?controller=order&action=admin"><i class="fa fa-flash "></i>Quản lí sản đơn hàng </a>
+                        <?php endif; ?>
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a href="http://localhost/php%20template/shop/public/index.php?controller=product&action=manage"><i class="fa fa-flash "></i>Quản lí sản sản phẩm </a>
                         <?php endif; ?>
 
 

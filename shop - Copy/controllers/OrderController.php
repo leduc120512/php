@@ -384,7 +384,15 @@ class OrderController
             exit;
         }
 
-        $orders = $this->order->getAll();
+        // Get search parameters from GET request
+        $username = isset($_GET['username']) ? $_GET['username'] : '';
+        $product_name = isset($_GET['product_name']) ? $_GET['product_name'] : '';
+        $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
+        $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
+
+        // Fetch orders with search filters
+        $orders = $this->order->getAll($username, $product_name, $start_date, $end_date);
+
         require '../view/admin.php';
         require '../view/admin_order.php';
     }
@@ -395,9 +403,29 @@ class OrderController
             header("Location: ?controller=product&action=index");
             exit;
         }
-        $orders = $this->order->getAll();
-        require '../view/admin_manager.php';
-        require '../view/admin.php';
+
+        // Get search parameters
+        $username = isset($_GET['username']) ? trim($_GET['username']) : '';
+        $product_name = isset($_GET['product_name']) ? trim($_GET['product_name']) : '';
+        $start_date = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
+        $end_date = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
+
+        // Validate date range
+        if ($start_date && $end_date && strtotime($start_date) > strtotime($end_date)) {
+            // Handle invalid date range (e.g., display error or swap dates)
+            $temp = $start_date;
+            $start_date = $end_date;
+            $end_date = $temp;
+        }
+
+        // Fetch orders with filters
+        $orders = $this->order->getAll($username, $product_name, $start_date, $end_date);
+
+        // Debugging: Check the orders array
+        // var_dump($orders); // Uncomment for debugging, remove after testing
+
+        // require '../view/admin_manager.php';
+     require '../view/admin.php';
     }
     public function checkout()
     {
@@ -406,6 +434,18 @@ class OrderController
             header("Location: ?controller=order&action=viewCart");
             exit;
         }
+
+        // Fetch user details (name, address, phone) once before the loop
+        $user = $this->user->getById($_SESSION['user_id']);
+        if (!$user) {
+            $_SESSION['error'] = "Không thể lấy thông tin người dùng.";
+            header("Location: ?controller=order&action=viewCart");
+            exit;
+        }
+
+        $name = $user['name'] ?? '';
+        $address = $user['address'] ?? '';
+        $phone = $user['phone'] ?? '';
 
         foreach ($_SESSION['cart'] as $product_id => $item) {
             $product = $this->product->getById($product_id);
@@ -421,11 +461,15 @@ class OrderController
             }
 
             $total_price = $product['price'] * $item['quantity'];
+            // Pass name, address, phone to the create function
             $order_id = $this->order->create(
                 $_SESSION['user_id'],
                 $product_id,
                 $item['quantity'],
-                $total_price
+                $total_price,
+                $name,
+                $address,
+                $phone
             );
 
             if ($order_id === false) {
@@ -444,7 +488,6 @@ class OrderController
                 $product['description']
             );
 
-            $user = $this->user->getById($_SESSION['user_id']);
             if ($user && isset($user['email'])) {
                 $this->sendOrderEmail(
                     $user['email'],

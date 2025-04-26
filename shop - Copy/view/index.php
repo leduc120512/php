@@ -168,10 +168,11 @@
             <li class="nav-item">
               <a class="nav-link" href="shop.html"> Shop </a>
             </li>
-
             <li class="nav-item">
-              <a class="nav-link" href="testimonial.html"> Testimonial </a>
+              <a class="nav-link" href="?controller=auth&action=updateUser"> Sửa thông tin người dùng </a>
             </li>
+
+
             <li class="nav-item">
               <?php if (isset($_SESSION['user_id'])): ?>
                 <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
@@ -323,14 +324,14 @@
   <section class="shop_section layout_padding">
     <div class="container">
       <div class="heading_container heading_center">
-        <li class="nav-item">
-
-        </li>
         <h2>Top 3 sản phẩm mới nhất</h2>
       </div>
-      <div class="row">
-        <?php foreach ($latestProducts as $product): ?>
-          <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="row justify-content-center">
+        <?php
+        $topProducts = array_slice($latestProducts, 0, 3); // Lấy 3 sản phẩm đầu tiên
+        foreach ($topProducts as $product):
+        ?>
+          <div class="col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
             <div class="box">
               <a href="?controller=product&action=detail&id=<?php echo $product['ID']; ?>">
                 <div class="img-box">
@@ -347,7 +348,6 @@
                   <span>New</span>
                 </div>
               </a>
-              <!-- Form chuyển hướng đến trang chi tiết sản phẩm -->
               <form class="buy-form" method="POST" action="?controller=order&action=buy">
                 <input type="hidden" name="product_id" value="<?php echo $product['ID']; ?>">
                 <input type="hidden" name="quantity" value="1" class="quantity-input">
@@ -357,11 +357,12 @@
           </div>
         <?php endforeach; ?>
       </div>
-      <div class="btn-box">
+      <div class="btn-box text-center mt-4">
         <a href="?controller=product&action=index">View All Products</a>
       </div>
     </div>
   </section>
+
 
   <!-- end shop section -->
 
