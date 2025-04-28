@@ -5,6 +5,7 @@ require_once '../models/Product.php';
 require_once '../models/User.php';
 require_once '../models/Cart.php';
 require_once '../vendor/autoload.php';
+require('../../helo/fpdf.php');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -109,6 +110,59 @@ class OrderController
 
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save('php://output');
+            exit;
+        } catch (Exception $e) {
+            return '<div style="color: red; text-align: center;">Thất bại: Lỗi khi xuất đơn hàng - ' . $e->getMessage() . '</div>';
+        }
+    }
+    public function exportPDF()
+    {
+        try {
+            $orders = $this->order->getAll();
+            if (empty($orders)) {
+                return '<div style="color: red; text-align: center;">Thất bại: Không có đơn hàng nào để xuất.</div>';
+            }
+
+            // Tạo đối tượng PDF
+            $pdf = new FPDF();
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', 'B', 16);
+
+            // Tiêu đề chính
+            $pdf->Cell(0, 10, 'Shop ban hoa', 0, 1, 'C');
+            $pdf->Ln(5);
+
+            // Header bảng
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->SetFillColor(200, 229, 255);
+            $pdf->Cell(40, 10, 'Ten nguoi dung', 1, 0, 'C', true);
+            $pdf->Cell(50, 10, 'Ten san pham', 1, 0, 'C', true);
+            $pdf->Cell(20, 10, 'So luong', 1, 0, 'C', true);
+            $pdf->Cell(30, 10, 'Tong tien', 1, 0, 'C', true);
+            $pdf->Cell(30, 10, 'Trang thai', 1, 0, 'C', true);
+            $pdf->Cell(40, 10, 'Thoi gian tao', 1, 1, 'C', true);
+
+            // Dữ liệu
+            $pdf->SetFont('Arial', '', 12);
+            foreach ($orders as $order) {
+                $pdf->Cell(40, 10, $order['username'], 1);
+                $pdf->Cell(50, 10, $order['product_name'], 1);
+                $pdf->Cell(20, 10, $order['quantity'], 1, 0, 'C');
+                $pdf->Cell(30, 10, number_format($order['total_price'], 0, ',', '.') . ' ₫', 1, 0, 'R');
+                $pdf->Cell(30, 10, $order['status'], 1);
+
+                // Format thời gian tạo
+                $createdAtFormatted = date('H:i d/m/Y', strtotime($order['created_at']));
+                $pdf->Cell(40, 10, $createdAtFormatted, 1);
+                $pdf->Ln();
+            }
+
+            // Xuất file
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment;filename="don_hang_shop_hoa.pdf"');
+            header('Cache-Control: max-age=0');
+
+            $pdf->Output('D', 'don_hang_shop_hoa.pdf');
             exit;
         } catch (Exception $e) {
             return '<div style="color: red; text-align: center;">Thất bại: Lỗi khi xuất đơn hàng - ' . $e->getMessage() . '</div>';
@@ -393,6 +447,7 @@ class OrderController
         // Fetch orders with search filters
         $orders = $this->order->getAll($username, $product_name, $start_date, $end_date);
 
+
         require '../view/admin.php';
         require '../view/admin_order.php';
     }
@@ -425,7 +480,7 @@ class OrderController
         // var_dump($orders); // Uncomment for debugging, remove after testing
 
         // require '../view/admin_manager.php';
-     require '../view/admin.php';
+        require '../view/admin.php';
     }
     public function checkout()
     {

@@ -142,7 +142,7 @@ class AuthController
                 ];
 
                 if ($user['role'] === 'admin') {
-                    header("Location: http://localhost:3000/bs-advance-admin/advance-admin/index.php");
+                    header("Location: http://localhost:3000/plain-free-bootstrap-admin-template\index.php");
                 } else {
                     header("Location: ?controller=product&action=index");
                 }

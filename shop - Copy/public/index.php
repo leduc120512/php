@@ -94,7 +94,8 @@ switch ($controller) {
             $ctrl->removeFromCart($id);
         } elseif ($action === 'checkout') {
             $ctrl->checkout();
-        }
+        } elseif ($action === 'exportPDF') { // Thêm hành động exportPDF
+            $ctrl->exportPDF();}
         break;
     default:
         header("Location: ?controller=product&action=index");

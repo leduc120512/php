@@ -135,7 +135,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                         <?php if ($_SESSION['role'] === 'admin'): ?>
                             <a href="http://localhost/php%20template/shop/public/index.php?controller=product&action=manage"><i class="fa fa-flash "></i>Quản lí sản sản phẩm </a>
                         <?php endif; ?>
-
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a href="http://localhost/bs-advance-admin\advance-admin\invoice.php?controller=product&action=manage"><i class="fa fa-flash "></i>Quản lí sản sản phẩmlkjl </a>
+                        <?php endif; ?>
+                        bs-advance-admin\advance-admin\invoice.php
 
                     </li>
                     <li>
