@@ -142,7 +142,7 @@ class AuthController
                 ];
 
                 if ($user['role'] === 'admin') {
-                    header("Location: http://localhost:3000/bs-advance-admin/advance-admin/index.php");
+                    header("Location: http://localhost:3000/adminkit/static/index.php");
                 } else {
                     header("Location: ?controller=product&action=index");
                 }
@@ -255,7 +255,7 @@ class AuthController
         return $password;
     }
 
-    // Gửi email chứa mật khẩu mới
+
     private function sendPasswordEmail($email, $newPassword)
     {
         require 'PHPMailer-master/src/Exception.php';
@@ -278,35 +278,203 @@ class AuthController
             $mail->setFrom('mailleduc05122004@gmail.com', 'Shop Admin');
             $mail->addAddress($email);
 
-
-            // Nội dung emailre
+            // Nội dung email
             $mail->isHTML(true);
             $mail->Subject = 'Mật khẩu mới của bạn';
-            $mail->Body = "Mật khẩu mới của bạn là: <b>$newPassword</b><br>Vui lòng đăng nhập và đổi mật khẩu ngay sau khi nhận được email này.";
-            $mail->AltBody = "Mật khẩu mới của bạn là: $newPassword\nVui lòng đăng nhập và đổi mật khẩu ngay sau khi nhận được email này.";
+
+            // Template HTML
+            $htmlContent = '
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Mật khẩu mới của bạn</title>
+            <style>
+                /* Reset styles cho email */
+                body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+                table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+                body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: \'Roboto\', \'Arial\', sans-serif; }
+
+                /* Font Google */
+                @import url(\'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap\');
+
+                /* Container chính */
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+
+                /* Header */
+                .header {
+                    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+                    padding: 40px 20px;
+                    text-align: center;
+                    color: #ffffff;
+                }
+                .header h1 {
+                    margin: 0;
+                    font-size: 28px;
+                    font-weight: 700;
+                    letter-spacing: 0.5px;
+                }
+
+                /* Content */
+                .content {
+                    padding: 40px 30px;
+                    text-align: center;
+                    color: #2d3748;
+                }
+                .content p {
+                    font-size: 16px;
+                    line-height: 1.8;
+                    margin: 0 0 20px;
+                    color: #4a5568;
+                }
+                .password-box {
+                    background-color: #f7fafc;
+                    border: 2px dashed #e2e8f0;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 25px 0;
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #2575fc;
+                    letter-spacing: 1px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                }
+                .cta-button {
+                    display: inline-block;
+                    padding: 14px 30px;
+                    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+                    color: #ffffff !important;
+                    text-decoration: none;
+                    border-radius: 50px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    margin: 20px 0;
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                }
+                .cta-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                }
+
+                /* Footer */
+                .footer {
+                    background-color: #edf2f7;
+                    padding: 25px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #718096;
+                }
+                .footer a {
+                    color: #2575fc;
+                    text-decoration: none;
+                    font-weight: 700;
+                }
+                .footer a:hover {
+                    text-decoration: underline;
+                }
+
+                /* Responsive */
+                @media only screen and (max-width: 600px) {
+                    .container {
+                        width: 100% !important;
+                        margin: 0 !important;
+                        border-radius: 0;
+                    }
+                    .header {
+                        padding: 30px 15px;
+                    }
+                    .header h1 {
+                        font-size: 22px;
+                    }
+                    .content {
+                        padding: 30px 20px;
+                    }
+                    .content p {
+                        font-size: 14px;
+                    }
+                    .password-box {
+                        font-size: 18px;
+                        padding: 15px;
+                    }
+                    .cta-button {
+                        font-size: 14px;
+                        padding: 12px 25px;
+                    }
+                    .footer {
+                        font-size: 12px;
+                        padding: 20px;
+                    }
+                }
+            </style>
+        </head>
+        <body style="background-color: #edf2f7; margin: 0; padding: 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #edf2f7; padding: 20px 0;">
+                <tr>
+                    <td align="center">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="container">
+                            <!-- Header -->
+                            <tr>
+                                <td class="header">
+                                    <h1>Mật Khẩu Mới Của Bạn</h1>
+                                </td>
+                            </tr>
+                            <!-- Content -->
+                            <tr>
+                                <td class="content">
+                                    <p>Xin chào,</p>
+                                    <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Dưới đây là mật khẩu mới của bạn:</p>
+                                    <div class="password-box">' . htmlspecialchars($newPassword) . '</div>
+                                    <p>Vui lòng đăng nhập bằng mật khẩu này và đổi ngay để đảm bảo an toàn cho tài khoản của bạn.</p>
+                                    <a href="https://yourwebsite.com/login" class="cta-button">Đăng Nhập Ngay</a>
+                                </td>
+                            </tr>
+                            <!-- Footer -->
+                            <tr>
+                                <td class="footer">
+                                    <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng liên hệ tại <a href="mailto:support@shopadmin.com">qquynhanh176@gmail.com</a>.</p>
+                                    <p>© 2025 Shop Hoa quả. All rights reserved.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>';
+
+            // Gán nội dung HTML vào email
+            $mail->Body = $htmlContent;
+            $mail->AltBody = "Mật khẩu mới của bạn là: $newPassword\nVui lòng đăng nhập tại https://yourwebsite.com/login và đổi mật khẩu ngay.";
 
             $mail->send();
-            // Thay echo thông báo thường bằng SweetAlert
             echo "<script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: 'Email đã được gửi thành công!',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-              </script>";
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: 'Email đã được gửi thành công!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        </script>";
         } catch (Exception $e) {
             error_log("Failed to send password email: {$mail->ErrorInfo}");
-            // Thông báo lỗi cũng dùng SweetAlert
             echo "<script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: 'Không thể gửi email: " . $mail->ErrorInfo . "',
-                    confirmButtonText: 'OK'
-                });
-              </script>";
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể gửi email: " . addslashes($mail->ErrorInfo) . "',
+                confirmButtonText: 'OK'
+            });
+        </script>";
         }
     }
 }

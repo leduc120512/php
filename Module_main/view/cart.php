@@ -22,17 +22,153 @@
     <link rel="stylesheet" href="../view/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="../view/css/style.css" type="text/css">
 </head>
+<style>
+    /* Tổng thể container */
+    .container {
+        background: linear-gradient(to right, #f9f9f9, #e0f7fa);
+        padding: 40px 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tiêu đề */
+    .container h2 {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 30px;
+        font-weight: bold;
+        animation: slideInTop 1s ease;
+    }
+
+    /* Alert */
+    .alert {
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Bảng */
+    .table {
+        background-color: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .table thead {
+        background: #0d6efd;
+        color: white;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+        font-size: 1rem;
+        padding: 15px;
+    }
+
+    .table th {
+        font-weight: bold;
+    }
+
+    /* Dòng bảng hover */
+    .table tbody tr:hover {
+        background-color: #f1f8ff;
+    }
+
+    /* Checkbox */
+    #select-all,
+    .product-checkbox {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Nút Xóa */
+    .btn-danger {
+        background-color: #ff4d4f;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #ff7875;
+        transform: scale(1.05);
+    }
+
+    /* Nút Mua ngay */
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        border: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 10px 20px;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+        margin-right: 10px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        transform: scale(1.05);
+    }
+
+    /* Nút Tiếp tục mua */
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: scale(1.05);
+    }
+
+    /* Phần Tổng cộng */
+    .table tfoot td {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #ff5722;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes slideInTop {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
 <body>
     <!-- Page Preloder -->
     <div id="preloder">
         <div class="loader"></div>
     </div>
-    <li class="nav-item">
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
-        <?php endif; ?>
-    </li>
+
 
     <!-- Humberger Begin -->
     <div class="humberger__menu__overlay"></div>
@@ -58,7 +194,7 @@
                 </ul>
             </div>
             <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
             </div>
         </div>
         <nav class="humberger__menu__nav mobile-menu">
@@ -98,7 +234,7 @@
         <div class="header__top">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="header__top__left">
                             <ul>
                                 <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
@@ -106,7 +242,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="header__top__right">
                             <div class="header__top__right__social">
                                 <a href="#"><i class="fa fa-facebook"></i></a>
@@ -124,7 +260,7 @@
                                 </ul>
                             </div>
                             <div class="header__top__right__auth">
-                                <a href="#"><i class="fa fa-user"></i> Login</a>
+                                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
                             </div>
                         </div>
                     </div>
@@ -141,8 +277,8 @@
                 <div class="col-lg-6">
                     <nav class="header__menu">
                         <ul>
-                            <li><a href="./index.html">Home</a></li>
-                            <li class="active"><a href="./shop-grid.html">Shop</a></li>
+                            <li class="active"><a href="controller=product&action=index">Home</a></li>
+                            <li><a href="./shop-grid.html">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="header__menu__dropdown">
                                     <li><a href="./shop-details.html">Shop Details</a></li>
@@ -152,7 +288,7 @@
                                 </ul>
                             </li>
                             <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -160,7 +296,7 @@
                     <div class="header__cart">
                         <ul>
                             <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                            <li><a href="?controller=order&action=viewCart"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                         </ul>
                         <div class="header__cart__price">item: <span>$150.00</span></div>
                     </div>
@@ -307,7 +443,7 @@
                     </tbody>
                 </table>
 
-                <button type="submit" class="btn btn-primary">Thanh toán sản phẩm đã chọn</button>
+                <button type="submit" class="btn btn-primary">Mua ngay</button>
                 <a href="?controller=product&action=index" class="btn btn-secondary">Tiếp tục mua sắm</a>
             </form>
         <?php endif; ?>

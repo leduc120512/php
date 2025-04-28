@@ -22,17 +22,148 @@
     <link rel="stylesheet" href="../view/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="../view/css/style.css" type="text/css">
 </head>
+<style>
+    /* Tổng thể */
+    .product-detail-container {
+        background: linear-gradient(to right, #f8f9fa, #e0f7fa);
+        padding: 50px 20px;
+        border-radius: 20px;
+    }
+
+    /* Alert */
+    .custom-alert {
+        font-weight: bold;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 1.2rem;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Card sản phẩm */
+    .product-card {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transition: transform 0.4s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+    }
+
+    /* Ảnh sản phẩm */
+    .product-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 15px;
+        object-fit: cover;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .product-img:hover {
+        transform: scale(1.08);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Tiêu đề */
+    h2 {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 20px;
+        animation: slideInLeft 1s ease;
+    }
+
+    /* Các đoạn mô tả */
+    p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    /* Label */
+    .form-label {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    /* Input số lượng */
+    .custom-input {
+        height: 48px;
+        font-size: 1rem;
+        border-radius: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+        padding: 10px;
+    }
+
+    .custom-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+        outline: none;
+    }
+
+    /* Tổng tiền */
+    .total-price-box {
+        background-color: #eef4f7;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #ff5722;
+        text-align: center;
+    }
+
+    /* Nút mua hàng */
+    .buy-btn {
+        background: linear-gradient(135deg, #ff6f61, #ff9472);
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 14px;
+        border-radius: 50px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .buy-btn:hover {
+        background: linear-gradient(135deg, #e85b50, #ff6f61);
+        transform: scale(1.05) translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 111, 97, 0.5);
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
 
 <body>
     <!-- Page Preloder -->
     <div id="preloder">
         <div class="loader"></div>
     </div>
-    <li class="nav-item">
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
-        <?php endif; ?>
-    </li>
 
     <!-- Humberger Begin -->
     <div class="humberger__menu__overlay"></div>
@@ -58,12 +189,12 @@
                 </ul>
             </div>
             <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
             </div>
         </div>
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
+                <li class="active"><a href="controller=product&action=index">Home</a></li>
                 <li><a href="./shop-grid.html">Shop</a></li>
                 <li><a href="#">Pages</a>
                     <ul class="header__menu__dropdown">
@@ -98,7 +229,7 @@
         <div class="header__top">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="header__top__left">
                             <ul>
                                 <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
@@ -106,7 +237,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="header__top__right">
                             <div class="header__top__right__social">
                                 <a href="#"><i class="fa fa-facebook"></i></a>
@@ -141,8 +272,8 @@
                 <div class="col-lg-6">
                     <nav class="header__menu">
                         <ul>
-                            <li><a href="./index.html">Home</a></li>
-                            <li class="active"><a href="./shop-grid.html">Shop</a></li>
+                            <li class="active"><a href="controller=product&action=index">Home</a></li>
+                            <li><a href="./shop-grid.html">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="header__menu__dropdown">
                                     <li><a href="./shop-details.html">Shop Details</a></li>
@@ -152,7 +283,7 @@
                                 </ul>
                             </li>
                             <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -160,7 +291,7 @@
                     <div class="header__cart">
                         <ul>
                             <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                            <li><a href="?controller=order&action=viewCart"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                         </ul>
                         <div class="header__cart__price">item: <span>$150.00</span></div>
                     </div>
@@ -234,7 +365,8 @@
                     <div class="breadcrumb__text">
                         <h2>Vegetable’s Package</h2>
                         <div class="breadcrumb__option">
-                            <a href="./index.html">Home</a>
+                            <a href="controller=product&action=index">Home</a>
+
                             <a href="./index.html">Vegetables</a>
                             <span>Vegetable’s Package</span>
                         </div>
@@ -246,158 +378,56 @@
     <!-- Breadcrumb Section End -->
 
     <!-- Product Details Section Begin -->
-    <section class="product-details spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6">
-                    <div class="product__details__pic">
-                        <div class="product__details__pic__item">
-                            <img class="product__details__pic__item--large"
-                                src="../public/img/<?php echo htmlspecialchars($product['img']); ?>">
-                        </div>
-                        <div class="product__details__pic__slider owl-carousel">
-                            <img data-imgbigurl="../view/img/product/details/product-details-2.jpg"
-                                src="../view/img/product/details/thumb-1.jpg" alt="">
-                            <img data-imgbigurl="../view/img/product/details/product-details-3.jpg"
-                                src="../view/img/product/details/thumb-2.jpg" alt="">
-                            <img data-imgbigurl="../view/img/product/details/product-details-5.jpg"
-                                src="../view/img/product/details/thumb-3.jpg" alt="">
-                            <img data-imgbigurl="../view/img/product/details/product-details-4.jpg"
-                                src="../view/img/product/details/thumb-4.jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <div class="product__details__text">
-                        <h3> <?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product__details__rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-half-o"></i>
-                            <span>(18 reviews)</span>
-                        </div>
-                        <div class="product__details__price"><?php echo number_format($product['price']); ?></div>
-                        <p>Tồn kho : <?php echo $product['quantity']; ?> sản phẩm</p>
-                        <p> <?php echo htmlspecialchars($product['description']); ?></p>
-                        <div class="product__details__quantity">
-                            <div class="quantity">
-                                <div class="pro-qty">
+    <div class="container my-5 product-detail-container">
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger custom-alert">
+                <?php echo $_SESSION['error'];
+                unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
 
-                                    <input type="number" name="quantity" id="quantity"
-                                        class="form-control custom-input"
-                                        min="1" max="<?php echo $product['quantity']; ?>"
-                                        value="1" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="form-label fw-semibold">Tổng tiền:</label>
-                            <div id="total-price" class="total-price-box">
-                                <?php echo number_format($product['price']); ?> VND
-                            </div>
-                        </div>
-                        <a href="#" class="primary-btn">ADD TO CARD</a>
-                        <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
-                        <ul>
-                            <li><b>Availability</b> <span>In Stock</span></li>
-                            <li><b>Shipping</b> <span>01 day shipping. <samp>Free pickup today</samp></span></li>
-                            <li><b>Weight</b> <span>0.5 kg</span></li>
-                            <li><b>Share on</b>
-                                <div class="share">
-                                    <a href="#"><i class="fa fa-facebook"></i></a>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                    <a href="#"><i class="fa fa-instagram"></i></a>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
-                                </div>
-                            </li>
-                        </ul>
+        <div class="row product-card shadow-lg rounded-5 overflow-hidden">
+            <!-- Cột hình ảnh -->
+            <div class="col-md-6 p-4 bg-light d-flex align-items-center justify-content-center">
+                <img src="../public/img/<?php echo htmlspecialchars($product['img']); ?>"
+                    alt="<?php echo htmlspecialchars($product['name']); ?>"
+                    class="img-fluid product-img">
+            </div>
+
+            <!-- Cột thông tin sản phẩm + form -->
+            <div class="col-md-6 p-4 d-flex flex-column justify-content-center">
+                <h2 class="mb-3 fw-bold text-primary">
+                    <?php echo htmlspecialchars($product['name']); ?>
+                </h2>
+
+                <p><strong>Giá:</strong> <?php echo number_format($product['price']); ?> VND</p>
+                <p><strong>Tồn kho:</strong> <?php echo $product['quantity']; ?> sản phẩm</p>
+                <p><strong>Mô tả:</strong> <?php echo htmlspecialchars($product['description']); ?></p>
+
+                <form id="buyForm" method="POST" action="?controller=order&action=buy">
+                    <input type="hidden" name="product_id" value="<?php echo $product['ID']; ?>">
+                    <input type="hidden" id="product-price" value="<?php echo $product['price']; ?>">
+
+                    <div class="form-group mb-3">
+                        <label for="quantity" class="form-label fw-semibold">Số lượng:</label>
+                        <input type="number" name="quantity" id="quantity"
+                            class="form-control custom-input"
+                            min="1" max="<?php echo $product['quantity']; ?>"
+                            value="1" required>
                     </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="product__details__tab">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"
-                                    aria-selected="true">Description</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab"
-                                    aria-selected="false">Information</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab"
-                                    aria-selected="false">Reviews <span>(1)</span></a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
-                                <div class="product__details__tab__desc">
-                                    <h6>Products Infomation</h6>
-                                    <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
-                                        Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vivamus
-                                        suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam sit amet quam
-                                        vehicula elementum sed sit amet dui. Donec rutrum congue leo eget malesuada.
-                                        Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur arcu erat,
-                                        accumsan id imperdiet et, porttitor at sem. Praesent sapien massa, convallis a
-                                        pellentesque nec, egestas non nisi. Vestibulum ac diam sit amet quam vehicula
-                                        elementum sed sit amet dui. Vestibulum ante ipsum primis in faucibus orci luctus
-                                        et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam
-                                        vel, ullamcorper sit amet ligula. Proin eget tortor risus.</p>
-                                    <p>Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Lorem
-                                        ipsum dolor sit amet, consectetur adipiscing elit. Mauris blandit aliquet
-                                        elit, eget tincidunt nibh pulvinar a. Cras ultricies ligula sed magna dictum
-                                        porta. Cras ultricies ligula sed magna dictum porta. Sed porttitor lectus
-                                        nibh. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.
-                                        Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Sed
-                                        porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum
-                                        sed sit amet dui. Proin eget tortor risus.</p>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-2" role="tabpanel">
-                                <div class="product__details__tab__desc">
-                                    <h6>Products Infomation</h6>
-                                    <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
-                                        Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus.
-                                        Vivamus suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam
-                                        sit amet quam vehicula elementum sed sit amet dui. Donec rutrum congue leo
-                                        eget malesuada. Vivamus suscipit tortor eget felis porttitor volutpat.
-                                        Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Praesent
-                                        sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ac
-                                        diam sit amet quam vehicula elementum sed sit amet dui. Vestibulum ante
-                                        ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-                                        Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.
-                                        Proin eget tortor risus.</p>
-                                    <p>Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Lorem
-                                        ipsum dolor sit amet, consectetur adipiscing elit. Mauris blandit aliquet
-                                        elit, eget tincidunt nibh pulvinar a. Cras ultricies ligula sed magna dictum
-                                        porta. Cras ultricies ligula sed magna dictum porta. Sed porttitor lectus
-                                        nibh. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</p>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-3" role="tabpanel">
-                                <div class="product__details__tab__desc">
-                                    <h6>Products Infomation</h6>
-                                    <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
-                                        Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus.
-                                        Vivamus suscipit tortor eget felis porttitor volutpat. Vestibulum ac diam
-                                        sit amet quam vehicula elementum sed sit amet dui. Donec rutrum congue leo
-                                        eget malesuada. Vivamus suscipit tortor eget felis porttitor volutpat.
-                                        Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Praesent
-                                        sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ac
-                                        diam sit amet quam vehicula elementum sed sit amet dui. Vestibulum ante
-                                        ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-                                        Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.
-                                        Proin eget tortor risus.</p>
-                                </div>
-                            </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-semibold">Tổng tiền:</label>
+                        <div id="total-price" class="total-price-box">
+                            <?php echo number_format($product['price']); ?> VND
                         </div>
                     </div>
-                </div>
+
+                    <button type="submit" name="buy" class="btn buy-btn w-100">🛒 Thêm vào giỏ hàng</button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
     <!-- Product Details Section End -->
 
     <!-- Related Product Section Begin -->
@@ -582,6 +612,7 @@
             totalPriceDiv.textContent = formatVND(total);
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Js Plugins -->
     <script src="../view/js/jquery-3.3.1.min.js"></script>
     <script src="../view/js/bootstrap.min.js"></script>

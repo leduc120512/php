@@ -27,6 +27,129 @@
   <link rel="stylesheet" href="../view/css/elegant-icons.css" type="text/css">
   <link rel="stylesheet" href="../view/css/nice-select.css" type="text/css">
 </head>
+<style>
+  .shop_section {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+  }
+
+  .heading_container h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+    color: #333;
+  }
+
+  .heading_container h2::after {
+    content: "";
+    width: 60%;
+    height: 3px;
+    background-color: #ff6f61;
+    display: block;
+    margin: 10px auto 0;
+    border-radius: 5px;
+  }
+
+  .box {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 20px 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .box a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .img-box {
+    background-color: #f1f1f1;
+    padding: 20px;
+  }
+
+  .img-box img {
+    max-width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .detail-box {
+    padding: 20px 10px;
+  }
+
+  .detail-box h6 {
+    margin: 5px 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .detail-box span {
+    color: #ff6f61;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+
+  .new {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #ff6f61;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-weight: bold;
+  }
+
+  .buy-form {
+    margin-top: 10px;
+  }
+
+  .buy-btn {
+    background-color: #ff6f61;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .buy-btn:hover {
+    background-color: #e85b50;
+  }
+
+  .btn-box a {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #ff6f61;
+    color: white;
+    font-weight: bold;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+  }
+
+  .btn-box a:hover {
+    background-color: #e85b50;
+  }
+</style>
 
 <body>
   <!-- Page Preloder -->
@@ -58,12 +181,12 @@
         </ul>
       </div>
       <div class="header__top__right__auth">
-        <a href="#"><i class="fa fa-user"></i> Login</a>
+        <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
       </div>
     </div>
     <nav class="humberger__menu__nav mobile-menu">
       <ul>
-        <li class="active"><a href="./index.html">Home</a></li>
+        <li class="active"><a href="controller=product&action=index">Home</a></li>
         <li><a href="./shop-grid.html">Shop</a></li>
         <li><a href="#">Pages</a>
           <ul class="header__menu__dropdown">
@@ -124,7 +247,7 @@
                 </ul>
               </div>
               <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
               </div>
             </div>
           </div>
@@ -141,7 +264,7 @@
         <div class="col-lg-6">
           <nav class="header__menu">
             <ul>
-              <li class="active"><a href="./index.html">Home</a></li>
+              <li class="active"><a href="controller=product&action=index">Home</a></li>
               <li><a href="./shop-grid.html">Shop</a></li>
               <li><a href="#">Pages</a>
                 <ul class="header__menu__dropdown">
@@ -160,7 +283,7 @@
           <div class="header__cart">
             <ul>
               <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-              <li><a href="?controller=order&action=myOrders"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+              <li><a href="?controller=order&action=viewCart"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
             </ul>
             <div class="header__cart__price">item: <span>$150.00</span></div>
           </div>
@@ -269,6 +392,47 @@
     </div>
   </section>
   <!-- Categories Section End -->
+  <section class="shop_section layout_padding">
+    <div class="container">
+      <div class="heading_container heading_center">
+        <h2>Top 3 sản phẩm mới nhất</h2>
+      </div>
+      <div class="row justify-content-center">
+        <?php
+        $topProducts = array_slice($latestProducts, 0, 3); // Lấy 3 sản phẩm đầu tiên
+        foreach ($topProducts as $product):
+        ?>
+          <div class="col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
+            <div class="box">
+              <a href="?controller=product&action=detail&id=<?php echo $product['ID']; ?>">
+                <div class="img-box">
+                  <img src="../public/img/<?php echo htmlspecialchars($product['img']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                </div>
+                <div class="detail-box">
+                  <h6><?php echo htmlspecialchars($product['name']); ?></h6>
+                  <h6>
+                    Price
+                    <span><?php echo number_format($product['price']); ?> VND</span>
+                  </h6>
+                </div>
+                <div class="new">
+                  <span>New</span>
+                </div>
+              </a>
+              <form class="buy-form" method="POST" action="?controller=order&action=buy">
+                <input type="hidden" name="product_id" value="<?php echo $product['ID']; ?>">
+                <input type="hidden" name="quantity" value="1" class="quantity-input">
+                <button type="submit" class="btn btn-primary buy-btn">Buy Now</button>
+              </form>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+      <div class="btn-box text-center mt-4">
+        <a href="?controller=product&action=index">View All Products</a>
+      </div>
+    </div>
+  </section>
 
   <!-- Featured Section Begin -->
   <section class="featured spad">
@@ -287,6 +451,12 @@
               <li data-filter=".fastfood">Fastfood</li>
             </ul>
           </div>
+        </div>
+      </div>
+      <div style="margin-top: 10px;margin-left: 325px; display:flex;justify-content: center;width: 60%;" class="input-group mb-4 mt-20">
+        <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm" value="<?php echo htmlspecialchars($keyword ?? ''); ?>">
+        <div class="input-group-append">
+          <button id="searchButton" class="btn btn-primary">Tìm</button>
         </div>
       </div>
       <div class="row featured__filter" id="productList">
@@ -338,6 +508,25 @@
         <?php endforeach; ?>
       </div>
     </div>
+    <nav aria-label="Page navigation" id="pagination">
+      <ul class="pagination justify-content-center">
+        <?php if ($currentPage > 1): ?>
+          <li class="page-item"><a class="page-link" href="#" data-page="<?php echo $currentPage - 1; ?>">Previous</a></li>
+        <?php else: ?>
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        <?php endif; ?>
+        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+          <li class="page-item <?php echo $i === $currentPage ? 'active' : ''; ?>">
+            <a class="page-link" href="#" data-page="<?php echo $i; ?>"><?php echo $i; ?></a>
+          </li>
+        <?php endfor; ?>
+        <?php if ($currentPage < $totalPages): ?>
+          <li class="page-item"><a class="page-link" href="#" data-page="<?php echo $currentPage + 1; ?>">Next</a></li>
+        <?php else: ?>
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        <?php endif; ?>
+      </ul>
+    </nav>
   </section>
   <!-- Featured Section End -->
 
@@ -708,7 +897,129 @@
   <script src="../view/js/main.js"></script>
 
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchButton = document.getElementById('searchButton');
+      const searchInput = document.getElementById('searchInput');
+      const productList = document.getElementById('productList');
+      const pagination = document.getElementById('pagination');
 
+      // Hàm tải danh sách sản phẩm
+      function loadProducts(keyword = '', page = 1) {
+        fetch(`?controller=product&action=searchAjax&search=${encodeURIComponent(keyword)}&page=${page}`, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
+            // Cập nhật danh sách sản phẩm
+            productList.innerHTML = '';
+            data.products.forEach(product => {
+              productList.innerHTML += `
+    <div class="col-lg-3 col-md-4 col-sm-6 mix new-arrival">
+      <div class="featured__item">
+        <div class="featured__item__pic set-bg" data-setbg="../public/img/${product.img}">
+          <ul class="featured__item__pic__hover">
+            <li><a href="#"><i class="fa fa-heart"></i></a></li>
+            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+            <li>
+              <form method="POST" action="?controller=order&action=buy">
+                <input type="hidden" name="product_id" value="${product.ID}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="no-style-btn">
+                  <i class="fa fa-shopping-cart"></i>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+        <div class="featured__item__text">
+          <h6><a href="#">${product.name}</a></h6>
+          <h5>${new Intl.NumberFormat('vi-VN').format(product.price)} VND</h5>
+          <p class="description">${product.description}</p>
+          <p class="created-date">Ngày: ${product.created_at || 'N/A'}</p>
+        </div>
+      </div>
+    </div>
+  `;
+            });
+            // Re-run set-bg logic
+            document.querySelectorAll('.set-bg').forEach(element => {
+              const bg = element.getAttribute('data-setbg');
+              element.style.backgroundImage = `url(${bg})`;
+            });
+
+            // Cập nhật phân trang
+            pagination.innerHTML = '';
+            let paginationHTML = '<ul class="pagination justify-content-center">';
+            if (data.currentPage > 1) {
+              paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${data.currentPage - 1}">Previous</a></li>`;
+            } else {
+              paginationHTML += `<li class="page-item disabled"><span class="page-link">Previous</span></li>`;
+            }
+
+            for (let i = 1; i <= data.totalPages; i++) {
+              paginationHTML += `
+                    <li class="page-item ${i === data.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+
+            if (data.currentPage < data.totalPages) {
+              paginationHTML += `<li class="page-item"><a class="page-link" href="#" data-page="${data.currentPage + 1}">Next</a></li>`;
+            } else {
+              paginationHTML += `<li class="page-item disabled"><span class="page-link">Next</span></li>`;
+            }
+            paginationHTML += '</ul>';
+            pagination.innerHTML = paginationHTML;
+
+            // Gắn lại sự kiện cho các liên kết phân trang
+            attachPaginationEvents();
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      // Sự kiện nút tìm kiếm
+      searchButton.addEventListener('click', function() {
+        const keyword = searchInput.value.trim();
+        loadProducts(keyword, 1); // Tải trang 1 với từ khóa
+      });
+
+      // Sự kiện nhấn Enter trong input
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const keyword = searchInput.value.trim();
+          loadProducts(keyword, 1);
+        }
+      });
+
+      // Gắn sự kiện cho phân trang
+      function attachPaginationEvents() {
+        const pageLinks = document.querySelectorAll('.page-link');
+        pageLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            if (page) {
+              const keyword = searchInput.value.trim();
+              loadProducts(keyword, page);
+            }
+          });
+        });
+      }
+
+      // Tải sản phẩm ban đầu
+      loadProducts();
+    });
+  </script>
 </body>
 
 </html>

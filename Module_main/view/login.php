@@ -7,117 +7,128 @@
     <title>Đăng nhập - Cửa hàng hoa</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <style>
+        /* Đặt background cho toàn trang */
         body {
-            background: url('https://images.unsplash.com/photo-1509266272358-7701da638078?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(to bottom, #f5ffe0, #ffffff);
+            font-family: 'Poppins', sans-serif;
             margin: 0;
-            font-family: 'Playfair Display', serif;
+            padding: 0;
         }
 
+        /* Container đăng nhập */
         .login-container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
+            background-color: #fff;
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 30px 40px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-            animation: fadeIn 0.8s ease-in-out;
-            border: 1px solid #f7d7e6;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            text-align: center;
+            border: 2px solid #e0f7e9;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        /* Icon hoa quả phía trên */
+        .floral-icon {
+            width: 80px;
+            height: 80px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/135/135620.png');
+            /* icon trái cây */
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 20px auto;
         }
 
+        /* Tiêu đề */
         .login-title {
             font-size: 28px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #d14781;
-            text-transform: uppercase;
+            color: #4caf50;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Form input */
+        .form-outline {
+            position: relative;
+            margin-bottom: 20px;
         }
 
         .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #c8e6c9;
             border-radius: 10px;
-            padding: 15px;
-            border: 1px solid #f7d7e6;
-            transition: all 0.3s ease;
-            background: #fff;
+            background-color: #f9fff9;
+            transition: border-color 0.3s;
         }
 
         .form-control:focus {
-            border-color: #d14781;
-            box-shadow: 0 0 10px rgba(209, 71, 129, 0.2);
+            border-color: #66bb6a;
+            outline: none;
+            background-color: #ffffff;
         }
 
+        /* Label */
         .form-label {
+            display: block;
+            text-align: left;
+            margin-top: 8px;
             font-size: 14px;
-            color: #555;
-            font-weight: 500;
+            color: #757575;
         }
 
+        /* Link quên mật khẩu */
+        .forgot-password {
+            font-size: 14px;
+            color: #66bb6a;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Nút đăng nhập */
         .btn-primary {
-            background: #d14781;
+            background-color: #66bb6a;
             border: none;
-            border-radius: 10px;
             padding: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
 
         .btn-primary:hover {
-            background: #b03566;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(209, 71, 129, 0.4);
+            background-color: #43a047;
         }
 
-        .social-buttons .btn {
-            color: #d14781;
-            transition: all 0.3s ease;
-        }
-
-        .social-buttons .btn:hover {
-            color: #b03566;
-            transform: scale(1.15);
+        /* Đăng ký và social */
+        .text-center p {
+            font-size: 14px;
+            margin-top: 20px;
         }
 
         .text-center a {
-            color: #d14781;
+            color: #4caf50;
             text-decoration: none;
-            font-weight: 600;
         }
 
         .text-center a:hover {
             text-decoration: underline;
-            color: #b03566;
         }
 
-        .forgot-password {
-            font-size: 13px;
-            color: #777;
+        /* Social buttons */
+        .social-buttons {
+            margin-top: 15px;
         }
 
-        .floral-icon {
-            display: block;
-            margin: 0 auto 20px;
-            width: 60px;
-            height: 60px;
-            background: url('https://img.icons8.com/color/48/000000/flower.png') no-repeat center;
-            background-size: contain;
+        .social-buttons .btn-link {
+            color: #66bb6a;
+            font-size: 20px;
+        }
+
+        .social-buttons .btn-link:hover {
+            color: #43a047;
         }
     </style>
 </head>

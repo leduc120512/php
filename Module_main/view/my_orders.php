@@ -189,6 +189,60 @@
     .btn-back:hover {
         background-color: #218838;
     }
+
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    .order-table thead {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .order-table th,
+    .order-table td {
+        padding: 12px 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .order-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .order-table tbody tr:hover {
+        background-color: #e0f7fa;
+        transition: 0.3s;
+    }
+
+    .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .update-status-form button {
+        background-color: #e74c3c;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .update-status-form button:hover {
+        background-color: #c0392b;
+    }
 </style>
 
 <body>
@@ -221,12 +275,12 @@
                 </ul>
             </div>
             <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                <a href="#"><i class="fa fa-user"></i> Logout</a>
             </div>
         </div>
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
+                <li class="active"><a href="controller=product&action=index">Home</a></li>
                 <li><a href="./shop-grid.html">Shop</a></li>
                 <li><a href="#">Pages</a>
                     <ul class="header__menu__dropdown">
@@ -287,7 +341,7 @@
                                 </ul>
                             </div>
                             <div class="header__top__right__auth">
-                                <a href="#"><i class="fa fa-user"></i> Login</a>
+                                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
                             </div>
                         </div>
                     </div>
@@ -304,7 +358,7 @@
                 <div class="col-lg-6">
                     <nav class="header__menu">
                         <ul>
-                            <li class="active"><a href="./index.html">Home</a></li>
+                            <li class="active"><a href="controller=product&action=index">Home</a></li>
                             <li><a href="./shop-grid.html">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="header__menu__dropdown">
@@ -315,7 +369,7 @@
                                 </ul>
                             </li>
                             <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -479,14 +533,16 @@
                                             <td><?php echo htmlspecialchars($order['created_at'] ?? date('Y-m-d H:i:s')); ?></td>
                                             <td>
                                                 <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
-                                                    <select name="status"
-                                                        style="opacity: 0 !important; position: absolute !important; pointer-events: none !important;">
+                                                    <select name="status" hidden>
                                                         <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
                                                     </select>
 
-                                                    <button type="submit" style=" height: 40px !important; width:100px;" class="btn btn-sm btn-danger">Hủy </button>
+                                                    <button type="submit" style="height: 40px; width: 100px;" class="btn btn-sm btn-danger">
+                                                        Hủy
+                                                    </button>
                                                 </form>
                                             </td>
+
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -867,7 +923,86 @@
     <script src="../view/js/owl.carousel.min.js"></script>
     <script src="../view/js/main.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            $('.update-status-form').on('submit', function(e) {
+                e.preventDefault();
 
+                let form = $(this);
+                let orderId = form.data('order-id');
+                let newStatus = form.find('select[name="status"]').val();
+                let row = form.closest('tr');
+                let productName = row.find('td:nth-child(2)').text();
+
+                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
+
+                if (!orderId || !newStatus) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Dữ liệu không hợp lệ.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: '?controller=product&action=updateStatusUser',
+                    method: 'POST',
+                    data: {
+                        order_id: orderId,
+                        status: newStatus
+                    },
+                    dataType: 'json',
+                    beforeSend: function() {
+                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
+                    },
+                    success: function(response) {
+                        console.log('AJAX Response:', response);
+                        if (response.success) {
+                            row.find('td:nth-child(6)').text(newStatus);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cập nhật thành công!',
+                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
+                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            console.log('Server error response:', response);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
+                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
+                        try {
+                            let response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: errorMessage,
+                            confirmButtonText: 'OK'
+                        });
+                    },
+                    complete: function() {
+                        form.find('button').prop('disabled', false).text('Cập nhật');
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 

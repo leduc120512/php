@@ -33,7 +33,7 @@ class OrderController
         try {
             $orders = $this->order->getAll();
             if (empty($orders)) {
-                return '<div style="color: red; text-align: center;">Thất bại: Không có đơn hàng nào để xuất.</div>';
+                return '<div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; text-align: center; padding: 15px; border-radius: 5px; font-family: Arial, sans-serif;">Thất bại: Không có đơn hàng nào để xuất.</div>';
             }
 
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -41,11 +41,29 @@ class OrderController
 
             // Tiêu đề chính
             $sheet->mergeCells('A1:F1');
-            $sheet->setCellValue('A1', 'Shop bán hoa');
+            $sheet->setCellValue('A1', 'Shop Bán Hoa quả - Báo Cáo Đơn Hàng');
             $sheet->getStyle('A1')->applyFromArray([
-                'font' => ['bold' => true, 'size' => 16],
-                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+                'font' => [
+                    'bold' => true,
+                    'size' => 18,
+                    'color' => ['argb' => 'FFFFFFFF'],
+                    'name' => 'Arial'
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+                ],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR,
+                    'rotation' => 90,
+                    'startColor' => ['argb' => 'FF4CAF50'],
+                    'endColor' => ['argb' => 'FF81C784']
+                ],
+                'borders' => [
+                    'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM, 'color' => ['argb' => 'FF2E7D32']]
+                ]
             ]);
+            $sheet->getRowDimension(1)->setRowHeight(40);
 
             // Header (từ dòng 2)
             $headers = [
@@ -62,18 +80,29 @@ class OrderController
 
             // Style header
             $sheet->getStyle('A2:F2')->applyFromArray([
-                'font' => ['bold' => true],
-                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-                'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
+                'font' => [
+                    'bold' => true,
+                    'color' => ['argb' => 'FFFFFFFF'],
+                    'size' => 12,
+                    'name' => 'Arial'
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+                ],
+                'borders' => [
+                    'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']]
+                ],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['argb' => 'FFCCE5FF']
+                    'startColor' => ['argb' => 'FF388E3C']
                 ]
             ]);
+            $sheet->getRowDimension(2)->setRowHeight(30);
 
             // Dữ liệu
             $row = 3;
-            foreach ($orders as $order) {
+            foreach ($orders as $index => $order) {
                 $sheet->setCellValue("A$row", $order['username']);
                 $sheet->setCellValue("B$row", $order['product_name']);
                 $sheet->setCellValue("C$row", $order['quantity']);
@@ -84,34 +113,53 @@ class OrderController
                 $createdAtFormatted = date('H:i d/m/Y', strtotime($order['created_at']));
                 $sheet->setCellValue("F$row", $createdAtFormatted);
 
+                // Style dữ liệu
                 $sheet->getStyle("A$row:F$row")->applyFromArray([
-                    'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
-                    'alignment' => ['vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER],
+                    'font' => ['size' => 11, 'name' => 'Arial'],
+                    'borders' => [
+                        'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['argb' => 'FF000000']]
+                    ],
+                    'alignment' => [
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'startColor' => ['argb' => ($index % 2 == 0) ? 'FFF1F8E9' : 'FFFFFFFF']
+                    ]
                 ]);
+
+                // Căn giữa cột Số lượng và Trạng thái
+                $sheet->getStyle("C$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("E$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
                 $row++;
             }
 
             // Format tiền
-            $sheet->getStyle("D3:D$row")->getNumberFormat()->setFormatCode('#,##0 \₫');
+            $sheet->getStyle("D3:D" . ($row - 1))->getNumberFormat()->setFormatCode('#,##0 " VNĐ"');
 
-            // Set chiều rộng
+            // Set chiều rộng cột
             $sheet->getColumnDimension('A')->setWidth(25); // Tên người dùng
-            $sheet->getColumnDimension('B')->setWidth(30); // Tên sản phẩm
-            $sheet->getColumnDimension('C')->setWidth(15); // Số lượng
-            $sheet->getColumnDimension('D')->setWidth(20); // Tổng tiền
-            $sheet->getColumnDimension('E')->setWidth(20); // Trạng thái
-            $sheet->getColumnDimension('F')->setWidth(25); // Thời gian tạo
+            $sheet->getColumnDimension('B')->setWidth(35); // Tên sản phẩm
+            $sheet->getColumnDimension('C')->setWidth(12); // Số lượng
+            $sheet->getColumnDimension('D')->setWidth(18); // Tổng tiền
+            $sheet->getColumnDimension('E')->setWidth(15); // Trạng thái
+            $sheet->getColumnDimension('F')->setWidth(20); // Thời gian tạo
+
+            // Đặt tiêu đề file
+            $sheet->setTitle('Báo Cáo Đơn Hàng');
 
             // Xuất file
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="don_hang_shop_hoa.xlsx"');
+            header('Content-Disposition: attachment;filename="bao_cao_don_hang_shop_hoa_qua.xlsx"');
             header('Cache-Control: max-age=0');
 
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $writer->save('php://output');
             exit;
         } catch (Exception $e) {
-            return '<div style="color: red; text-align: center;">Thất bại: Lỗi khi xuất đơn hàng - ' . $e->getMessage() . '</div>';
+            return '<div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; text-align: center; padding: 15px; border-radius: 5px; font-family: Arial, sans-serif;">Thất bại: Lỗi khi xuất đơn hàng - ' . $e->getMessage() . '</div>';
         }
     }
 
@@ -252,11 +300,11 @@ class OrderController
         exit;
     }
 
-    private function sendOrderEmail($email, $product_name, $quantity, $total_price, $order_id)
+    private function sendOrderEmail($email, $products, $total_price, $order_id)
     {
-        require 'PHPMailer-master/src/Exception.php';
-        require 'PHPMailer-master/src/PHPMailer.php';
-        require 'PHPMailer-master/src/SMTP.php';
+        require_once 'PHPMailer-master/src/Exception.php';
+        require_once 'PHPMailer-master/src/PHPMailer.php';
+        require_once 'PHPMailer-master/src/SMTP.php';
 
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
 
@@ -265,7 +313,7 @@ class OrderController
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'mailleduc05122004@gmail.com';
-            $mail->Password = 'guezbvjtsdwubjlt'; // 👉 Gợi ý: nên dùng biến môi trường để bảo mật hơn
+            $mail->Password = 'guezbvjtsdwubjlt'; // Gợi ý: nên dùng biến môi trường để bảo mật hơn
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
 
@@ -274,6 +322,20 @@ class OrderController
 
             $mail->isHTML(true);
             $mail->Subject = 'Xác nhận đơn hàng #' . $order_id;
+
+            // Build product list for the email
+            $product_list_html = '';
+            $product_list_text = '';
+            foreach ($products as $product) {
+                $subtotal = $product['price'] * $product['quantity'];
+                $product_list_html .= "
+                <tr>
+                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>{$product['name']}</td>
+                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>{$product['quantity']}</td>
+                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>" . number_format($subtotal, 0, ',', '.') . " VND</td>
+                </tr>";
+                $product_list_text .= "Sản phẩm: {$product['name']}, Số lượng: {$product['quantity']}, Tổng: " . number_format($subtotal, 0, ',', '.') . " VND\n";
+            }
 
             // Enhanced email template with modern design
             $mail->Body = "
@@ -304,20 +366,25 @@ class OrderController
                             <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>#$order_id</td>
                         </tr>
                         <tr>
-                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Sản phẩm</td>
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>$product_name</td>
+                          
+                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>
+                                <table style='width: 100%; border-collapse: collapse;'>
+                                    <tr style='background-color: #f8fafc;'>
+                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Tên sản phẩm</th>
+                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Số lượng</th>
+                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Tổng</th>
+                                    </tr>
+                                    $product_list_html
+                                </table>
+                            </td>
                         </tr>
                         <tr style='background-color: #f8fafc;'>
-                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Số lượng</td>
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>$quantity</td>
-                        </tr>
-                        <tr>
                             <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Tổng tiền</td>
                             <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>" . number_format($total_price, 0, ',', '.') . " VND</td>
                         </tr>
-                        <tr style='background-color: #f8fafc;'>
-                            <td style='padding: 12px; font-weight: 600;'>Trạng thái</td>
-                            <td style='padding: 12px;'>Đang xử lý</td>
+                        <tr>
+                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Trạng thái</td>
+                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>Đang xử lý</td>
                         </tr>
                     </table>
 
@@ -331,7 +398,7 @@ class OrderController
                 <!-- Footer -->
                 <div style='background-color: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;'>
                     <p style='color: #6b7280; font-size: 13px; margin: 0;'>Cần hỗ trợ? <a href='mailto:support@shopname.com' style='color: #2a9d8f; text-decoration: none;'>Liên hệ chúng tôi</a></p>
-                    <p style='color: #6b7280; font-size: 13px; margin: 8px 0 0;'>&copy; 2025 Shop Name. All rights reserved.</p>
+                    <p style='color: #6b7280; font-size: 13px; margin: 8px 0 0;'>© 2025 Shop Name. All rights reserved.</p>
                 </div>
             </div>
         </body>
@@ -342,8 +409,7 @@ class OrderController
             $mail->AltBody = "Cảm ơn bạn đã mua hàng!\n"
                 . "Đơn hàng của bạn đã được ghi nhận:\n"
                 . "Mã đơn hàng: #$order_id\n"
-                . "Sản phẩm: $product_name\n"
-                . "Số lượng: $quantity\n"
+                . $product_list_text
                 . "Tổng tiền: " . number_format($total_price, 0, ',', '.') . " VND\n"
                 . "Trạng thái: Đang xử lý\n"
                 . "Vui lòng kiểm tra đơn hàng trong tài khoản của bạn.";
@@ -454,13 +520,21 @@ class OrderController
     }
     public function checkout()
     {
+        // Kiểm tra giỏ hàng có tồn tại và không rỗng
         if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
             $_SESSION['error'] = "Giỏ hàng trống.";
             header("Location: ?controller=order&action=viewCart");
             exit;
         }
 
-        // Fetch user details (name, address, phone) once before the loop
+        // Kiểm tra xem có sản phẩm nào được chọn hay không
+        if (!isset($_POST['selected_products']) || empty($_POST['selected_products'])) {
+            $_SESSION['error'] = "Vui lòng chọn ít nhất một sản phẩm để thanh toán.";
+            header("Location: ?controller=order&action=viewCart");
+            exit;
+        }
+
+        // Fetch user details
         $user = $this->user->getById($_SESSION['user_id']);
         if (!$user) {
             $_SESSION['error'] = "Không thể lấy thông tin người dùng.";
@@ -471,8 +545,20 @@ class OrderController
         $name = $user['name'] ?? '';
         $address = $user['address'] ?? '';
         $phone = $user['phone'] ?? '';
+        $email = $user['email'] ?? '';
 
-        foreach ($_SESSION['cart'] as $product_id => $item) {
+        // Lọc giỏ hàng dựa trên các sản phẩm được chọn
+        $selected_products = $_POST['selected_products']; // Mảng chứa product_id được chọn
+        $products = [];
+        $total_price = 0;
+
+        // Validate products and stock
+        foreach ($selected_products as $product_id) {
+            if (!isset($_SESSION['cart'][$product_id])) {
+                continue; // Bỏ qua nếu product_id không có trong giỏ hàng
+            }
+
+            $item = $_SESSION['cart'][$product_id];
             $product = $this->product->getById($product_id);
             if (!$product) {
                 unset($_SESSION['cart'][$product_id]);
@@ -485,13 +571,32 @@ class OrderController
                 exit;
             }
 
-            $total_price = $product['price'] * $item['quantity'];
-            // Pass name, address, phone to the create function
+            // Add product to the order
+            $subtotal = $product['price'] * $item['quantity'];
+            $products[] = [
+                'product_id' => $product_id,
+                'name' => $product['name'],
+                'quantity' => $item['quantity'],
+                'price' => $product['price'],
+                'subtotal' => $subtotal
+            ];
+            $total_price += $subtotal;
+        }
+
+        if (empty($products)) {
+            $_SESSION['error'] = "Không có sản phẩm hợp lệ được chọn.";
+            header("Location: ?controller=order&action=viewCart");
+            exit;
+        }
+
+        // Create a single order for all selected products
+        $order_id = false;
+        foreach ($products as $product) {
             $order_id = $this->order->create(
                 $_SESSION['user_id'],
-                $product_id,
-                $item['quantity'],
-                $total_price,
+                $product['product_id'],
+                $product['quantity'],
+                $product['subtotal'],
                 $name,
                 $address,
                 $phone
@@ -503,28 +608,43 @@ class OrderController
                 exit;
             }
 
-            $new_quantity = $product['quantity'] - $item['quantity'];
+            // Update product quantity
+            $current_product = $this->product->getById($product['product_id']);
+            $new_quantity = $current_product['quantity'] - $product['quantity'];
             $this->product->update(
-                $product_id,
-                $product['name'],
-                $product['img'],
-                $product['price'],
+                $product['product_id'],
+                $current_product['name'],
+                $current_product['img'],
+                $current_product['price'],
                 $new_quantity,
-                $product['description']
+                $current_product['description']
             );
-
-            if ($user && isset($user['email'])) {
-                $this->sendOrderEmail(
-                    $user['email'],
-                    $product['name'],
-                    $item['quantity'],
-                    $total_price,
-                    $order_id
-                );
-            }
         }
 
-        unset($_SESSION['cart']);
+        // Prepare products for email
+        $email_products = array_map(function ($product) {
+            return [
+                'name' => $product['name'],
+                'quantity' => $product['quantity'],
+                'price' => $product['price']
+            ];
+        }, $products);
+
+        // Send order confirmation email
+        if (!empty($email)) {
+            $this->sendOrderEmail($email, $email_products, $total_price, $order_id);
+        }
+
+        // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+        foreach ($selected_products as $product_id) {
+            unset($_SESSION['cart'][$product_id]);
+        }
+
+        // Nếu giỏ hàng rỗng sau khi xóa, xóa luôn session cart
+        if (empty($_SESSION['cart'])) {
+            unset($_SESSION['cart']);
+        }
+
         $_SESSION['success'] = "Đơn hàng đã được tạo thành công!";
         header("Location: ?controller=product&action=index");
         exit;

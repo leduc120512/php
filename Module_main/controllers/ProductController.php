@@ -150,11 +150,13 @@ class ProductController
         }
         require '../view/edit_product.php';
     }
-
     public function delete($id)
     {
         if ($_SESSION['role'] !== 'admin') return;
         $this->product->delete($id);
-        header("Location: ?controller=order&action=admin");
+
+        // Sau khi xóa xong, chuyển hướng kèm thông báo
+        header('Location: ?controller=product&action=list&delete=success');
+        exit();
     }
 }
