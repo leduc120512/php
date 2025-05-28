@@ -1,783 +1,917 @@
 <!DOCTYPE html>
-<html>
+<html lang="zxx">
 
 <head>
-    <!-- Basic -->
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Mobile Metas -->
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <!-- Site Metas -->
-    <meta name="keywords" content="" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <link rel="shortcut icon" href="../view/images/favicon.png" type="image/x-icon" />
+    <meta charset="UTF-8">
+    <meta name="description" content="Ogani Template">
+    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ogani | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="../view/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../view/css/font-awesome.min.css" type="text/css">
 
 
-    <title>Giftos</title>
+    <link rel="stylesheet" href="../view/css/jquery-ui.min.css" type="text/css">
 
-    <!-- slider stylesheet -->
-    <link
-        rel="stylesheet"
-        type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
 
-    <!-- bootstrap core css -->
+    <link rel="stylesheet" href="../view/css/owl.carousel.min.css" type="text/css">
 
-    <link rel="stylesheet" type="text/css" href="../view/css/bootstrap.css" />
-    <!-- Custom styles for this template -->
-
-    <link href="../view/css/style.css" rel="stylesheet" />
-    <!-- responsive style -->
-    <link href="../view/css/responsive.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../view/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="../view/css/style.css" type="text/css">
+    <link rel="stylesheet" href="../view/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="../view/css/nice-select.css" type="text/css">
 </head>
 <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f6f8;
-        display: flex;
-        justify-content: center;
-        padding: 40px;
+    .shop_section {
+        padding: 60px 0;
+        background-color: #f9f9f9;
     }
 
+    .heading_container h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 40px;
+        position: relative;
+        display: inline-block;
+        color: #333;
+    }
+
+    .heading_container h2::after {
+        content: "";
+        width: 60%;
+        height: 3px;
+        background-color: #ff6f61;
+        display: block;
+        margin: 10px auto 0;
+        border-radius: 5px;
+    }
+
+    .box {
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin: 20px 10px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .box a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .img-box {
+        background-color: #f1f1f1;
+        padding: 20px;
+    }
+
+    .img-box img {
+        max-width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .detail-box {
+        padding: 20px 10px;
+    }
+
+    .detail-box h6 {
+        margin: 5px 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .detail-box span {
+        color: #ff6f61;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+
+    .new {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: #ff6f61;
+        color: #fff;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 30px;
+        font-weight: bold;
+    }
+
+    .buy-form {
+        margin-top: 10px;
+    }
+
+    .buy-btn {
+        background-color: #ff6f61;
+        border: none;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .buy-btn:hover {
+        background-color: #e85b50;
+    }
+
+    .btn-box a {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #ff6f61;
+        color: white;
+        font-weight: bold;
+        border-radius: 30px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-box a:hover {
+        background-color: #e85b50;
+    }
+
+    /* Đặt style cho toàn bộ form */
     form {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
         width: 100%;
         max-width: 500px;
+        /* Giới hạn chiều rộng form */
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        /* Gradient nền */
+        padding: 30px;
+        border-radius: 15px;
+        /* Bo góc */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        /* Hiệu ứng bóng */
+        font-family: 'Arial', sans-serif;
+        /* Font chữ hiện đại */
     }
 
-    h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
+    /* Style cho label */
     label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 500;
+        font-size: 16px;
+        font-weight: 600;
         color: #333;
+        margin-bottom: 8px;
+        margin-top: 15px;
     }
 
-    input[type="text"],
+    /* Style cho input */
     input[type="email"],
+    input[type="text"],
     input[type="password"] {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 15px;
-        transition: border 0.3s;
-    }
-
-    input:focus {
-        border-color: #4a90e2;
-        outline: none;
-    }
-
-    button[type="submit"] {
-        background-color: #4a90e2;
-        color: white;
         padding: 12px;
-        width: 100%;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hiệu ứng khi focus vào input */
+    input[type="email"]:focus,
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Placeholder style */
+    input::placeholder {
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Style cho button */
+    button {
+        margin-top: 25px;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        /* Gradient button */
         border: none;
         border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    button[type="submit"]:hover {
-        background-color: #357abd;
+    /* H ascendancy effect khi hover button */
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
     }
 
-    .success-message {
-        color: green;
-        background-color: #e6f7e6;
-        padding: 10px 15px;
-        border: 1px solid #b6e2b6;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        text-align: center;
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 600px) {
+        form {
+            padding: 20px;
+            margin: 20px;
+        }
     }
 </style>
 
 <body>
-    <div class="hero_area">
-        <!-- header section strats -->
-        <header class="header_section">
-            <nav class="navbar navbar-expand-lg custom_nav-container">
-                <a class="navbar-brand" href="index.html">
-                    <span> Giftos </span>
-                </a>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
 
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class=""></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="shop.html"> Shop </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="?controller=auth&action=updateUser"> Sửa thông tin người dùng </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <?php if (isset($_SESSION['user_id'])): ?>
-                                <a class="nav-link" href="?controller=order&action=myOrders">Đơn hàng của tôi</a>
-                            <?php endif; ?>
-                        </li>
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo">
+            <a href="#"><img src="../view/../view/img/logo.png" alt=""></a>
+        </div>
+        <div class="humberger__menu__cart">
+            <ul>
+                <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+            </ul>
+            <div class="header__cart__price">item: <span>$150.00</span></div>
+        </div>
+        <div class="humberger__menu__widget">
+            <div class="header__top__right__language">
+                <img src="../view/img/language.png" alt="">
+                <div>English</div>
+                <span class="arrow_carrot-down"></span>
+                <ul>
+                    <li><a href="#">Spanis</a></li>
+                    <li><a href="#">English</a></li>
+                </ul>
+            </div>
+            <div class="header__top__right__auth">
+                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="controller=product&action=index">Home</a></li>
+                <li><a href="./shop-grid.html">Shop</a></li>
+                <li><a href="#">Pages</a>
+                    <ul class="header__menu__dropdown">
+                        <li><a href="./shop-details.html">Shop Details</a></li>
+                        <li><a href="./shoping-cart.html">Shoping Cart</a></li>
+                        <li><a href="./checkout.html">Check Out</a></li>
+                        <li><a href="./blog-details.html">Blog Details</a></li>
                     </ul>
-                    <div class="user_option">
-                        <a href="?controller=auth&action=logout">
-                            <i class="fa fa-user" aria-hidden="true"></i>
-                            <span> Logout </span>
-                        </a>
-                        <div class="user_option">
-                            <a href="?controller=order&action=viewCart">
-
-                                <span> <i class="fa fa-shopping-bag" aria-hidden="true"></i> </span>
-                            </a>
-
-
-                            <form class="form-inline">
-                                <button class="btn nav_search-btn" type="submit">
-                                    <i class="fa fa-search" aria-hidden="true"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-            </nav>
-        </header>
-        <!-- end header section -->
-        <!-- slider section -->
-
-        <!-- end hero area -->
-
-
-        <?php
-        $user = $_SESSION['user'];
-        ?>
-
-        <h2 style="margin-top: 30px;">Cập nhật thông tin người dùng</h2>
-
-        <?php if (isset($_GET['success'])) { ?>
-            <div class="success-message">Cập nhật thành công!</div>
-        <?php } ?>
-        <div style="display: flex;width:100%;justify-content: center; margin-top: 30px;margin-bottom: 40px;">
-            <form action="?controller=auth&action=updateUser" method="post">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required value="<?= htmlspecialchars($user['email'] ?? '') ?>">
-
-                <label for="name">Tên:</label>
-                <input type="text" id="name" name="name" required value="<?= htmlspecialchars($user['name'] ?? '') ?>">
-
-                <label for="address">Địa chỉ:</label>
-                <input type="text" id="address" name="address" required value="<?= htmlspecialchars($user['address'] ?? '') ?>">
-
-                <label for="phone">Số điện thoại:</label>
-                <input type="text" id="phone" name="phone" required value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
-
-                <label for="password">Mật khẩu mới:</label>
-                <input type="password" id="password" name="password" placeholder="Để trống nếu không muốn đổi">
-
-                <button type="submit" name="update">Cập nhật</button>
-            </form>
-
+                </li>
+                <li><a href="./blog.html">Blog</a></li>
+                <li><a href="./contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+        <div class="header__top__right__social">
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-pinterest-p"></i></a>
         </div>
+        <div class="humberger__menu__contact">
+            <ul>
+                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                <li>Free Shipping for all Order of $99</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Humberger End -->
 
-
-        <!-- end shop section -->
-
-        <!-- saving section -->
-
-        <section class="saving_section">
-            <div class="box">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="img-box">
-                                <img src="../view/images/saving-img.png" alt="" />
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="detail-box">
-                                <div class="heading_container">
-                                    <h2>
-                                        Best Savings on <br />
-                                        new arrivals
-                                    </h2>
-                                </div>
-                                <p>
-                                    Qui ex dolore at repellat, quia neque doloribus omnis
-                                    adipisci, ipsum eos odio fugit ut eveniet blanditiis
-                                    praesentium totam non nostrum dignissimos nihil eius facere et
-                                    eaque. Qui, animi obcaecati.
-                                </p>
-                                <div class="btn-box">
-                                    <a href="#" class="btn1"> Buy Now </a>
-                                    <a href="#" class="btn2"> See More </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- end saving section -->
-
-        <!-- why section -->
-
-        <section class="why_section layout_padding">
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
             <div class="container">
-                <div class="heading_container heading_center">
-                    <h2>Why Shop With Us</h2>
-                </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="box">
-                            <div class="img-box">
-                                <svg
-                                    version="1.1"
-                                    id="Layer_1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                                    x="0px"
-                                    y="0px"
-                                    viewBox="0 0 512 512"
-                                    style="enable-background: new 0 0 512 512"
-                                    xml:space="preserve">
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M476.158,231.363l-13.259-53.035c3.625-0.77,6.345-3.986,6.345-7.839v-8.551c0-18.566-15.105-33.67-33.67-33.67h-60.392
-                 V110.63c0-9.136-7.432-16.568-16.568-16.568H50.772c-9.136,0-16.568,7.432-16.568,16.568V256c0,4.427,3.589,8.017,8.017,8.017
-                 c4.427,0,8.017-3.589,8.017-8.017V110.63c0-0.295,0.239-0.534,0.534-0.534h307.841c0.295,0,0.534,0.239,0.534,0.534v145.372
-                 c0,4.427,3.589,8.017,8.017,8.017c4.427,0,8.017-3.589,8.017-8.017v-9.088h94.569c0.008,0,0.014,0.002,0.021,0.002
-                 c0.008,0,0.015-0.001,0.022-0.001c11.637,0.008,21.518,7.646,24.912,18.171h-24.928c-4.427,0-8.017,3.589-8.017,8.017v17.102
-                 c0,13.851,11.268,25.119,25.119,25.119h9.086v35.273h-20.962c-6.886-19.883-25.787-34.205-47.982-34.205
-                 s-41.097,14.322-47.982,34.205h-3.86v-60.393c0-4.427-3.589-8.017-8.017-8.017c-4.427,0-8.017,3.589-8.017,8.017v60.391H192.817
-                 c-6.886-19.883-25.787-34.205-47.982-34.205s-41.097,14.322-47.982,34.205H50.772c-0.295,0-0.534-0.239-0.534-0.534v-17.637
-                 h34.739c4.427,0,8.017-3.589,8.017-8.017s-3.589-8.017-8.017-8.017H8.017c-4.427,0-8.017,3.589-8.017,8.017
-                 s3.589,8.017,8.017,8.017h26.188v17.637c0,9.136,7.432,16.568,16.568,16.568h43.304c-0.002,0.178-0.014,0.355-0.014,0.534
-                 c0,27.996,22.777,50.772,50.772,50.772s50.772-22.776,50.772-50.772c0-0.18-0.012-0.356-0.014-0.534h180.67
-                 c-0.002,0.178-0.014,0.355-0.014,0.534c0,27.996,22.777,50.772,50.772,50.772c27.995,0,50.772-22.776,50.772-50.772
-                 c0-0.18-0.012-0.356-0.014-0.534h26.203c4.427,0,8.017-3.589,8.017-8.017v-85.511C512,251.989,496.423,234.448,476.158,231.363z
-                  M375.182,144.301h60.392c9.725,0,17.637,7.912,17.637,17.637v0.534h-78.029V144.301z M375.182,230.881v-52.376h71.235
-                 l13.094,52.376H375.182z M144.835,401.904c-19.155,0-34.739-15.583-34.739-34.739s15.584-34.739,34.739-34.739
-                 c19.155,0,34.739,15.583,34.739,34.739S163.99,401.904,144.835,401.904z M427.023,401.904c-19.155,0-34.739-15.583-34.739-34.739
-                 s15.584-34.739,34.739-34.739c19.155,0,34.739,15.583,34.739,34.739S446.178,401.904,427.023,401.904z M495.967,299.29h-9.086
-                 c-5.01,0-9.086-4.076-9.086-9.086v-9.086h18.171V299.29z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M144.835,350.597c-9.136,0-16.568,7.432-16.568,16.568c0,9.136,7.432,16.568,16.568,16.568
-                 c9.136,0,16.568-7.432,16.568-16.568C161.403,358.029,153.971,350.597,144.835,350.597z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M427.023,350.597c-9.136,0-16.568,7.432-16.568,16.568c0,9.136,7.432,16.568,16.568,16.568
-                 c9.136,0,16.568-7.432,16.568-16.568C443.591,358.029,436.159,350.597,427.023,350.597z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M332.96,316.393H213.244c-4.427,0-8.017,3.589-8.017,8.017s3.589,8.017,8.017,8.017H332.96
-                 c4.427,0,8.017-3.589,8.017-8.017S337.388,316.393,332.96,316.393z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M127.733,282.188H25.119c-4.427,0-8.017,3.589-8.017,8.017s3.589,8.017,8.017,8.017h102.614
-                 c4.427,0,8.017-3.589,8.017-8.017S132.16,282.188,127.733,282.188z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M278.771,173.37c-3.13-3.13-8.207-3.13-11.337,0.001l-71.292,71.291l-37.087-37.087c-3.131-3.131-8.207-3.131-11.337,0
-                 c-3.131,3.131-3.131,8.206,0,11.337l42.756,42.756c1.565,1.566,3.617,2.348,5.668,2.348s4.104-0.782,5.668-2.348l76.96-76.96
-                 C281.901,181.576,281.901,176.501,278.771,173.37z" />
-                                        </g>
-                                    </g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                </svg>
-                            </div>
-                            <div class="detail-box">
-                                <h5>Fast Delivery</h5>
-                                <p>variations of passages of Lorem Ipsum available</p>
-                            </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                                <li>Free Shipping for all Order of $99</li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="box">
-                            <div class="img-box">
-                                <svg
-                                    version="1.1"
-                                    id="Capa_1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                                    x="0px"
-                                    y="0px"
-                                    viewBox="0 0 490.667 490.667"
-                                    style="enable-background: new 0 0 490.667 490.667"
-                                    xml:space="preserve">
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M138.667,192H96c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667s10.667-4.779,10.667-10.667
-                 v-74.667h32c5.888,0,10.667-4.779,10.667-10.667S144.555,192,138.667,192z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M117.333,234.667H96c-5.888,0-10.667,4.779-10.667,10.667S90.112,256,96,256h21.333c5.888,0,10.667-4.779,10.667-10.667
-                 S123.221,234.667,117.333,234.667z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M245.333,0C110.059,0,0,110.059,0,245.333s110.059,245.333,245.333,245.333s245.333-110.059,245.333-245.333
-                 S380.608,0,245.333,0z M245.333,469.333c-123.52,0-224-100.48-224-224s100.48-224,224-224s224,100.48,224,224
-                 S368.853,469.333,245.333,469.333z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M386.752,131.989C352.085,88.789,300.544,64,245.333,64s-106.752,24.789-141.419,67.989
-                 c-3.691,4.587-2.965,11.307,1.643,14.997c4.587,3.691,11.307,2.965,14.976-1.643c30.613-38.144,76.096-60.011,124.8-60.011
-                 s94.187,21.867,124.779,60.011c2.112,2.624,5.205,3.989,8.32,3.989c2.368,0,4.715-0.768,6.677-2.347
-                 C389.717,143.296,390.443,136.576,386.752,131.989z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M376.405,354.923c-4.224-4.032-11.008-3.861-15.061,0.405c-30.613,32.235-71.808,50.005-116.011,50.005
-                 s-85.397-17.771-115.989-50.005c-4.032-4.309-10.816-4.437-15.061-0.405c-4.309,4.053-4.459,10.816-0.405,15.083
-                 c34.667,36.544,81.344,56.661,131.456,56.661s96.789-20.117,131.477-56.661C380.864,365.739,380.693,358.976,376.405,354.923z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M206.805,255.723c15.701-2.027,27.861-15.488,27.861-31.723c0-17.643-14.357-32-32-32h-21.333
-                 c-5.888,0-10.667,4.779-10.667,10.667v42.581c0,0.043,0,0.107,0,0.149V288c0,5.888,4.779,10.667,10.667,10.667
-                 S192,293.888,192,288v-16.917l24.448,24.469c2.091,2.069,4.821,3.115,7.552,3.115c2.731,0,5.461-1.045,7.531-3.136
-                 c4.16-4.16,4.16-10.923,0-15.083L206.805,255.723z M192,234.667v-21.333h10.667c5.867,0,10.667,4.779,10.667,10.667
-                 s-4.8,10.667-10.667,10.667H192z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M309.333,277.333h-32v-64h32c5.888,0,10.667-4.779,10.667-10.667S315.221,192,309.333,192h-42.667
-                 c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667h42.667c5.888,0,10.667-4.779,10.667-10.667
-                 S315.221,277.333,309.333,277.333z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M288,234.667h-21.333c-5.888,0-10.667,4.779-10.667,10.667S260.779,256,266.667,256H288
-                 c5.888,0,10.667-4.779,10.667-10.667S293.888,234.667,288,234.667z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M394.667,277.333h-32v-64h32c5.888,0,10.667-4.779,10.667-10.667S400.555,192,394.667,192H352
-                 c-5.888,0-10.667,4.779-10.667,10.667V288c0,5.888,4.779,10.667,10.667,10.667h42.667c5.888,0,10.667-4.779,10.667-10.667
-                 S400.555,277.333,394.667,277.333z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M373.333,234.667H352c-5.888,0-10.667,4.779-10.667,10.667S346.112,256,352,256h21.333
-                 c5.888,0,10.667-4.779,10.667-10.667S379.221,234.667,373.333,234.667z" />
-                                        </g>
-                                    </g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                    <g></g>
-                                </svg>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
                             </div>
-                            <div class="detail-box">
-                                <h5>Free Shiping</h5>
-                                <p>variations of passages of Lorem Ipsum available</p>
+                            <div class="header__top__right__language">
+                                <img src="../view/img/language.png" alt="">
+                                <div>English</div>
+                                <span class="arrow_carrot-down"></span>
+                                <ul>
+                                    <li><a href="#">Spanis</a></li>
+                                    <li><a href="#">English</a></li>
+                                </ul>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="box">
-                            <div class="img-box">
-                                <svg
-                                    id="_30_Premium"
-                                    height="512"
-                                    viewBox="0 0 512 512"
-                                    width="512"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    data-name="30_Premium">
-                                    <g id="filled">
-                                        <path
-                                            d="m252.92 300h3.08a124.245 124.245 0 1 0 -4.49-.09c.075.009.15.023.226.03.394.039.789.06 1.184.06zm-96.92-124a100 100 0 1 1 100 100 100.113 100.113 0 0 1 -100-100z" />
-                                        <path
-                                            d="m447.445 387.635-80.4-80.4a171.682 171.682 0 0 0 60.955-131.235c0-94.841-77.159-172-172-172s-172 77.159-172 172c0 73.747 46.657 136.794 112 161.2v158.8c-.3 9.289 11.094 15.384 18.656 9.984l41.344-27.562 41.344 27.562c7.574 5.4 18.949-.7 18.656-9.984v-70.109l46.6 46.594c6.395 6.789 18.712 3.025 20.253-6.132l9.74-48.724 48.725-9.742c9.163-1.531 12.904-13.893 6.127-20.252zm-339.445-211.635c0-81.607 66.393-148 148-148s148 66.393 148 148-66.393 148-148 148-148-66.393-148-148zm154.656 278.016a12 12 0 0 0 -13.312 0l-29.344 19.562v-129.378a172.338 172.338 0 0 0 72 0v129.38zm117.381-58.353a12 12 0 0 0 -9.415 9.415l-6.913 34.58-47.709-47.709v-54.749a171.469 171.469 0 0 0 31.467-15.6l67.151 67.152z" />
-                                        <path
-                                            d="m287.62 236.985c8.349 4.694 19.251-3.212 17.367-12.618l-5.841-35.145 25.384-25c7.049-6.5 2.89-19.3-6.634-20.415l-35.23-5.306-15.933-31.867c-4.009-8.713-17.457-8.711-21.466 0l-15.933 31.866-35.23 5.306c-9.526 1.119-13.681 13.911-6.634 20.415l25.384 25-5.841 35.145c-1.879 9.406 9 17.31 17.367 12.618l31.62-16.414zm-53-32.359 2.928-17.615a12 12 0 0 0 -3.417-10.516l-12.721-12.531 17.658-2.66a12 12 0 0 0 8.947-6.5l7.985-15.971 7.985 15.972a12 12 0 0 0 8.947 6.5l17.658 2.66-12.723 12.535a12 12 0 0 0 -3.417 10.516l2.928 17.615-15.849-8.231a12 12 0 0 0 -11.058 0z" />
-                                    </g>
-                                </svg>
-                            </div>
-                            <div class="detail-box">
-                                <h5>Best Quality</h5>
-                                <p>variations of passages of Lorem Ipsum available</p>
+                            <div class="header__top__right__auth">
+                                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="./index.html"><img src="../view/img/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="active"><a href="controller=product&action=index">Home</a></li>
+                            <li><a href="./shop-grid.html">Shop</a></li>
+                            <li><a href="#">Pages</a>
+                                <ul class="header__menu__dropdown">
+                                    <li><a href="./shop-details.html">Shop Details</a></li>
+                                    <li><a href="./shoping-cart.html">Shoping Cart</a></li>
+                                    <li><a href="./checkout.html">Check Out</a></li>
+                                    <li><a href="./blog-details.html">Blog Details</a></li>
+                                </ul>
+                            </li>
 
-        <!-- end why section -->
+                            <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
+                            <li><a href="?controller=auth&action=updateUser">Sửa user</a></li>
 
-        <!-- gift section -->
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                            <li><a href="?controller=order&action=viewCart"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                        </ul>
+                        <div class="header__cart__price">item: <span>$150.00</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
 
-        <section class="gift_section layout_padding-bottom">
-            <div class="box">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="img_container">
-                                <div class="img-box">
-                                    <img src="../view/images/gifts.png" alt="" />
-                                </div>
-                            </div>
+
+    <!-- Hero Section End -->
+
+    <!-- Categories Section Begin -->
+    <section class="categories">
+        <div class="container">
+            <div class="row">
+                <div class="categories__slider owl-carousel">
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="../view/img/categories/cat-1.jpg">
+                            <h5><a href="#">Fresh Fruit</a></h5>
                         </div>
-                        <div class="col-md-7">
-                            <div class="detail-box">
-                                <div class="heading_container">
-                                    <h2>
-                                        Gifts for your <br />
-                                        loved ones
-                                    </h2>
-                                </div>
-                                <p>
-                                    Omnis ex nam laudantium odit illum harum, excepturi accusamus
-                                    at corrupti, velit blanditiis unde perspiciatis, vitae minus
-                                    culpa? Beatae at aut consequuntur porro adipisci aliquam eaque
-                                    iste ducimus expedita accusantium?
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="../view/img/categories/cat-2.jpg">
+                            <h5><a href="#">Dried Fruit</a></h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="../view/img/categories/cat-3.jpg">
+                            <h5><a href="#">Vegetables</a></h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="../view/img/categories/cat-4.jpg">
+                            <h5><a href="#">drink fruits</a></h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="../view/img/categories/cat-5.jpg">
+                            <h5><a href="#">drink fruits</a></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Categories Section End -->
+
+    <?php
+    $user = $_SESSION['user'];
+    ?>
+
+
+
+    <?php if (isset($_GET['success'])) { ?>
+        <div class="success-message">Cập nhật thành công!</div>
+    <?php } ?>
+    <div style="display: flex;width:100%;justify-content: center; margin-top: 30px;margin-bottom: 40px;">
+        <form action="?controller=auth&action=updateUser" method="post">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+
+            <label for="name">Tên:</label>
+            <input type="text" id="name" name="name" required value="<?= htmlspecialchars($user['name'] ?? '') ?>">
+
+            <label for="address">Địa chỉ:</label>
+            <input type="text" id="address" name="address" required value="<?= htmlspecialchars($user['address'] ?? '') ?>">
+
+            <label for="phone">Số điện thoại:</label>
+            <input type="text" id="phone" name="phone" required value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
+
+            <label for="password">Mật khẩu mới:</label>
+            <input type="password" id="password" name="password" placeholder="Để trống nếu không muốn đổi">
+
+            <button type="submit" name="update">Cập nhật</button>
+        </form>
+
+    </div>
+    <!-- Featured Section Begin -->
+    <section class="featured spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>Featured Product</h2>
+                    </div>
+                    <div class="featured__controls">
+                        <ul>
+                            <li class="active" data-filter="*">All</li>
+                            <li data-filter=".oranges">Oranges</li>
+                            <li data-filter=".fresh-meat">Fresh Meat</li>
+                            <li data-filter=".vegetables">Vegetables</li>
+                            <li data-filter=".fastfood">Fastfood</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 10px;margin-left: 325px; display:flex;justify-content: center;width: 60%;" class="input-group mb-4 mt-20">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm" value="<?php echo htmlspecialchars($keyword ?? ''); ?>">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-primary">Tìm</button>
+                </div>
+            </div>
+            <div class="row featured__filter" id="productList">
+                <?php foreach ($allProducts as $product): ?>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mix new-arrival">
+                        <div class="featured__item">
+                            <div
+                                class="featured__item__pic set-bg"
+                                data-setbg="../public/img/<?php echo htmlspecialchars($product['img']); ?>">
+                                <ul class="featured__item__pic__hover">
+                                    <li>
+                                        <a href="#"><i class="fa fa-heart"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><i class="fa fa-retweet"></i></a>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="?controller=order&action=buy">
+                                            <input
+                                                type="hidden"
+                                                name="product_id"
+                                                value="<?php echo $product['ID']; ?>" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="no-style-btn">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="featured__item__text">
+                                <h6>
+                                    <a href="#"><?php echo htmlspecialchars($product['name']); ?></a>
+                                </h6>
+                                <h5>
+                                    <?php echo number_format($product['price']); ?>
+                                    VND
+                                </h5>
+                                <p class="description">
+                                    <?php echo htmlspecialchars($product['description']); ?>
                                 </p>
-                                <div class="btn-box">
-                                    <a href="#" class="btn1"> Buy Now </a>
-                                    <a href="#" class="btn2"> See More </a>
-                                </div>
+                                <p class="created-date">
+                                    Ngày:
+                                    <?php echo $product['created_at'] ?? 'N/A'; ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <nav aria-label="Page navigation" id="pagination">
+            <ul class="pagination justify-content-center">
+                <?php if ($currentPage > 1): ?>
+                    <li class="page-item"><a class="page-link" href="#" data-page="<?php echo $currentPage - 1; ?>">Previous</a></li>
+                <?php else: ?>
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?php echo $i === $currentPage ? 'active' : ''; ?>">
+                        <a class="page-link" href="#" data-page="<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <li class="page-item"><a class="page-link" href="#" data-page="<?php echo $currentPage + 1; ?>">Next</a></li>
+                <?php else: ?>
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </section>
+    <!-- Featured Section End -->
+
+    <!-- Banner Begin -->
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="banner__pic">
+                        <img src="../view/img/banner/banner-1.jpg" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="banner__pic">
+                        <img src="../view/img/banner/banner-2.jpg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Banner End -->
+
+    <!-- Latest Product Section Begin -->
+    <section class="latest-product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="latest-product__text">
+                        <h4>Latest Products</h4>
+                        <div class="latest-product__slider owl-carousel">
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="latest-product__text">
+                        <h4>Top Rated Products</h4>
+                        <div class="latest-product__slider owl-carousel">
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="latest-product__text">
+                        <h4>Review Products</h4>
+                        <div class="latest-product__slider owl-carousel">
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="latest-prdouct__slider__item">
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-1.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-2.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="latest-product__item">
+                                    <div class="latest-product__item__pic">
+                                        <img src="../view/img/latest-product/lp-3.jpg" alt="">
+                                    </div>
+                                    <div class="latest-product__item__text">
+                                        <h6>Crab Pool Security</h6>
+                                        <span>$30.00</span>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+    <!-- Latest Product Section End -->
 
-        <!-- end gift section -->
-
-        <!-- contact section -->
-
-        <section class="contact_section">
-            <div class="container px-0">
-                <div class="heading_container">
-                    <h2 class="">Contact Us</h2>
+    <!-- Blog Section Begin -->
+    <section class="from-blog spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title from-blog__title">
+                        <h2>From The Blog</h2>
+                    </div>
                 </div>
             </div>
-            <div class="container container-bg">
-                <div class="row">
-                    <div class="col-lg-7 col-md-6 px-0">
-                        <div class="map_container">
-                            <div class="map-responsive">
-                                <iframe
-                                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0s1a7phLN0iaD6-UE7m4qP-z21pH0eSc&q=Eiffel+Tower+Paris+France"
-                                    width="600"
-                                    height="300"
-                                    frameborder="0"
-                                    style="border: 0; width: 100%; height: 100%"
-                                    allowfullscreen></iframe>
-                            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="../view/img/blog/blog-1.jpg" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">Cooking tips make cooking simple</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-5 px-0">
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="../view/img/blog/blog-2.jpg" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">6 ways to prepare breakfast for 30</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="../view/img/blog/blog-3.jpg" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">Visit the clean farm in the US</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Section End -->
+
+    <!-- Footer Section Begin -->
+    <footer class="footer spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="footer__about">
+                        <div class="footer__about__logo">
+                            <a href="./index.html"><img src="../view/img/logo.png" alt=""></a>
+                        </div>
+                        <ul>
+                            <li>Address: 60-49 Road 11378 New York</li>
+                            <li>Phone: +65 11.188.888</li>
+                            <li>Email: hello@colorlib.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                    <div class="footer__widget">
+                        <h6>Useful Links</h6>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">About Our Shop</a></li>
+                            <li><a href="#">Secure Shopping</a></li>
+                            <li><a href="#">Delivery infomation</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Our Sitemap</a></li>
+                        </ul>
+                        <ul>
+                            <li><a href="#">Who We Are</a></li>
+                            <li><a href="#">Our Services</a></li>
+                            <li><a href="#">Projects</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Innovation</a></li>
+                            <li><a href="#">Testimonials</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer__widget">
+                        <h6>Join Our Newsletter Now</h6>
+                        <p>Get E-mail updates about our latest shop and special offers.</p>
                         <form action="#">
-                            <div>
-                                <input type="text" placeholder="Name" />
-                            </div>
-                            <div>
-                                <input type="email" placeholder="Email" />
-                            </div>
-                            <div>
-                                <input type="text" placeholder="Phone" />
-                            </div>
-                            <div>
-                                <input type="text" class="message-box" placeholder="Message" />
-                            </div>
-                            <div class="d-flex">
-                                <button>SEND</button>
-                            </div>
+                            <input type="text" placeholder="Enter your mail">
+                            <button type="submit" class="site-btn">Subscribe</button>
                         </form>
+                        <div class="footer__widget__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- end contact section -->
-
-        <!-- client section -->
-        <section class="client_section layout_padding">
-            <div class="container">
-                <div class="heading_container heading_center">
-                    <h2>Testimonial</h2>
-                </div>
-            </div>
-            <div class="container px-0">
-                <div
-                    id="customCarousel2"
-                    class="carousel carousel-fade"
-                    data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div class="box">
-                                <div class="client_info">
-                                    <div class="client_name">
-                                        <h5>Morijorch</h5>
-                                        <h6>Default model text</h6>
-                                    </div>
-                                    <i class="fa fa-quote-left" aria-hidden="true"></i>
-                                </div>
-                                <p>
-                                    editors now use Lorem Ipsum as their default model text, and a
-                                    search for 'lorem ipsum' will uncover many web sites still in
-                                    their infancy. Variouseditors now use Lorem Ipsum as their
-                                    default model text, and a search for 'lorem ipsum' will
-                                    uncover many web sites still in their infancy. Variouseditors
-                                    now use Lorem Ipsum as their default model text, and a search
-                                    for 'lorem ipsum' will uncover many web sites still in their
-                                    infancy. Various
-                                </p>
-                            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="footer__copyright">
+                        <div class="footer__copyright__text">
+                            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                Copyright &copy;<script>
+                                    document.write(new Date().getFullYear());
+                                </script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
                         </div>
-                        <div class="carousel-item">
-                            <div class="box">
-                                <div class="client_info">
-                                    <div class="client_name">
-                                        <h5>Rochak</h5>
-                                        <h6>Default model text</h6>
-                                    </div>
-                                    <i class="fa fa-quote-left" aria-hidden="true"></i>
-                                </div>
-                                <p>
-                                    Variouseditors now use Lorem Ipsum as their default model
-                                    text, and a search for 'lorem ipsum' will uncover many web
-                                    sites still in their infancy. Variouseditors now use Lorem
-                                    Ipsum as their default model text, and a search for 'lorem
-                                    ipsum' will uncover many web sites still in their infancy.
-                                    editors now use Lorem Ipsum as their default model text, and a
-                                    search for 'lorem ipsum' will uncover many web sites still in
-                                    their infancy.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div class="box">
-                                <div class="client_info">
-                                    <div class="client_name">
-                                        <h5>Brad Johns</h5>
-                                        <h6>Default model text</h6>
-                                    </div>
-                                    <i class="fa fa-quote-left" aria-hidden="true"></i>
-                                </div>
-                                <p>
-                                    Variouseditors now use Lorem Ipsum as their default model
-                                    text, and a search for 'lorem ipsum' will uncover many web
-                                    sites still in their infancy, editors now use Lorem Ipsum as
-                                    their default model text, and a search for 'lorem ipsum' will
-                                    uncover many web sites still in their infancy. Variouseditors
-                                    now use Lorem Ipsum as their default model text, and a search
-                                    for 'lorem ipsum' will uncover many web sites still in their
-                                    infancy. Various
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel_btn-box">
-                        <a
-                            class="carousel-control-prev"
-                            href="#customCarousel2"
-                            role="button"
-                            data-slide="prev">
-                            <i class="fa fa-angle-left" aria-hidden="true"></i>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a
-                            class="carousel-control-next"
-                            href="#customCarousel2"
-                            role="button"
-                            data-slide="next">
-                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                            <span class="sr-only">Next</span>
-                        </a>
+                        <div class="footer__copyright__payment"><img src="../view/img/payment-item.png" alt=""></div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <div style="margin-top: 10px;margin-left: 325px; display:flex;justify-content: center;width: 60%;" class="input-group mb-4 mt-20">
-            <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên sản phẩm" value="<?php echo htmlspecialchars($keyword ?? ''); ?>">
-            <div class="input-group-append">
-                <button id="searchButton" class="btn btn-primary">Tìm</button>
             </div>
         </div>
+    </footer>
+    <!-- Footer Section End -->
 
-        <section class="info_section layout_padding2-top">
-            <div class="social_container">
-                <div class="social_box">
-                    <a href="">
-                        <i class="fa fa-facebook" aria-hidden="true"></i>
-                    </a>
-                    <a href="">
-                        <i class="fa fa-twitter" aria-hidden="true"></i>
-                    </a>
-                    <a href="">
-                        <i class="fa fa-instagram" aria-hidden="true"></i>
-                    </a>
-                    <a href="">
-                        <i class="fa fa-youtube" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
+    <!-- Js Plugins -->
+    <script src="../view/js/jquery-3.3.1.min.js"></script>
+    <script src="../view/js/bootstrap.min.js"></script>
+    <script src="../view/js/jquery.nice-select.min.js"></script>
+    <script src="../view/js/jquery-ui.min.js"></script>
+    <script src="../view/js/jquery.slicknav.js"></script>
+    <script src="../view/js/mixitup.min.js"></script>
+    <script src="../view/js/owl.carousel.min.js"></script>
+    <script src="../view/js/main.js"></script>
 
-            <div class="info_container">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-3">
-                            <h6>ABOUT US</h6>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                                doLorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                                doLorem ipsum dolor sit amet,
-                            </p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <div class="info_form">
-                                <h5>Newsletter</h5>
-                                <form action="#">
-                                    <input type="email" placeholder="Enter your email" />
-                                    <button>Subscribe</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <h6>NEED HELP</h6>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                                doLorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                                doLorem ipsum dolor sit amet,
-                            </p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <h6>CONTACT US</h6>
-                            <div class="info_link-box">
-                                <a href="">
-                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
-                                    <span> Gb road 123 london Uk </span>
-                                </a>
-                                <a href="">
-                                    <i class="fa fa-phone" aria-hidden="true"></i>
-                                    <span>+01 12345678901</span>
-                                </a>
-                                <a href="">
-                                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                                    <span> demo@gmail.com</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- footer section -->
-            <footer class="footer_section">
-                <div class="container">
-                    <p>
-                        &copy; <span id="displayYear"></span> All Rights Reserved By
-                        <a href="https://html.design/">Free Html Templates</a>
-                    </p>
-                </div>
-            </footer>
-            <!-- footer section -->
-        </section>
-        <li class="nav-item">
-            <a class="nav-link" href="?controller=auth&action=logout">Logout</a>
-        </li>
-        <!-- end info section -->
-
-        <script src="../view/js/jquery-3.4.1.min.js"></script>
-        <script src="../view/js/bootstrap.js"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-        <script src="../view/js/custom.js"></script>
 
 </body>
 

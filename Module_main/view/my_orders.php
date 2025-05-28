@@ -368,8 +368,10 @@
                                     <li><a href="./blog-details.html">Blog Details</a></li>
                                 </ul>
                             </li>
-                            <li><a href="./blog.html">Blog</a></li>
+
                             <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
+                            <li><a href="?controller=auth&action=updateUser">Sửa user</a></li>
+
                         </ul>
                     </nav>
                 </div>

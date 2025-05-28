@@ -161,6 +161,138 @@
             transform: translateY(0);
         }
     }
+
+    /* Style cho container */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Style cho bảng giỏ hàng */
+    .cart-table {
+        width: 100%;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 15px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .cart-table th {
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .cart-table tr {
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-table tr:last-child {
+        border-bottom: none;
+    }
+
+    /* Style cho input số lượng */
+    .quantity-input {
+        width: 80px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .quantity-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Style cho button */
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        border: none;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(108, 117, 125, 0.4);
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+    }
+
+    /* Style cho alert */
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+
+        .cart-table th,
+        .cart-table td {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .quantity-input {
+            width: 60px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+    }
 </style>
 
 <body>
@@ -169,64 +301,6 @@
         <div class="loader"></div>
     </div>
 
-
-    <!-- Humberger Begin -->
-    <div class="humberger__menu__overlay"></div>
-    <div class="humberger__menu__wrapper">
-        <div class="humberger__menu__logo">
-            <a href="#"><img src="../view/img/logo.png" alt=""></a>
-        </div>
-        <div class="humberger__menu__cart">
-            <ul>
-                <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
-            </ul>
-            <div class="header__cart__price">item: <span>$150.00</span></div>
-        </div>
-        <div class="humberger__menu__widget">
-            <div class="header__top__right__language">
-                <img src="../view/img/language.png" alt="">
-                <div>English</div>
-                <span class="arrow_carrot-down"></span>
-                <ul>
-                    <li><a href="#">Spanis</a></li>
-                    <li><a href="#">English</a></li>
-                </ul>
-            </div>
-            <div class="header__top__right__auth">
-                <a href="?controller=auth&action=logout"><i class="fa fa-user"></i> Logout</a>
-            </div>
-        </div>
-        <nav class="humberger__menu__nav mobile-menu">
-            <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
-                <li><a href="./shop-grid.html">Shop</a></li>
-                <li><a href="#">Pages</a>
-                    <ul class="header__menu__dropdown">
-                        <li><a href="./shop-details.html">Shop Details</a></li>
-                        <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                        <li><a href="./checkout.html">Check Out</a></li>
-                        <li><a href="./blog-details.html">Blog Details</a></li>
-                    </ul>
-                </li>
-                <li><a href="./blog.html">Blog</a></li>
-                <li><a href="./contact.html">Contact</a></li>
-            </ul>
-        </nav>
-        <div id="mobile-menu-wrap"></div>
-        <div class="header__top__right__social">
-            <a href="#"><i class="fa fa-facebook"></i></a>
-            <a href="#"><i class="fa fa-twitter"></i></a>
-            <a href="#"><i class="fa fa-linkedin"></i></a>
-            <a href="#"><i class="fa fa-pinterest-p"></i></a>
-        </div>
-        <div class="humberger__menu__contact">
-            <ul>
-                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
-                <li>Free Shipping for all Order of $99</li>
-            </ul>
-        </div>
-    </div>
     <!-- Humberger End -->
 
     <!-- Header Section Begin -->
@@ -287,8 +361,10 @@
                                     <li><a href="./blog-details.html">Blog Details</a></li>
                                 </ul>
                             </li>
-                            <li><a href="./blog.html">Blog</a></li>
+
                             <li><a href="?controller=order&action=myOrders">đơn hàng</a></li>
+                            <li><a href="?controller=auth&action=updateUser">Sửa user</a></li>
+
                         </ul>
                     </nav>
                 </div>
@@ -402,8 +478,8 @@
         <?php if (empty($cart)): ?>
             <p>Giỏ hàng trống.</p>
         <?php else: ?>
-            <form action="?controller=order&action=checkout" method="POST">
-                <table class="table">
+            <form id="cartForm" action="?controller=order&action=checkout" method="POST">
+                <table class="table cart-table">
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="select-all" onclick="toggleSelectAll()"> Chọn</th>
@@ -417,27 +493,28 @@
                     <tbody>
                         <?php $total = 0; ?>
                         <?php foreach ($cart as $product_id => $item): ?>
-                            <tr>
+                            <tr data-product-id="<?php echo $product_id; ?>">
                                 <td>
                                     <input type="checkbox" name="selected_products[]" value="<?php echo $product_id; ?>" class="product-checkbox">
                                 </td>
                                 <td><?php echo htmlspecialchars($item['name']); ?></td>
-                                <td><?php echo number_format($item['price']); ?> VND</td>
-                                <td><?php echo $item['quantity']; ?></td>
-                                <td><?php
-                                    $subtotal = $item['price'] * $item['quantity'];
-                                    $total += $subtotal;
-                                    echo number_format($subtotal);
-                                    ?> VND</td>
+                                <td class="product-price"><?php echo number_format($item['price']); ?> VND</td>
                                 <td>
-                                    <a href="?controller=order&action=removeFromCart&id=<?php echo $product_id; ?>"
-                                        class="btn btn-danger btn-sm">Xóa</a>
+                                    <input type="number" class="quantity-input" name="quantity[<?php echo $product_id; ?>]" value="<?php echo $item['quantity']; ?>" min="1" data-price="<?php echo $item['price']; ?>">
+                                </td>
+                                <td class="subtotal"><?php
+                                                        $subtotal = $item['price'] * $item['quantity'];
+                                                        $total += $subtotal;
+                                                        echo number_format($subtotal);
+                                                        ?> VND</td>
+                                <td>
+                                    <a href="?controller=order&action=removeFromCart&id=<?php echo $product_id; ?>" class="btn btn-danger btn-sm">Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                         <tr>
                             <td colspan="4"><strong>Tổng cộng:</strong></td>
-                            <td><strong><?php echo number_format($total); ?> VND</strong></td>
+                            <td><strong id="total-price"><?php echo number_format($total); ?> VND</strong></td>
                             <td></td>
                         </tr>
                     </tbody>
@@ -598,11 +675,45 @@
     </footer>
     <!-- Footer Section End -->
     <script>
-        const buyForm = document.getElementById('buyForm');
+        // Chọn tất cả checkbox
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
+        }
 
-        buyForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // ngăn submit ngay lập tức
+        // Cập nhật tổng tiền khi thay đổi số lượng
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const quantity = parseInt(this.value) || 0;
+                const price = parseInt(this.dataset.price);
+                const subtotal = quantity * price;
+                const row = this.closest('tr');
+                row.querySelector('.subtotal').textContent = formatVND(subtotal);
 
+                updateTotalPrice();
+            });
+        });
+
+        // Hàm định dạng tiền VND
+        function formatVND(n) {
+            return n.toLocaleString('vi-VN') + ' VND';
+        }
+
+        // Cập nhật tổng tiền toàn bộ giỏ hàng
+        function updateTotalPrice() {
+            let total = 0;
+            document.querySelectorAll('.subtotal').forEach(subtotal => {
+                const value = parseInt(subtotal.textContent.replace(/[^0-9]/g, '')) || 0;
+                total += value;
+            });
+            document.getElementById('total-price').textContent = formatVND(total);
+        }
+
+        // Xử lý submit form với SweetAlert
+        const cartForm = document.getElementById('cartForm');
+        cartForm.addEventListener('submit', function(e E) {
+            e.preventDefault();
             Swal.fire({
                 icon: 'success',
                 title: 'Mua hàng thành công!',
@@ -613,23 +724,8 @@
                 },
                 buttonsStyling: false
             }).then(() => {
-                buyForm.submit(); // chỉ submit sau khi bấm OK
+                cartForm.submit();
             });
-        });
-
-        // Tính tổng tiền động
-        const quantityInput = document.getElementById('quantity');
-        const totalPriceDiv = document.getElementById('total-price');
-        const productPrice = parseInt(document.getElementById('product-price').value);
-
-        function formatVND(n) {
-            return n.toLocaleString('vi-VN') + ' VND';
-        }
-
-        quantityInput.addEventListener('input', () => {
-            const quantity = parseInt(quantityInput.value) || 0;
-            const total = quantity * productPrice;
-            totalPriceDiv.textContent = formatVND(total);
         });
     </script>
     <!-- Js Plugins -->

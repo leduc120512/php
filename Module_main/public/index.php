@@ -3,6 +3,7 @@ session_start();
 require_once '../controllers/AuthController.php';
 require_once '../controllers/ProductController.php';
 require_once '../controllers/OrderController.php';
+require_once '../controllers/FarmingProcessController.php';
 
 // Bật error reporting để debug
 ini_set('display_errors', 1);
@@ -31,10 +32,14 @@ switch ($controller) {
         $ctrl2 = new OrderController();
         if ($action === 'index') $ctrl->index();
         elseif ($action === 'add') $ctrl->add();
+        elseif ($action === 'inventory') $ctrl->inventory();
         elseif ($action === 'edit' && $id) $ctrl->edit($id);
         elseif ($action === 'delete' && $id) $ctrl->delete($id);
         elseif ($action === 'detail' && $id) $ctrl->detail($id);
+        elseif ($action === 'addComment') $ctrl->addComment(); // Thêm dòng này
+        elseif ($action === 'addReply') $ctrl->addReply();
         elseif ($action === 'manage') $ctrl->manage();
+        elseif ($action === 'addReview') $ctrl->addReview();
         elseif ($action === 'searchAjax') $ctrl->searchAjax();
         elseif ($action === 'updateStatusUser') {
             // Lấy order_id và status từ POST
@@ -50,21 +55,9 @@ switch ($controller) {
                 exit;
             }
         };
-        
-        // Xóa confirmPurchase nếu không dùng
-        // elseif ($action === 'confirmPurchase') $ctrl->confirmPurchase();
+
         break;
-    // case 'order':
-    //     $ctrl = new OrderController();
-    //     if ($action === 'buy') $ctrl->buy();
-    //     elseif ($action === 'admin') $ctrl->admin();
-    //     elseif ($action === 'updateStatus' && $order_id) $ctrl->updateStatus($order_id);
-    //     elseif ($action === 'myOrders') $ctrl->myOrders();
-    //     elseif ($action === 'exportExcel') $ctrl->exportExcel();
-    //     elseif ($action === 'viewCart') $ctrl->viewCart();
-    //     elseif ($action === 'removeFromCart' && $id) $ctrl->removeFromCart();
-    //     elseif ($action === 'checkout') $ctrl->checkout();
-    //     break; // Add this line
+
     case 'order':
         $ctrl = new OrderController();
         if ($action === 'buy') {
@@ -94,6 +87,18 @@ switch ($controller) {
             $ctrl->removeFromCart($id);
         } elseif ($action === 'checkout') {
             $ctrl->checkout();
+        }
+        break;
+    case 'farming_process':
+        $ctrl = new FarmingProcessController();
+        if ($action === 'manage') $ctrl->manage();
+        elseif ($action === 'add') $ctrl->add();
+        elseif ($action === 'edit' && $id) $ctrl->edit($id);
+        elseif ($action === 'delete' && $id) $ctrl->delete($id);
+        elseif ($action === 'getAll') $ctrl->getAll();
+        else {
+            header("Location: ?controller=farming_process&action=manage");
+            exit;
         }
         break;
     default:

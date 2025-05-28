@@ -1,29 +1,19 @@
 <?php
 require_once '../config/database.php';
 require_once '../models/Product.php';
-require_once '../models/ProductReview.php';
-require_once '../models/ProductComment.php';
-require_once '../models/CommentReply.php';
+
 class ProductController
 {
     private $product;
-    private $productReview;
-    private $productComment;
-    private $commentReply;
+
     public function __construct()
     {
-        $db = Database::getInstance();
+        $db = new Database();
         $this->product = new Product($db->getConnection());
-        $this->productReview = new ProductReview($db->getConnection());
-        $this->productComment = new ProductComment($db->getConnection());
-        $this->commentReply = new CommentReply($db->getConnection());
     }
     public function index()
     {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: ?controller=auth&action=login");
-            exit;
-        }
+
 
         // Lấy 3 sản phẩm mới nhất
         $latestProducts = $this->product->getLatest();
@@ -42,23 +32,18 @@ class ProductController
             $totalItems = $this->product->getTotalByName($keyword);
         } else {
             // Nếu không có từ khóa, lấy tất cả sản phẩm
-            $allProducts = $this->product->getAll(); // Sử dụng getAll() đã sửa
+            $allProducts = $this->product->getPaginated($itemsPerPage, $offset);
             $totalItems = $this->product->getTotal();
         }
 
         $totalPages = ceil($totalItems / $itemsPerPage); // Tổng số trang
         if ($currentPage > $totalPages) $currentPage = $totalPages;
 
-        // Chuyển dữ liệu sang view
-        $products = $allProducts; // Để sử dụng trong view
         require '../view/index.php';
     }
     public function inventory()
     {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: ?controller=auth&action=login");
-            exit;
-        }
+
 
         // Thiết lập phân trang
         $itemsPerPage = 9; // Số sản phẩm mỗi trang
@@ -83,79 +68,70 @@ class ProductController
         }
         require '../view/admin_manager.php'; // Danh sách sản phẩm
     }
+
     public function add()
     {
-        header('Content-Type: application/json');
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            echo json_encode(['success' => false, 'message' => 'Bạn không có quyền truy cập.']);
+            header("Location: ?controller=auth&action=login");
             exit;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
-            // Debug: Log toàn bộ $_FILES
-            error_log('$_FILES: ' . print_r($_FILES, true));
-
+        if (isset($_POST['add_product'])) {
+            // Sanitize and validate inputs
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
             $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
             $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
             $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
-            $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT, ['options' => ['default' => null]]);
+            $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT);
 
-            if (!$name || $price === false || $quantity === false) {
-                echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ và đúng các trường bắt buộc.']);
+            // Validate required fields
+            if (!$name || $price === false || $quantity === false || !$category_id) {
+                $_SESSION['error'] = "Vui lòng điền đầy đủ và đúng các trường bắt buộc.";
+                header("Location: ?controller=product&action=add");
                 exit;
             }
 
-            $image_urls = [];
-            $upload_dir = "../public/img/";
-            if (!is_writable($upload_dir)) {
-                echo json_encode(['success' => false, 'message' => 'Thư mục img không có quyền ghi.']);
-                exit;
-            }
-
-            if (isset($_FILES['img']) && is_array($_FILES['img']['name'])) {
+            // Handle file upload
+            $image_url = null;
+            if (isset($_FILES['img']) && $_FILES['img']['error'] === UPLOAD_ERR_OK) {
+                $img_name = $_FILES['img']['name'];
+                $img_tmp = $_FILES['img']['tmp_name'];
+                $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
                 $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
-                $file_count = count($_FILES['img']['name']);
-                error_log("Number of files uploaded: $file_count");
 
-                for ($i = 0; $i < $file_count; $i++) {
-                    if ($_FILES['img']['error'][$i] === UPLOAD_ERR_OK) {
-                        $img_name = $_FILES['img']['name'][$i];
-                        $img_tmp = $_FILES['img']['tmp_name'][$i];
-                        $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
-                        error_log("Processing file $i: $img_name, Extension: $img_ext");
+                // Validate file extension
+                if (!in_array($img_ext, $allowed_exts)) {
+                    $_SESSION['error'] = "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, hoặc GIF.";
+                    header("Location: ?controller=product&action=add");
+                    exit;
+                }
 
-                        if (!in_array($img_ext, $allowed_exts)) {
-                            echo json_encode(['success' => false, 'message' => "Định dạng ảnh $img_name không hợp lệ. Chỉ chấp nhận JPG, PNG, hoặc GIF."]);
-                            exit;
-                        }
+                // Generate unique file name
+                $img_new_name = uniqid() . '.' . $img_ext;
+                $target = "../public/img/" . $img_new_name;
 
-                        $img_new_name = uniqid() . '.' . $img_ext;
-                        $target = $upload_dir . $img_new_name;
-                        if (move_uploaded_file($img_tmp, $target)) {
-                            $image_urls[] = $img_new_name;
-                            error_log("Uploaded file $i: $img_new_name");
-                        } else {
-                            error_log("Failed to upload file $i: $img_name");
-                            echo json_encode(['success' => false, 'message' => "Tải ảnh $img_name lên thất bại."]);
-                            exit;
-                        }
-                    } else {
-                        error_log("File $i error code: " . $_FILES['img']['error'][$i]);
-                    }
+                if (move_uploaded_file($img_tmp, $target)) {
+                    $image_url = $img_new_name;
+                } else {
+                    $_SESSION['error'] = "Tải ảnh lên thất bại.";
+                    header("Location: ?controller=product&action=add");
+                    exit;
                 }
             }
 
-            error_log('Image URLs to insert: ' . print_r($image_urls, true));
-            if ($this->product->add($name, $price, $quantity, $description, $category_id, $image_urls)) {
-                echo json_encode(['success' => true, 'message' => 'Thêm sản phẩm thành công.']);
+            // Call model’s add method
+            if ($this->product->add($name, $price, $quantity, $description, $category_id, $image_url)) {
+                $_SESSION['success'] = "Thêm sản phẩm thành công.";
+                header("Location: ?controller=product&action=manage");
             } else {
-                echo json_encode(['success' => false, 'message' => 'Thêm sản phẩm thất bại.']);
+                $_SESSION['error'] = "Thêm sản phẩm thất bại.";
+                header("Location: ?controller=product&action=add");
             }
             exit;
         }
 
-        require '../view/admin_manager.php';
+        // Load the add product view
+        require '../view/add_product.php';
     }
 
     public function edit($id)
@@ -244,6 +220,7 @@ class ProductController
         $itemsPerPage = 9;
         $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($currentPage < 1) $currentPage = 1;
+
         $offset = ($currentPage - 1) * $itemsPerPage;
 
         if (!empty($keyword)) {
@@ -256,6 +233,7 @@ class ProductController
 
         $totalPages = ceil($totalItems / $itemsPerPage);
 
+        // Trả về dữ liệu JSON
         echo json_encode([
             'products' => $products,
             'totalPages' => $totalPages,
@@ -283,91 +261,9 @@ class ProductController
             header("Location: ?controller=product&action=index&redirected=1");
             exit;
         }
-
-        // Lấy đánh giá và bình luận
-        $reviews = $this->productReview->getByProductId($id);
-        $comments = $this->productComment->getByProductId($id);
-        $averageRating = $this->productReview->getAverageRating($id);
-
-        // Lấy trả lời cho từng bình luận
-        foreach ($comments as &$comment) {
-            $comment['replies'] = $this->commentReply->getByCommentId($comment['ID']);
-        }
-
         require_once '../view/detail.php';
     }
-    public function addReview()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để đánh giá.']);
-            exit;
-        }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
-            $rating = filter_input(INPUT_POST, 'rating', FILTER_VALIDATE_INT);
-            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            if ($product_id === false || $rating === false || $rating < 1 || $rating > 5) {
-                echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
-                exit;
-            }
-
-            if ($this->productReview->add($product_id, $_SESSION['user_id'], $rating, $comment)) {
-                echo json_encode(['success' => true, 'message' => 'Thêm đánh giá thành công.']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Thêm đánh giá thất bại.']);
-            }
-        }
-        exit;
-    }
-
-    public function addComment()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để bình luận.']);
-            exit;
-        }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
-            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
-
-            if ($product_id === false || empty($comment)) {
-                echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
-                exit;
-            }
-
-            if ($this->productComment->add($product_id, $_SESSION['user_id'], $comment)) {
-                echo json_encode(['success' => true, 'message' => 'Thêm bình luận thành công.']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Thêm bình luận thất bại.']);
-            }
-        }
-        exit;
-    }
-
-    public function addReply()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để trả lời.']);
-            exit;
-        }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $comment_id = filter_input(INPUT_POST, 'comment_id', FILTER_VALIDATE_INT);
-            $reply = filter_input(INPUT_POST, 'reply', FILTER_SANITIZE_SPECIAL_CHARS);
-
-            if ($comment_id === false || empty($reply)) {
-                echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
-                exit;
-            }
-
-            if ($this->commentReply->add($comment_id, $_SESSION['user_id'], $reply)) {
-                echo json_encode(['success' => true, 'message' => 'Thêm trả lời thành công.']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Thêm trả lời thất bại.']);
-            }
-        }
-        exit;
-    }
 
 
     public function delete($id)

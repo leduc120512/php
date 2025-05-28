@@ -39,7 +39,7 @@ $revenue = calculateTotalRevenue($orders);
     <link href="../../adminkit/static/css/app.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<style>
+<!-- <style>
     /* Style for the action column's form container */
     .update-status-form .d-flex {
         gap: 8px;
@@ -332,7 +332,7 @@ $revenue = calculateTotalRevenue($orders);
             /* Slightly smaller but still readable */
         }
     }
-</style>
+</style> -->
 
 <body>
     <div class="wrapper">
@@ -366,6 +366,24 @@ $revenue = calculateTotalRevenue($orders);
                         <?php if ($_SESSION['role'] === 'admin'): ?>
                             <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=manage">
                                 <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Quản lí sản sản phẩm</span>
+                            </a>
+                        <?php endif; ?>
+
+                    </li>
+                    <li class="sidebar-item">
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=inventory">
+                                <i class="align-middle" data-feather="user-plus"></i>
+                                <pan class="align-middle">Quản lí sản phẩm tồn kho </pan>
+                            </a>
+                        <?php endif; ?>
+
+                    </li>
+                    <li class="sidebar-item">
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=auth&action=logout">
+                                <i class="align-middle" data-feather="user-plus"></i>
+                                <pan class="align-middle">Đăng xuất</pan>
                             </a>
                         <?php endif; ?>
 
@@ -686,649 +704,697 @@ $revenue = calculateTotalRevenue($orders);
                     </div>
                 </div>
             </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tên người dùng</th>
+                                <th>Tên người mua</th>
+                                <th>Địa chỉ</th>
+                                <th>Số điện thoại</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                                <th>Thời gian tạo</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($orders as $order): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($order['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['name'] ?? ''); ?></td> <!-- Line 204 -->
+                                    <td><?php echo htmlspecialchars($order['address'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($order['phone'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($order['product_name']); ?></td>
+                                    <td><?php echo $order['quantity']; ?></td>
+                                    <td><?php echo number_format($order['total_price']); ?> VND</td>
+                                    <td><?php echo date('H:i d/m/Y', strtotime($order['created_at'])); ?></td>
+                                    <td><?php echo htmlspecialchars($order['status']); ?></td>
+                                    <td>
+                                        <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
+                                            <select name="status" class="form-control d-inline-block" style="width: 120px;">
+                                                <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
+                                                <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
+                                                <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="?controller=product&action=index" class="btn btn-secondary">Quay lại</a>
 
-            <main class="content">
-                <div class="container-fluid p-0">
 
-                    <h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
+                <main class="content">
+                    <div class="container-fluid p-0">
 
-                    <div class="row">
-                        <div class="col-xl-6 col-xxl-5 d-flex">
-                            <div class="w-100">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col mt-0">
-                                                        <h5 class="card-title">Sales</h5>
-                                                    </div>
+                        <h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
 
-                                                    <div class="col-auto">
-                                                        <div class="stat text-primary">
-                                                            <i class="align-middle" data-feather="truck"></i>
+                        <div class="row">
+                            <div class="col-xl-6 col-xxl-5 d-flex">
+                                <div class="w-100">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Sales</h5>
+                                                        </div>
+
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="truck"></i>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <h1 class="mt-1 mb-3">2.382</h1>
-                                                <div class="mb-0">
-                                                    <span class="text-danger">-3.65%</span>
-                                                    <span class="text-muted">Since last week</span>
+                                                    <h1 class="mt-1 mb-3">2.382</h1>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger">-3.65%</span>
+                                                        <span class="text-muted">Since last week</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col mt-0">
-                                                        <h5 class="card-title">Visitors</h5>
-                                                    </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Visitors</h5>
+                                                        </div>
 
-                                                    <div class="col-auto">
-                                                        <div class="stat text-primary">
-                                                            <i class="align-middle" data-feather="users"></i>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="users"></i>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <h1 class="mt-1 mb-3">14.212</h1>
-                                                <div class="mb-0">
-                                                    <span class="text-success">5.25%</span>
-                                                    <span class="text-muted">Since last week</span>
+                                                    <h1 class="mt-1 mb-3">14.212</h1>
+                                                    <div class="mb-0">
+                                                        <span class="text-success">5.25%</span>
+                                                        <span class="text-muted">Since last week</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col mt-0">
-                                                        <h5 class="card-title">Earnings</h5>
-                                                    </div>
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Earnings</h5>
+                                                        </div>
 
-                                                    <div class="col-auto">
-                                                        <div class="stat text-primary">
-                                                            <i class="align-middle" data-feather="dollar-sign"></i>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="dollar-sign"></i>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <h1 class="mt-1 mb-3">$21.300</h1>
-                                                <div class="mb-0">
-                                                    <span class="text-success">6.65%</span>
-                                                    <span class="text-muted">Since last week</span>
+                                                    <h1 class="mt-1 mb-3">$21.300</h1>
+                                                    <div class="mb-0">
+                                                        <span class="text-success">6.65%</span>
+                                                        <span class="text-muted">Since last week</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col mt-0">
-                                                        <h5 class="card-title">Orders</h5>
-                                                    </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Orders</h5>
+                                                        </div>
 
-                                                    <div class="col-auto">
-                                                        <div class="stat text-primary">
-                                                            <i class="align-middle" data-feather="shopping-cart"></i>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="shopping-cart"></i>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <h1 class="mt-1 mb-3">64</h1>
-                                                <div class="mb-0">
-                                                    <span class="text-danger">-2.25%</span>
-                                                    <span class="text-muted">Since last week</span>
+                                                    <h1 class="mt-1 mb-3">64</h1>
+                                                    <div class="mb-0">
+                                                        <span class="text-danger">-2.25%</span>
+                                                        <span class="text-muted">Since last week</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-xl-6 col-xxl-7">
-                            <div class="card flex-fill w-100">
-                                <div class="card-header">
+                            <div class="col-xl-6 col-xxl-7">
+                                <div class="card flex-fill w-100">
+                                    <div class="card-header">
 
-                                    <h5 class="card-title mb-0">Recent Movement</h5>
-                                </div>
-                                <div class="card-body py-3">
-                                    <div class="chart chart-sm">
-                                        <canvas id="chartjs-dashboard-line"></canvas>
+                                        <h5 class="card-title mb-0">Recent Movement</h5>
+                                    </div>
+                                    <div class="card-body py-3">
+                                        <div class="chart chart-sm">
+                                            <canvas id="chartjs-dashboard-line"></canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
-                            <div class="card flex-fill w-100">
-                                <div class="card-header">
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+                                <div class="card flex-fill w-100">
+                                    <div class="card-header">
 
-                                    <h5 class="card-title mb-0">Browser Usage</h5>
-                                </div>
-                                <div class="card-body d-flex">
-                                    <div class="align-self-center w-100">
-                                        <div class="py-3">
-                                            <div class="chart chart-xs">
-                                                <canvas id="chartjs-dashboard-pie"></canvas>
+                                        <h5 class="card-title mb-0">Browser Usage</h5>
+                                    </div>
+                                    <div class="card-body d-flex">
+                                        <div class="align-self-center w-100">
+                                            <div class="py-3">
+                                                <div class="chart chart-xs">
+                                                    <canvas id="chartjs-dashboard-pie"></canvas>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <table class="table mb-0">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Chrome</td>
-                                                    <td class="text-end">4306</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Firefox</td>
-                                                    <td class="text-end">3801</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>IE</td>
-                                                    <td class="text-end">1689</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
-                            <div class="card flex-fill w-100">
-                                <div class="card-header">
-
-                                    <h5 class="card-title mb-0">Real-Time</h5>
-                                </div>
-                                <div class="card-body px-4">
-                                    <div id="world_map" style="height:350px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
-                            <div class="card flex-fill">
-                                <div class="card-header">
-
-                                    <h5 class="card-title mb-0">Calendar</h5>
-                                </div>
-                                <div class="card-body d-flex">
-                                    <div class="align-self-center w-100">
-                                        <div class="chart">
-                                            <div id="datetimepicker-dashboard"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 d-flex">
-                            <div class="card flex-fill">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Quản lý đơn hàng</h5>
-                                    <div class="revenue-summary mt-2">
-                                        <?php
-                                        $revenue = calculateTotalRevenue($orders);
-                                        echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover my-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tên người dùng</th>
-                                                    <th class="d-none d-md-table-cell">Tên người mua</th>
-                                                    <th class="d-none d-xl-table-cell">Địa chỉ</th>
-                                                    <th class="d-none d-xl-table-cell">Số điện thoại</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Tổng tiền</th>
-                                                    <th class="d-none d-md-table-cell">Thời gian tạo</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Hành động</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($orders as $order): ?>
+                                            <table class="table mb-0">
+                                                <tbody>
                                                     <tr>
-                                                        <td><?php echo htmlspecialchars($order['username']); ?></td>
-                                                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($order['name'] ?? ''); ?></td>
-                                                        <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['address'] ?? ''); ?></td>
-                                                        <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['phone'] ?? ''); ?></td>
-                                                        <td><?php echo htmlspecialchars($order['product_name']); ?></td>
-                                                        <td><?php echo $order['quantity']; ?></td>
-                                                        <td><?php echo number_format($order['total_price']); ?> VND</td>
-                                                        <td class="d-none d-md-table-cell"><?php echo date('H:i d/m/Y', strtotime($order['created_at'])); ?></td>
-                                                        <td>
-                                                            <span class="badge <?php
-                                                                                switch ($order['status']) {
-                                                                                    case 'pending':
-                                                                                        echo 'bg-warning';
-                                                                                        break;
-                                                                                    case 'completed':
-                                                                                        echo 'bg-success';
-                                                                                        break;
-                                                                                    case 'cancelled':
-                                                                                        echo 'bg-danger';
-                                                                                        break;
-                                                                                    default:
-                                                                                        echo 'bg-secondary';
-                                                                                }
-                                                                                ?>">
-                                                                <?php echo htmlspecialchars(ucfirst($order['status'])); ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
-                                                                <div class="d-flex align-items-center">
-                                                                    <select name="status" class="form-select form-select-sm me-2" style="width: 120px;">
-                                                                        <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
-                                                                        <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
-                                                                        <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
-                                                                    </select>
-                                                                    <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
-                                                                </div>
-                                                            </form>
-                                                        </td>
+                                                        <td>Chrome</td>
+                                                        <td class="text-end">4306</td>
                                                     </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
+                                                    <tr>
+                                                        <td>Firefox</td>
+                                                        <td class="text-end">3801</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>IE</td>
+                                                        <td class="text-end">1689</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                    <a href="?controller=product&action=index" class="btn btn-secondary mt-3">Quay lại</a>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
+                                <div class="card flex-fill w-100">
+                                    <div class="card-header">
+
+                                        <h5 class="card-title mb-0">Real-Time</h5>
+                                    </div>
+                                    <div class="card-body px-4">
+                                        <div id="world_map" style="height:350px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+                                <div class="card flex-fill">
+                                    <div class="card-header">
+
+                                        <h5 class="card-title mb-0">Calendar</h5>
+                                    </div>
+                                    <div class="card-body d-flex">
+                                        <div class="align-self-center w-100">
+                                            <div class="chart">
+                                                <div id="datetimepicker-dashboard"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                </div>
-            </main>
-
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row text-muted">
-                        <div class="col-6 text-start">
-                            <p class="mb-0">
-                                <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin Template</strong></a> &copy;
-                            </p>
+                        <div class="row">
+                            <div class="col-12 d-flex">
+                                <div class="card flex-fill">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Quản lý đơn hàng</h5>
+                                        <div class="revenue-summary mt-2">
+                                            <?php
+                                            $revenue = calculateTotalRevenue($orders);
+                                            echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover my-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tên người dùng</th>
+                                                        <th class="d-none d-md-table-cell">Tên người mua</th>
+                                                        <th class="d-none d-xl-table-cell">Địa chỉ</th>
+                                                        <th class="d-none d-xl-table-cell">Số điện thoại</th>
+                                                        <th>Tên sản phẩm</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Tổng tiền</th>
+                                                        <th class="d-none d-md-table-cell">Thời gian tạo</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Hành động</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($orders as $order): ?>
+                                                        <tr>
+                                                            <td><?php echo htmlspecialchars($order['username']); ?></td>
+                                                            <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($order['name'] ?? ''); ?></td>
+                                                            <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['address'] ?? ''); ?></td>
+                                                            <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['phone'] ?? ''); ?></td>
+                                                            <td><?php echo htmlspecialchars($order['product_name']); ?></td>
+                                                            <td><?php echo $order['quantity']; ?></td>
+                                                            <td><?php echo number_format($order['total_price']); ?> VND</td>
+                                                            <td class="d-none d-md-table-cell"><?php echo date('H:i d/m/Y', strtotime($order['created_at'])); ?></td>
+                                                            <td>
+                                                                <span class="badge <?php
+                                                                                    switch ($order['status']) {
+                                                                                        case 'pending':
+                                                                                            echo 'bg-warning';
+                                                                                            break;
+                                                                                        case 'completed':
+                                                                                            echo 'bg-success';
+                                                                                            break;
+                                                                                        case 'cancelled':
+                                                                                            echo 'bg-danger';
+                                                                                            break;
+                                                                                        default:
+                                                                                            echo 'bg-secondary';
+                                                                                    }
+                                                                                    ?>">
+                                                                    <?php echo htmlspecialchars(ucfirst($order['status'])); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <select name="status" class="form-select form-select-sm me-2" style="width: 120px;">
+                                                                            <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
+                                                                            <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
+                                                                            <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                                                        </select>
+                                                                        <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
+                                                                    </div>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <a href="?controller=product&action=index" class="btn btn-secondary mt-3">Quay lại</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6 text-end">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-                                </li>
-                            </ul>
+
+                    </div>
+                </main>
+
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row text-muted">
+                            <div class="col-6 text-start">
+                                <p class="mb-0">
+                                    <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin Template</strong></a> &copy;
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">
+                                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
         </div>
-    </div>
 
-    <script src="../../adminkit/static/js/app.js"></script>
+        <script src="../../adminkit/static/js/app.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
-            var gradient = ctx.createLinearGradient(0, 0, 0, 225);
-            gradient.addColorStop(0, "rgba(215, 227, 244, 1)");
-            gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
-            // Line chart
-            new Chart(document.getElementById("chartjs-dashboard-line"), {
-                type: "line",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    datasets: [{
-                        label: "Sales ($)",
-                        fill: true,
-                        backgroundColor: gradient,
-                        borderColor: window.theme.primary,
-                        data: [
-                            2115,
-                            1562,
-                            1584,
-                            1892,
-                            1587,
-                            1923,
-                            2566,
-                            2448,
-                            2805,
-                            3438,
-                            2917,
-                            3327
-                        ]
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
-                    tooltips: {
-                        intersect: false
-                    },
-                    hover: {
-                        intersect: true
-                    },
-                    plugins: {
-                        filler: {
-                            propagate: false
-                        }
-                    },
-                    scales: {
-                        xAxes: [{
-                            reverse: true,
-                            gridLines: {
-                                color: "rgba(0,0,0,0.0)"
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                stepSize: 1000
-                            },
-                            display: true,
-                            borderDash: [3, 3],
-                            gridLines: {
-                                color: "rgba(0,0,0,0.0)"
-                            }
-                        }]
-                    }
-                }
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Pie chart
-            new Chart(document.getElementById("chartjs-dashboard-pie"), {
-                type: "pie",
-                data: {
-                    labels: ["Chrome", "Firefox", "IE"],
-                    datasets: [{
-                        data: [4306, 3801, 1689],
-                        backgroundColor: [
-                            window.theme.primary,
-                            window.theme.warning,
-                            window.theme.danger
-                        ],
-                        borderWidth: 5
-                    }]
-                },
-                options: {
-                    responsive: !window.MSInputMethodContext,
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
-                    cutoutPercentage: 75
-                }
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Bar chart
-            new Chart(document.getElementById("chartjs-dashboard-bar"), {
-                type: "bar",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                    datasets: [{
-                        label: "This year",
-                        backgroundColor: window.theme.primary,
-                        borderColor: window.theme.primary,
-                        hoverBackgroundColor: window.theme.primary,
-                        hoverBorderColor: window.theme.primary,
-                        data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
-                        barPercentage: .75,
-                        categoryPercentage: .5
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            gridLines: {
-                                display: false
-                            },
-                            stacked: false,
-                            ticks: {
-                                stepSize: 20
-                            }
-                        }],
-                        xAxes: [{
-                            stacked: false,
-                            gridLines: {
-                                color: "transparent"
-                            }
-                        }]
-                    }
-                }
-            });
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var markers = [{
-                    coords: [31.230391, 121.473701],
-                    name: "Shanghai"
-                },
-                {
-                    coords: [28.704060, 77.102493],
-                    name: "Delhi"
-                },
-                {
-                    coords: [6.524379, 3.379206],
-                    name: "Lagos"
-                },
-                {
-                    coords: [35.689487, 139.691711],
-                    name: "Tokyo"
-                },
-                {
-                    coords: [23.129110, 113.264381],
-                    name: "Guangzhou"
-                },
-                {
-                    coords: [40.7127837, -74.0059413],
-                    name: "New York"
-                },
-                {
-                    coords: [34.052235, -118.243683],
-                    name: "Los Angeles"
-                },
-                {
-                    coords: [41.878113, -87.629799],
-                    name: "Chicago"
-                },
-                {
-                    coords: [51.507351, -0.127758],
-                    name: "London"
-                },
-                {
-                    coords: [40.416775, -3.703790],
-                    name: "Madrid "
-                }
-            ];
-            var map = new jsVectorMap({
-                map: "world",
-                selector: "#world_map",
-                zoomButtons: true,
-                markers: markers,
-                markerStyle: {
-                    initial: {
-                        r: 9,
-                        strokeWidth: 7,
-                        stokeOpacity: .4,
-                        fill: window.theme.primary
-                    },
-                    hover: {
-                        fill: window.theme.primary,
-                        stroke: window.theme.primary
-                    }
-                },
-                zoomOnScroll: false
-            });
-            window.addEventListener("resize", () => {
-                map.updateSize();
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-            var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
-            document.getElementById("datetimepicker-dashboard").flatpickr({
-                inline: true,
-                prevArrow: "<span title=\"Previous month\">&laquo;</span>",
-                nextArrow: "<span title=\"Next month\">&raquo;</span>",
-                defaultDate: defaultDate
-            });
-        });
-    </script>
-
-    <!-- SCRIPTS - AT THE BOTTOM TO REDUCE LOAD TIME -->
-    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery-1.10.2.js"></script>
-    <script src="../../bs-advance-admin/advance-admin/assets/js/bootstrap.js"></script>
-    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery.metisMenu.js"></script>
-    <script src="../../bs-advance-admin/advance-admin/assets/js/custom.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('.update-status-form').on('submit', function(e) {
-                e.preventDefault();
-
-                let form = $(this);
-                let orderId = form.data('order-id');
-                let newStatus = form.find('select[name="status"]').val();
-                let row = form.closest('tr');
-                let productName = row.find('td:nth-child(2)').text();
-
-                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
-
-                if (!orderId || !newStatus) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Dữ liệu không hợp lệ.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                $.ajax({
-                    url: '?controller=order&action=updateStatus',
-                    method: 'POST',
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
+                var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+                gradient.addColorStop(0, "rgba(215, 227, 244, 1)");
+                gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
+                // Line chart
+                new Chart(document.getElementById("chartjs-dashboard-line"), {
+                    type: "line",
                     data: {
-                        order_id: orderId,
-                        status: newStatus
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        datasets: [{
+                            label: "Sales ($)",
+                            fill: true,
+                            backgroundColor: gradient,
+                            borderColor: window.theme.primary,
+                            data: [
+                                2115,
+                                1562,
+                                1584,
+                                1892,
+                                1587,
+                                1923,
+                                2566,
+                                2448,
+                                2805,
+                                3438,
+                                2917,
+                                3327
+                            ]
+                        }]
                     },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
-                    },
-                    success: function(response) {
-                        console.log('AJAX Response:', response);
-                        if (response.success) {
-                            row.find('td:nth-child(6)').text(newStatus);
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Cập nhật thành công!',
-                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
-                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            console.log('Server error response:', response);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi!',
-                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
-                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
-                        try {
-                            let response = JSON.parse(xhr.responseText);
-                            if (response.message) {
-                                errorMessage = response.message;
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            intersect: false
+                        },
+                        hover: {
+                            intersect: true
+                        },
+                        plugins: {
+                            filler: {
+                                propagate: false
                             }
-                        } catch (e) {
-                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
+                        },
+                        scales: {
+                            xAxes: [{
+                                reverse: true,
+                                gridLines: {
+                                    color: "rgba(0,0,0,0.0)"
+                                }
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    stepSize: 1000
+                                },
+                                display: true,
+                                borderDash: [3, 3],
+                                gridLines: {
+                                    color: "rgba(0,0,0,0.0)"
+                                }
+                            }]
                         }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: errorMessage,
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    complete: function() {
-                        form.find('button').prop('disabled', false).text('Cập nhật');
                     }
                 });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Xử lý submit form tìm kiếm
-            document.getElementById('searchForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const orderId = document.getElementById('orderId').value;
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
-
-                fetchOrders(orderId, startDate, endDate);
-            });
-
-            // Xử lý nút reset
-            document.getElementById('resetSearch').addEventListener('click', function() {
-                document.getElementById('searchForm').reset();
-                fetchOrders('', '', '');
-            });
-
-            function fetchOrders(orderId, startDate, endDate) {
-                fetch('?controller=order&action=search', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Pie chart
+                new Chart(document.getElementById("chartjs-dashboard-pie"), {
+                    type: "pie",
+                    data: {
+                        labels: ["Chrome", "Firefox", "IE"],
+                        datasets: [{
+                            data: [4306, 3801, 1689],
+                            backgroundColor: [
+                                window.theme.primary,
+                                window.theme.warning,
+                                window.theme.danger
+                            ],
+                            borderWidth: 5
+                        }]
+                    },
+                    options: {
+                        responsive: !window.MSInputMethodContext,
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
                         },
-                        body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        updateTable(data);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
+                        cutoutPercentage: 75
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Bar chart
+                new Chart(document.getElementById("chartjs-dashboard-bar"), {
+                    type: "bar",
+                    data: {
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        datasets: [{
+                            label: "This year",
+                            backgroundColor: window.theme.primary,
+                            borderColor: window.theme.primary,
+                            hoverBackgroundColor: window.theme.primary,
+                            hoverBorderColor: window.theme.primary,
+                            data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
+                            barPercentage: .75,
+                            categoryPercentage: .5
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    display: false
+                                },
+                                stacked: false,
+                                ticks: {
+                                    stepSize: 20
+                                }
+                            }],
+                            xAxes: [{
+                                stacked: false,
+                                gridLines: {
+                                    color: "transparent"
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var markers = [{
+                        coords: [31.230391, 121.473701],
+                        name: "Shanghai"
+                    },
+                    {
+                        coords: [28.704060, 77.102493],
+                        name: "Delhi"
+                    },
+                    {
+                        coords: [6.524379, 3.379206],
+                        name: "Lagos"
+                    },
+                    {
+                        coords: [35.689487, 139.691711],
+                        name: "Tokyo"
+                    },
+                    {
+                        coords: [23.129110, 113.264381],
+                        name: "Guangzhou"
+                    },
+                    {
+                        coords: [40.7127837, -74.0059413],
+                        name: "New York"
+                    },
+                    {
+                        coords: [34.052235, -118.243683],
+                        name: "Los Angeles"
+                    },
+                    {
+                        coords: [41.878113, -87.629799],
+                        name: "Chicago"
+                    },
+                    {
+                        coords: [51.507351, -0.127758],
+                        name: "London"
+                    },
+                    {
+                        coords: [40.416775, -3.703790],
+                        name: "Madrid "
+                    }
+                ];
+                var map = new jsVectorMap({
+                    map: "world",
+                    selector: "#world_map",
+                    zoomButtons: true,
+                    markers: markers,
+                    markerStyle: {
+                        initial: {
+                            r: 9,
+                            strokeWidth: 7,
+                            stokeOpacity: .4,
+                            fill: window.theme.primary
+                        },
+                        hover: {
+                            fill: window.theme.primary,
+                            stroke: window.theme.primary
+                        }
+                    },
+                    zoomOnScroll: false
+                });
+                window.addEventListener("resize", () => {
+                    map.updateSize();
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+                var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+                document.getElementById("datetimepicker-dashboard").flatpickr({
+                    inline: true,
+                    prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+                    nextArrow: "<span title=\"Next month\">&raquo;</span>",
+                    defaultDate: defaultDate
+                });
+            });
+        </script>
 
-            function updateTable(orders) {
-                const tbody = document.querySelector('tbody');
-                tbody.innerHTML = ''; // Xóa nội dung cũ
+        <!-- SCRIPTS - AT THE BOTTOM TO REDUCE LOAD TIME -->
+        <script src="../../bs-advance-admin/advance-admin/assets/js/jquery-1.10.2.js"></script>
+        <script src="../../bs-advance-admin/advance-admin/assets/js/bootstrap.js"></script>
+        <script src="../../bs-advance-admin/advance-admin/assets/js/jquery.metisMenu.js"></script>
+        <script src="../../bs-advance-admin/advance-admin/assets/js/custom.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                orders.forEach(order => {
-                    const row = `
+
+        <script>
+            $(document).ready(function() {
+                $('.update-status-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    let form = $(this);
+                    let orderId = form.data('order-id');
+                    let newStatus = form.find('select[name="status"]').val();
+                    let row = form.closest('tr');
+                    let productName = row.find('td:nth-child(2)').text();
+
+                    console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
+
+                    if (!orderId || !newStatus) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Dữ liệu không hợp lệ.',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '?controller=order&action=updateStatus',
+                        method: 'POST',
+                        data: {
+                            order_id: orderId,
+                            status: newStatus
+                        },
+                        dataType: 'json',
+                        beforeSend: function() {
+                            form.find('button').prop('disabled', true).text('Đang cập nhật...');
+                        },
+                        success: function(response) {
+                            console.log('AJAX Response:', response);
+                            if (response.success) {
+                                row.find('td:nth-child(6)').text(newStatus);
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Cập nhật thành công!',
+                                    html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
+                                        `Trạng thái mới: <strong>${newStatus}</strong>`,
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                console.log('Server error response:', response);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
+                            let errorMessage = 'Không thể xử lý phản hồi từ server.';
+                            try {
+                                let response = JSON.parse(xhr.responseText);
+                                if (response.message) {
+                                    errorMessage = response.message;
+                                }
+                            } catch (e) {
+                                errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: errorMessage,
+                                confirmButtonText: 'OK'
+                            });
+                        },
+                        complete: function() {
+                            form.find('button').prop('disabled', false).text('Cập nhật');
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Xử lý submit form tìm kiếm
+                document.getElementById('searchForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const orderId = document.getElementById('orderId').value;
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+
+                    fetchOrders(orderId, startDate, endDate);
+                });
+
+                // Xử lý nút reset
+                document.getElementById('resetSearch').addEventListener('click', function() {
+                    document.getElementById('searchForm').reset();
+                    fetchOrders('', '', '');
+                });
+
+                function fetchOrders(orderId, startDate, endDate) {
+                    fetch('?controller=order&action=search', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            updateTable(data);
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+
+                function updateTable(orders) {
+                    const tbody = document.querySelector('tbody');
+                    tbody.innerHTML = ''; // Xóa nội dung cũ
+
+                    orders.forEach(order => {
+                        const row = `
                 <tr>
                     <td>${order.username}</td>
                     <td>${order.product_name}</td>
@@ -1347,12 +1413,12 @@ $revenue = calculateTotalRevenue($orders);
                     </td>
                 </tr>
             `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-            }
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

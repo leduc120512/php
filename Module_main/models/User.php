@@ -79,20 +79,6 @@ class User
         return $stmt->fetch() !== false;
     }
 
-    // public function register($username, $email, $password)
-    // {
-    //     $query = "INSERT INTO " . $this->table_name . " (username, email, password) VALUES (:username, :email, :password)";
-    //     $stmt = $this->conn->prepare($query);
-
-    //     // Băm mật khẩu trước khi lưu
-    //     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    //     $stmt->bindParam(':username', $username);
-    //     $stmt->bindParam(':email', $email);
-    //     $stmt->bindParam(':password', $hashed_password); // Lưu mật khẩu đã băm
-
-    //     return $stmt->execute();
-    // }
     public function register($username, $email, $password)
     {
         $query = "INSERT INTO " . $this->table_name . " (username, email, password) VALUES (:username, :email, :password)";

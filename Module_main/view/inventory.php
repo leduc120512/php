@@ -1,7 +1,7 @@
 <?php
-
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ?controller=product&action=index");
+// Kiểm tra quyền truy cập
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ?controller=auth&action=login");
     exit;
 }
 ?>
@@ -144,93 +144,219 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         }
     }
 
-    /* Nền trang */
-    #page-wrapper {
-        background: #f5f7fa;
-        min-height: 100vh;
-        padding-top: 40px;
+    /* Reset and base styles */
+    * {
+        box-sizing: border-box;
     }
 
-    /* Tiêu đề trang */
-    .page-head-line {
-        font-size: 32px;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 10px;
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #f4f7fa;
+        font-size: 14px;
+        /* Base font size */
+    }
+
+    /* Panel styling */
+    .panel {
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin: 20px 0;
+        overflow: hidden;
+    }
+
+    /* Revenue summary */
+    .revenue-summary {
+        background: linear-gradient(90deg, #007bff, #00c4ff);
+        color: #fff;
+        padding: 25px;
         text-align: center;
     }
 
-    .page-subhead-line {
-        font-size: 18px;
-        color: #7f8c8d;
-        margin-bottom: 30px;
-        text-align: center;
+    .revenue-summary h4 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
     }
 
-    /* Thẻ card form */
-    .card {
-        background: #ffffff;
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    /* Table styling */
+    .table-responsive {
+        padding: 20px;
     }
 
-    /* Tiêu đề trong card */
-    .card-title {
-        font-size: 24px;
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        padding: 15px;
+        text-align: left;
+        font-size: 14px;
+        /* Minimum 14px for table content */
+    }
+
+    .table th {
+        background: #e9ecef;
+        color: #343a40;
         font-weight: 600;
-        text-align: center;
-        color: #34495e;
+        text-transform: uppercase;
+        font-size: 14px;
+        /* 14px for headers */
+        border-bottom: 2px solid #dee2e6;
     }
 
-    /* Các label */
-    .col-form-label {
+    .table tbody tr {
+        background: #fff;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table tbody td {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    /* Status styling */
+    td:contains('pending') {
+        color: #f39c12;
         font-weight: 500;
-        color: #34495e;
     }
 
-    /* Input focus */
+    td:contains('completed') {
+        color: #28a745;
+        font-weight: 500;
+    }
+
+    td:contains('cancelled') {
+        color: #dc3545;
+        font-weight: 500;
+    }
+
+    /* Form and button styling */
+    .update-status-form {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 14px;
+        /* 14px for select dropdown */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
     .form-control:focus {
-        border-color: #3498db;
-        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        outline: none;
     }
 
-    /* Ảnh sản phẩm */
-    .card img {
-        display: block;
-        margin-top: 10px;
-        max-width: 150px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .btn {
+        border-radius: 6px;
+        padding: 8px 20px;
+        font-size: 14px;
+        /* 14px for buttons */
+        font-weight: 500;
+        transition: background 0.3s ease, transform 0.2s ease;
     }
 
-    /* Button cập nhật */
     .btn-primary {
-        background-color: #3498db;
-        border-color: #3498db;
-        font-weight: 600;
-        padding: 10px 20px;
-        border-radius: 8px;
+        background: #007bff;
+        border: none;
+        color: #fff;
     }
 
     .btn-primary:hover {
-        background-color: #2980b9;
-        border-color: #2980b9;
+        background: #0056b3;
+        transform: translateY(-1px);
     }
 
-    /* Button hủy */
-    .btn-outline-secondary {
-        border-color: #95a5a6;
-        color: #7f8c8d;
-        font-weight: 600;
-        padding: 10px 20px;
-        border-radius: 8px;
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        color: #fff;
+        display: inline-block;
+        margin: 20px 0;
     }
 
-    .btn-outline-secondary:hover {
-        background-color: #bdc3c7;
-        border-color: #bdc3c7;
-        color: #2c3e50;
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-1px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+
+        .table th,
+        .table td {
+            padding: 10px;
+            font-size: 14px;
+            /* Keep 14px on mobile */
+        }
+
+        .update-status-form {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-control,
+        .btn {
+            width: 100%;
+            font-size: 14px;
+            /* Ensure 14px on mobile */
+        }
+
+        .revenue-summary h4 {
+            font-size: 1.6rem;
+            /* Slightly smaller but still readable */
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        margin: 0 5px;
+        text-decoration: none;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        color: #333;
+    }
+
+    .pagination a.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .pagination a:hover {
+        background-color: #f2f2f2;
     }
 </style>
 
@@ -252,6 +378,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                             <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
                         </a>
                     </li>
+
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
                             <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=order&action=admin">
@@ -287,6 +414,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         <?php endif; ?>
 
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="pages-sign-in.html">
+                            <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Sign In</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="pages-sign-up.html">
+                            <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Sign Up</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="pages-blank.html">
                             <i class="align-middle" data-feather="book"></i> <span class="align-middle">Blank</span>
@@ -519,73 +658,44 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     </ul>
                 </div>
             </nav>
-            <div id="page-wrapper">
-                <div id="page-inner">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h1 class="page-head-line">Chỉnh sửa sản phẩm</h1>
-                            <h1 class="page-subhead-line">Cập nhật thông tin sản phẩm</h1>
-                        </div>
-                    </div>
-                    <!-- Chỉ phần form với CSS Bootstrap -->
-                    <div class="container mt-4">
-                        <div class="card p-4">
-                            <h2 class="card-title mb-4">CẬP NHẬT SẢN PHẨM</h2>
-                            <form action="" method="POST" enctype="multipart/form-data">
-                                <div class="row mb-3">
-                                    <label for="name" class="col-sm-2 col-form-label">Tên sản phẩm</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" name="name"
-                                            value="<?= htmlspecialchars($product['name']) ?>" required>
-                                    </div>
-                                </div>
 
-                                <div class="row mb-3">
-                                    <label for="price" class="col-sm-2 col-form-label">Giá</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="price" name="price"
-                                            step="0.01" value="<?= htmlspecialchars($product['price']) ?>" required>
-                                    </div>
-                                </div>
+            <?php if (!empty($unsoldProducts)): ?>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Ngày tạo</th>
+                    </tr>
+                    <?php foreach ($unsoldProducts as $product): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($product['ID']); ?></td>
+                            <td><?php echo htmlspecialchars($product['name']); ?></td>
+                            <td><?php echo htmlspecialchars($product['quantity']); ?></td>
+                            <td><?php echo htmlspecialchars($product['price']); ?></td>
+                            <td><?php echo htmlspecialchars($product['created_at']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
 
-                                <div class="row mb-3">
-                                    <label for="quantity" class="col-sm-2 col-form-label">Số lượng</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="quantity" name="quantity"
-                                            value="<?= htmlspecialchars($product['quantity']) ?>" required>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="description" class="col-sm-2 col-form-label">Mô tả</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="description" name="description"
-                                            rows="4" required><?= htmlspecialchars($product['description']) ?></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="img" class="col-sm-2 col-form-label">Hình ảnh</label>
-                                    <div class="col-sm-10">
-                                        <input type="file" class="form-control" id="img" name="img">
-                                        <img src="../public/img/<?= htmlspecialchars($product['img']) ?>"
-                                            alt="Product Image" class="mt-2" style="max-width: 200px; border-radius: 5px;">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-sm-10 offset-sm-2">
-                                        <button type="submit" name="update_product"
-                                            class="btn btn-primary me-2">Cập nhật</button>
-                                        <a href="?controller=order&action=admin"
-                                            class="btn btn-outline-secondary">Hủy</a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                <!-- Phân trang -->
+                <div class="pagination">
+                    <?php if ($currentPage > 1): ?>
+                        <a href="?controller=product&action=inventory&page=<?php echo $currentPage - 1; ?>">&laquo; Trước</a>
+                    <?php endif; ?>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <a href="?controller=product&action=inventory&page=<?php echo $i; ?>" class="<?php echo $i === $currentPage ? 'active' : ''; ?>">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+                    <?php if ($currentPage < $totalPages): ?>
+                        <a href="?controller=product&action=inventory&page=<?php echo $currentPage + 1; ?>">Tiếp &raquo;</a>
+                    <?php endif; ?>
                 </div>
-            </div>
+            <?php else: ?>
+                <p>Không có sản phẩm tồn kho nào trên 3 tháng.</p>
+            <?php endif; ?>
 
             <main class="content">
                 <div class="container-fluid p-0">
@@ -1021,6 +1131,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var markers = [{
@@ -1100,149 +1211,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             });
         });
     </script>
-    <script>
-        $(document).ready(function() {
-            $('.update-status-form').on('submit', function(e) {
-                e.preventDefault();
 
-                let form = $(this);
-                let orderId = form.data('order-id');
-                let newStatus = form.find('select[name="status"]').val();
-                let row = form.closest('tr');
-                let productName = row.find('td:nth-child(2)').text();
+    <!-- SCRIPTS - AT THE BOTTOM TO REDUCE LOAD TIME -->
+    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery-1.10.2.js"></script>
+    <script src="../../bs-advance-admin/advance-admin/assets/js/bootstrap.js"></script>
+    <script src="../../bs-advance-admin/advance-admin/assets/js/jquery.metisMenu.js"></script>
+    <script src="../../bs-advance-admin/advance-admin/assets/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
 
-                if (!orderId || !newStatus) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Dữ liệu không hợp lệ.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                $.ajax({
-                    url: '?controller=order&action=updateStatus',
-                    method: 'POST',
-                    data: {
-                        order_id: orderId,
-                        status: newStatus
-                    },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
-                    },
-                    success: function(response) {
-                        console.log('AJAX Response:', response);
-                        if (response.success) {
-                            row.find('td:nth-child(6)').text(newStatus);
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Cập nhật thành công!',
-                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
-                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            console.log('Server error response:', response);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi!',
-                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
-                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
-                        try {
-                            let response = JSON.parse(xhr.responseText);
-                            if (response.message) {
-                                errorMessage = response.message;
-                            }
-                        } catch (e) {
-                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: errorMessage,
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    complete: function() {
-                        form.find('button').prop('disabled', false).text('Cập nhật');
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Xử lý submit form tìm kiếm
-            document.getElementById('searchForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const orderId = document.getElementById('orderId').value;
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
-
-                fetchOrders(orderId, startDate, endDate);
-            });
-
-            // Xử lý nút reset
-            document.getElementById('resetSearch').addEventListener('click', function() {
-                document.getElementById('searchForm').reset();
-                fetchOrders('', '', '');
-            });
-
-            function fetchOrders(orderId, startDate, endDate) {
-                fetch('?controller=order&action=search', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        updateTable(data);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            function updateTable(orders) {
-                const tbody = document.querySelector('tbody');
-                tbody.innerHTML = ''; // Xóa nội dung cũ
-
-                orders.forEach(order => {
-                    const row = `
-                <tr>
-                    <td>${order.username}</td>
-                    <td>${order.product_name}</td>
-                    <td>${order.quantity}</td>
-                    <td>${new Intl.NumberFormat().format(order.total_price)} VND</td>
-                    <td>${order.status}</td>
-                    <td>
-                        <form method="POST" class="update-status-form" data-order-id="${order.order_id}">
-                            <select name="status" class="form-control d-inline-block" style="width: 120px; display: inline;">
-                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
-                        </form>
-                    </td>
-                </tr>
-            `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-            }
-        });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 

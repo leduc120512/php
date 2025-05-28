@@ -1,30 +1,48 @@
 <?php
 class Database
 {
+    private static $instance = null;
+ 
+
     private $host = "localhost";
-    private $dbname = "shop_db";
+    private $dbname = "shop_ga";
     private $username = "root";
     private $password = "";
     public $conn;
-
-    public function getConnection()
+    private function __construct()
     {
         try {
             $this->conn = new PDO(
                 "mysql:host=$this->host;dbname=$this->dbname;charset=utf8mb4",
                 $this->username,
-                $this->password
+                $this->password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]
             );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            $this->conn->exec("SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'");
-            return $this->conn;
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
-            return null;
+            error_log("Kết nối cơ sở dữ liệu thất bại: " . $e->getMessage());
+            throw $e;
         }
     }
 
-    // Phương thức kiểm tra kết nối
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
 
+    public function getConnection()
+    {
+        return $this->conn;
+    }
+
+    public function closeConnection()
+    {
+        $this->conn = null;
+    }
 }

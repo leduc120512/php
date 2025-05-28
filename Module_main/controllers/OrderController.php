@@ -22,7 +22,7 @@ class OrderController
 
     public function __construct()
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $this->order = new Order($db->getConnection());
         $this->product = new Product($db->getConnection());
         $this->user = new User($db->getConnection());
