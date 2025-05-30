@@ -1,11 +1,15 @@
 <?php
+require_once '../config/database.php';
+require_once '../models/ArticleModel.php';
+
 class ArticleController
 {
     private $article;
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->article = new ArticleModel($db);
+        $db = Database::getInstance();
+        $this->article = new ArticleModel($db->getConnection());
     }
 
     public function add()
@@ -154,9 +158,38 @@ class ArticleController
         }
 
         // Lấy danh sách bài báo từ model
-        $articles = $this->article->getAll();
+        $articles = $this->article->getAllAt();
 
         // Tải view và truyền dữ liệu
         require '../view/admin_article.php';
+    }
+    // public function index()
+    // {
+    //     $articles = $this->article->getAllAt() ?: []; // Fallback to empty array
+    //     if (empty($articles)) {
+    //         error_log("No articles found in index method");
+    //     }
+    //     require '../view/Art.php';
+    // } // Trong ArticleController
+    public function searchAjax()
+    {
+        $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+        $articles = $this->article->getAllAt($category_id);
+        header('Content-Type: application/json');
+        echo json_encode($articles);
+        exit;
+    }
+
+    public function index()
+    {
+        // Lấy category_id từ request
+        $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+
+        // Gọi Model để lấy dữ liệu
+        $articles = $this->article->getAllAt($category_id);
+        $categoryArt = $this->article->CatergorygetAllAt();
+
+        // Load view và truyền dữ liệu
+        require '../view/Art.php';
     }
 }

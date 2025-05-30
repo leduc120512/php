@@ -4,6 +4,7 @@ require_once '../controllers/AuthController.php';
 require_once '../controllers/ProductController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/FarmingProcessController.php';
+require_once '../controllers/ArticleController.php';
 
 // Bật error reporting để debug
 ini_set('display_errors', 1);
@@ -35,6 +36,8 @@ switch ($controller) {
         elseif ($action === 'inventory') $ctrl->inventory();
         elseif ($action === 'edit' && $id) $ctrl->edit($id);
         elseif ($action === 'delete' && $id) $ctrl->delete($id);
+
+        elseif ($action === 'remove_image') $ctrl->remove_image(); // Added support for remove_image action
         elseif ($action === 'detail' && $id) $ctrl->detail($id);
         elseif ($action === 'addComment') $ctrl->addComment(); // Thêm dòng này
         elseif ($action === 'addReply') $ctrl->addReply();
@@ -60,34 +63,14 @@ switch ($controller) {
 
     case 'order':
         $ctrl = new OrderController();
-        if ($action === 'buy') {
-            $ctrl->buy();
-        } elseif ($action === 'admin') {
-            $ctrl->admin();
-        } elseif ($action === 'updateStatus') {
-            // Lấy order_id và status từ POST
-            $order_id = isset($_POST['order_id']) ? filter_var($_POST['order_id'], FILTER_VALIDATE_INT) : null;
-            $status = isset($_POST['status']) ? filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING) : null;
+        if ($action === 'create') $ctrl->create();
 
-            if ($order_id && $status) {
-                $ctrl->updateStatus($order_id, $status);
-            } else {
-                header('Content-Type: application/json');
-                http_response_code(400);
-                echo json_encode(['success' => false, 'message' => 'Invalid order_id or status']);
-                exit;
-            }
-        } elseif ($action === 'myOrders') {
-            $ctrl->myOrders();
-        } elseif ($action === 'exportExcel') {
-            $ctrl->exportExcel();
-        } elseif ($action === 'viewCart') {
-            $ctrl->viewCart();
-        } elseif ($action === 'removeFromCart' && isset($id)) {
-            $ctrl->removeFromCart($id);
-        } elseif ($action === 'checkout') {
-            $ctrl->checkout();
-        }
+        elseif ($action === 'admin') $ctrl->admin();
+        elseif ($action === 'myOrders') $ctrl->myOrders();
+        elseif ($action === 'exportExcel') $ctrl->exportExcel();
+        elseif ($action === 'viewCart') $ctrl->viewCart();
+        elseif ($action === 'removeFromCart' && $id) $ctrl->removeFromCart($id);
+
         break;
     case 'farming_process':
         $ctrl = new FarmingProcessController();
@@ -98,6 +81,16 @@ switch ($controller) {
         elseif ($action === 'getAll') $ctrl->getAll();
         else {
             header("Location: ?controller=farming_process&action=manage");
+            exit;
+        }
+        break;
+    case 'article':
+        $ctrl = new ArticleController(); // No need to pass $db since it's handled in the constructor
+        if ($action === 'manage') $ctrl->manage();
+        elseif ($action === 'add') $ctrl->add();
+        elseif ($action === 'edit' && $id) $ctrl->edit($id);
+        else {
+            header("Location: ?controller=article&action=manage");
             exit;
         }
         break;

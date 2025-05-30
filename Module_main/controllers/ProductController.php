@@ -4,12 +4,14 @@ require_once '../models/Product.php';
 require_once '../models/ProductReview.php';
 require_once '../models/ProductComment.php';
 require_once '../models/CommentReply.php';
+require_once '../models/ArticleModel.php';
 class ProductController
 {
     private $product;
     private $productReview;
     private $productComment;
     private $commentReply;
+    private $article;
     public function __construct()
     {
         $db = Database::getInstance();
@@ -17,40 +19,43 @@ class ProductController
         $this->productReview = new ProductReview($db->getConnection());
         $this->productComment = new ProductComment($db->getConnection());
         $this->commentReply = new CommentReply($db->getConnection());
+        $this->article = new ArticleModel($db->getConnection());
     }
     public function index()
     {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: ?controller=auth&action=login");
-            exit;
-        }
-
         // Lấy 3 sản phẩm mới nhất
         $latestProducts = $this->product->getLatest();
-
-        // Thiết lập phân trang và tìm kiếm
-        $itemsPerPage = 9; // Số sản phẩm mỗi trang
-        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Trang hiện tại
+    
+        // Thiết lập phân trang, tìm kiếm, sắp xếp và danh mục
+        $itemsPerPage = 9;
+        $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($currentPage < 1) $currentPage = 1;
-
-        $keyword = isset($_GET['search']) ? trim($_GET['search']) : ''; // Từ khóa tìm kiếm từ URL
-        $offset = ($currentPage - 1) * $itemsPerPage; // Vị trí bắt đầu
-
-        if (!empty($keyword)) {
-            // Nếu có từ khóa, tìm kiếm theo tên
-            $allProducts = $this->product->searchByName($keyword, $itemsPerPage, $offset);
-            $totalItems = $this->product->getTotalByName($keyword);
+        $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $sort = isset($_GET['sort']) && strtoupper($_GET['sort']) === 'DESC' ? 'DESC' : 'ASC';
+        $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' && is_numeric($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+        $offset = ($currentPage - 1) * $itemsPerPage;
+    
+        if (!empty($keyword) || $category_id !== null) {
+            $allProducts = $this->product->searchByName($keyword, $itemsPerPage, $offset, $sort, $category_id);
+            $totalItems = $this->product->getTotalByNameAndCategory($keyword, $category_id);
         } else {
-            // Nếu không có từ khóa, lấy tất cả sản phẩm
-            $allProducts = $this->product->getAll(); // Sử dụng getAll() đã sửa
+            $allProducts = $this->product->getPaginated($itemsPerPage, $offset, $sort);
             $totalItems = $this->product->getTotal();
         }
-
-        $totalPages = ceil($totalItems / $itemsPerPage); // Tổng số trang
+    
+        $totalPages = ceil($totalItems / $itemsPerPage);
         if ($currentPage > $totalPages) $currentPage = $totalPages;
-
+    
         // Chuyển dữ liệu sang view
-        $products = $allProducts; // Để sử dụng trong view
+        $products = $allProducts;
+        $articles = $this->article->getAllAt();
+        $categoryArt = $this->article->CatergorygetAllAt();
+        $category = $this->product->getAllCategory();
+        $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+
+        // Gọi ArticleModel để lấy dữ liệu
+        $articles = $this->article->getAllAt($category_id);
+        $categoryArt = $this->article->CatergorygetAllAt();
         require '../view/index.php';
     }
     public function inventory()
@@ -81,7 +86,7 @@ class ProductController
             header("Location: ?controller=product&action=index");
             exit;
         }
-        require '../view/admin_manager.php'; // Danh sách sản phẩm
+        require '../view/admin_manager.php';
     }
     public function add()
     {
@@ -161,6 +166,7 @@ class ProductController
     public function edit($id)
     {
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            $_SESSION['redirect_url'] = "?controller=product&action=edit&id=$id";
             header("Location: ?controller=auth&action=login");
             exit;
         }
@@ -173,54 +179,45 @@ class ProductController
         }
 
         if (isset($_POST['update_product'])) {
-            // Sanitize and validate inputs
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
             $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
             $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
             $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
             $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT);
+            $main_image_index = filter_input(INPUT_POST, 'main_image', FILTER_VALIDATE_INT);
 
-            // Validate required fields
             if (!$name || $price === false || $quantity === false || !$category_id) {
                 $_SESSION['error'] = "Vui lòng điền đầy đủ và đúng các trường bắt buộc.";
                 header("Location: ?controller=product&action=edit&id=$id");
                 exit;
             }
 
-            // Handle file upload
-            $image_url = $product['image_url'] ?? null;
-            if (isset($_FILES['img']) && $_FILES['img']['error'] === UPLOAD_ERR_OK) {
-                $img_name = $_FILES['img']['name'];
-                $img_tmp = $_FILES['img']['tmp_name'];
-                $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
+            $image_urls = [];
+            if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
                 $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+                foreach ($_FILES['images']['name'] as $key => $img_name) {
+                    if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
+                        if (!in_array($img_ext, $allowed_exts)) {
+                            $_SESSION['error'] = "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, hoặc GIF.";
+                            header("Location: ?controller=product&action=edit&id=$id");
+                            exit;
+                        }
 
-                // Validate file extension
-                if (!in_array($img_ext, $allowed_exts)) {
-                    $_SESSION['error'] = "Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, hoặc GIF.";
-                    header("Location: ?controller=product&action=edit&id=$id");
-                    exit;
-                }
-
-                // Generate unique file name
-                $img_new_name = uniqid() . '.' . $img_ext;
-                $target = "../public/img/" . $img_new_name;
-
-                if (move_uploaded_file($img_tmp, $target)) {
-                    // Delete old image file if it exists
-                    if ($image_url && file_exists("../public/img/" . $image_url)) {
-                        unlink("../public/img/" . $image_url);
+                        $img_new_name = uniqid() . '.' . $img_ext;
+                        $target = "../public/img/" . $img_new_name;
+                        if (move_uploaded_file($_FILES['images']['tmp_name'][$key], $target)) {
+                            $image_urls[] = $img_new_name;
+                        } else {
+                            $_SESSION['error'] = "Tải ảnh lên thất bại.";
+                            header("Location: ?controller=product&action=edit&id=$id");
+                            exit;
+                        }
                     }
-                    $image_url = $img_new_name;
-                } else {
-                    $_SESSION['error'] = "Tải ảnh lên thất bại.";
-                    header("Location: ?controller=product&action=edit&id=$id");
-                    exit;
                 }
             }
 
-            // Call model’s update method
-            if ($this->product->update($id, $name, $price, $quantity, $description, $category_id, $image_url)) {
+            if ($this->product->update($id, $name, $price, $quantity, $description, $category_id, $image_urls, $main_image_index)) {
                 $_SESSION['success'] = "Cập nhật sản phẩm thành công.";
                 header("Location: ?controller=product&action=manage");
             } else {
@@ -230,47 +227,100 @@ class ProductController
             exit;
         }
 
-        // Load the edit product view
         require '../view/edit_product.php';
+    }
+
+    public function remove_image()
+    {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            echo json_encode(['success' => false, 'message' => 'Không có quyền truy cập']);
+            exit;
+        }
+
+        $image_url = filter_input(INPUT_POST, 'image_url', FILTER_SANITIZE_STRING);
+        $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
+
+        if (!$image_url || !$product_id) {
+            echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ']);
+            exit;
+        }
+
+        if ($this->product->removeImage($product_id, $image_url)) {
+            if (file_exists("../public/img/" . $image_url)) {
+                unlink("../public/img/" . $image_url);
+            }
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Xóa ảnh thất bại']);
+        }
+        exit;
     }
     public function searchAjax()
     {
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['error' => 'Unauthorized']);
+        try {
+            $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
+            $sort = isset($_GET['sort']) && strtoupper($_GET['sort']) === 'DESC' ? 'DESC' : 'ASC';
+            // Explicitly cast category_id to int, treat empty string or invalid as null
+            $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' && is_numeric($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+            $itemsPerPage = 9;
+            $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+            if ($currentPage < 1) $currentPage = 1;
+            $offset = ($currentPage - 1) * $itemsPerPage;
+
+            error_log("searchAjax input: keyword=$keyword, sort=$sort, category_id=" . var_export($category_id, true) . ", page=$currentPage");
+
+            // Validate category_id exists in categories table
+            if ($category_id !== null) {
+                $categories = $this->product->getAllCategory();
+                $valid_category = array_filter($categories, fn($cat) => $cat['ID'] == $category_id);
+                if (empty($valid_category)) {
+                    error_log("Invalid category_id: $category_id");
+                    echo json_encode([
+                        'products' => [],
+                        'totalPages' => 0,
+                        'currentPage' => $currentPage,
+                        'keyword' => $keyword,
+                        'sort' => $sort,
+                        'category_id' => $category_id,
+                        'error' => 'Danh mục không hợp lệ'
+                    ]);
+                    exit;
+                }
+            }
+
+            if (!empty($keyword) || $category_id !== null) {
+                $products = $this->product->searchByName($keyword, $itemsPerPage, $offset, $sort, $category_id);
+                $totalItems = $this->product->getTotalByNameAndCategory($keyword, $category_id);
+            } else {
+                $products = $this->product->getPaginated($itemsPerPage, $offset, $sort);
+                $totalItems = $this->product->getTotal();
+            }
+
+            $totalPages = ceil($totalItems / $itemsPerPage);
+
+            error_log("searchAjax output: products=" . count($products) . ", totalItems=$totalItems, totalPages=$totalPages");
+
+            echo json_encode([
+                'products' => $products,
+                'totalPages' => $totalPages,
+                'currentPage' => $currentPage,
+                'keyword' => $keyword,
+                'sort' => $sort,
+                'category_id' => $category_id
+            ]);
+            exit;
+        } catch (Exception $e) {
+            error_log("Lỗi trong searchAjax: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Có lỗi xảy ra trên server: ' . $e->getMessage()]);
             exit;
         }
-
-        $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
-        $itemsPerPage = 9;
-        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        if ($currentPage < 1) $currentPage = 1;
-        $offset = ($currentPage - 1) * $itemsPerPage;
-
-        if (!empty($keyword)) {
-            $products = $this->product->searchByName($keyword, $itemsPerPage, $offset);
-            $totalItems = $this->product->getTotalByName($keyword);
-        } else {
-            $products = $this->product->getPaginated($itemsPerPage, $offset);
-            $totalItems = $this->product->getTotal();
-        }
-
-        $totalPages = ceil($totalItems / $itemsPerPage);
-
-        echo json_encode([
-            'products' => $products,
-            'totalPages' => $totalPages,
-            'currentPage' => $currentPage,
-            'keyword' => $keyword
-        ]);
-        exit;
     }
+
     public function detail($id)
     {
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['redirect_after_login'] = "?controller=product&action=detail&id=$id";
-            header("Location: ?controller=auth&action=login");
-            exit;
-        }
+
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if ($id === false || $id === null) {
             $_SESSION['error'] = "ID sản phẩm không hợp lệ.";

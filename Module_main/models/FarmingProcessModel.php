@@ -7,22 +7,23 @@ class FarmingProcessModel
     {
         $this->conn = $db;
     }
-
     public function getAll()
     {
         try {
             $stmt = $this->conn->prepare("
-                SELECT * FROM farming_process
-                ORDER BY process_order ASC
+                SELECT ID, title, decription, image_url, created_at, note
+                FROM articles
+                ORDER BY created_at DESC
             ");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error fetching farming processes: " . $e->getMessage());
+            error_log("Error fetching articles: " . $e->getMessage());
             return [];
         }
     }
 
+    
     public function getById($id)
     {
         try {

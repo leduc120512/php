@@ -160,5 +160,7 @@ class FarmingProcessController
 
         // Tải view và truyền dữ liệu
         require '../view/admin_farming_process_list.php';
+    
     }
+    
 }

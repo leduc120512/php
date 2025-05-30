@@ -42,9 +42,9 @@
                         echo '<option value="" disabled>Không có danh mục nào</option>';
                     } else {
                         foreach ($categories as $category) {
-                            $id = htmlspecialchars($category['id'] ?? '');
+                            $id = htmlspecialchars($category['ID'] ?? '');
                             $name = htmlspecialchars($category['name'] ?? '');
-                            if ($id !== '') {
+                            if ($id && $name) {
                                 echo "<option value=\"$id\">$name</option>";
                             }
                         }
@@ -58,121 +58,162 @@
             </div>
             <button type="submit" class="btn btn-primary mt-3">Thêm sản phẩm</button>
         </form>
-    </div>
-    <script>
-        $(document).ready(function() {
-            console.log('add-product.js loaded');
+        <div class="panel panel-default">
+            <div class="panel panel-default">
+                <div class="panel-heading">Danh sách sản phẩm</div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Ảnh</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-list">
+                                <?php foreach ($this->product->getAllAdmin() as $product): ?>
+                                    <tr data-product-id="<?php echo $product['ID']; ?>">
+                                        <td><?php echo htmlspecialchars($product['name']); ?></td>
+                                        <td>
+                                            <?php if (!empty($product['main_image'])): ?>
+                                                <img src="img/<?php echo htmlspecialchars($product['main_image']); ?>" width="50" alt="Product Image">
+                                            <?php else: ?>
+                                                <img src="img/default-placeholder.png" width="50" alt="No Image">
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo number_format($product['price']); ?> VND</td>
+                                        <td><?php echo $product['quantity']; ?></td>
+                                        <td>
+                                            <a href="?controller=product&action=edit&id=<?php echo $product['ID']; ?>" class="btn btn-sm btn-warning">Sửa</a>
+                                            <a href="?controller=product&action=delete&id=<?php echo $product['ID']; ?>"
+                                                class="btn btn-sm btn-danger btn-delete-product"
+                                                data-product-name="<?php echo htmlspecialchars($product['name']); ?>">Xóa</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function() {
+                console.log('add-product.js loaded');
 
-            if ($('select[name="category_id"]').length === 0) {
-                console.error('Select element with name="category_id" not found');
-            }
-
-            $('#add-product-form').on('submit', function(e) {
-                e.preventDefault();
-                console.log('Form submit triggered');
-
-                let name = $('input[name="name"]').val().trim();
-                let price = $('input[name="price"]').val();
-                let quantity = $('input[name="quantity"]').val();
-                let category_id = $('select[name="category_id"]').val();
-
-                console.log('Selected category_id:', category_id);
-
-                if (!name) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Tên sản phẩm không được để trống.',
-                        confirmButtonText: 'OK'
-                    });
-                    console.log('Validation failed: Name is empty');
-                    return;
-                }
-                if (!price || price <= 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Giá phải là số dương.',
-                        confirmButtonText: 'OK'
-                    });
-                    console.log('Validation failed: Invalid price');
-                    return;
-                }
-                if (!quantity || quantity < 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Số lượng phải là số không âm.',
-                        confirmButtonText: 'OK'
-                    });
-                    console.log('Validation failed: Invalid quantity');
-                    return;
-                }
-                if (!category_id || category_id === '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Vui lòng chọn danh mục.',
-                        confirmButtonText: 'OK'
-                    });
-                    console.log('Validation failed: Category not selected or empty');
-                    return;
+                if ($('select[name="category_id"]').length === 0) {
+                    console.error('Select element with name="category_id" not found');
                 }
 
-                let formData = new FormData(this);
-                // Debug: Log FormData
-                for (let [key, value] of formData.entries()) {
-                    if (key === 'img[]' && value instanceof File) {
-                        console.log(`FormData - ${key}: ${value.name}, Size: ${value.size} bytes`);
-                    } else {
-                        console.log(`FormData - ${key}:`, value);
-                    }
-                }
+                $('#add-product-form').on('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submit triggered');
 
-                $.ajax({
-                    url: '?controller=product&action=add',
-                    method: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    dataType: 'json',
-                    beforeSend: function() {
-                        console.log('Sending AJAX request to ?controller=product&action=add');
-                    },
-                    success: function(response) {
-                        console.log('AJAX Success:', response);
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Thành công!',
-                                text: `Sản phẩm "${name}" đã được thêm.`,
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                window.location.href = '?controller=product&action=manage';
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi!',
-                                text: response.message || 'Thêm sản phẩm thất bại.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', xhr.status, status, error);
-                        console.log('Response Text:', xhr.responseText);
+                    let name = $('input[name="name"]').val().trim();
+                    let price = $('input[name="price"]').val();
+                    let quantity = $('input[name="quantity"]').val();
+                    let category_id = $('select[name="category_id"]').val();
+
+                    console.log('Selected category_id:', category_id);
+
+                    if (!name) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi!',
-                            text: 'Không thể kết nối đến server. Vui lòng thử lại.',
+                            text: 'Tên sản phẩm không được để trống.',
                             confirmButtonText: 'OK'
                         });
+                        console.log('Validation failed: Name is empty');
+                        return;
                     }
+                    if (!price || price <= 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Giá phải là số dương.',
+                            confirmButtonText: 'OK'
+                        });
+                        console.log('Validation failed: Invalid price');
+                        return;
+                    }
+                    if (!quantity || quantity < 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Số lượng phải là số không âm.',
+                            confirmButtonText: 'OK'
+                        });
+                        console.log('Validation failed: Invalid quantity');
+                        return;
+                    }
+                    if (!category_id || category_id === '') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Vui lòng chọn danh mục.',
+                            confirmButtonText: 'OK'
+                        });
+                        console.log('Validation failed: Category not selected or empty');
+                        return;
+                    }
+
+                    let formData = new FormData(this);
+                    // Debug: Log FormData
+                    for (let [key, value] of formData.entries()) {
+                        if (key === 'img[]' && value instanceof File) {
+                            console.log(`FormData - ${key}: ${value.name}, Size: ${value.size} bytes`);
+                        } else {
+                            console.log(`FormData - ${key}:`, value);
+                        }
+                    }
+
+                    $.ajax({
+                        url: '?controller=product&action=add',
+                        method: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        beforeSend: function() {
+                            console.log('Sending AJAX request to ?controller=product&action=add');
+                        },
+                        success: function(response) {
+                            console.log('AJAX Success:', response);
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công!',
+                                    text: `Sản phẩm "${name}" đã được thêm.`,
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    window.location.href = '?controller=product&action=manage';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: response.message || 'Thêm sản phẩm thất bại.',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', xhr.status, status, error);
+                            console.log('Response Text:', xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: 'Không thể kết nối đến server. Vui lòng thử lại.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
                 });
             });
-        });
-    </script>
+        </script>
 </body>
 
 </html>

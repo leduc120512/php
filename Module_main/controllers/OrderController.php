@@ -222,53 +222,7 @@ class OrderController
         include '../view/cart.php';
     }
 
-    public function buyFromCart()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['error'] = "Vui lòng đăng nhập để đặt hàng.";
-            header("Location: ?controller=auth&action=login");
-            exit;
-        }
-
-        $cart_items = $this->cart->getCartByUserId($_SESSION['user_id']);
-        if (empty($cart_items)) {
-            $_SESSION['error'] = "Giỏ hàng của bạn đang trống.";
-            header("Location: ?controller=order&action=viewCart");
-            exit;
-        }
-
-        foreach ($cart_items as $item) {
-            $product = $this->product->getById($item['product_id']);
-            if ($item['quantity'] > $product['quantity']) {
-                $_SESSION['error'] = "Số lượng sản phẩm {$product['name']} vượt quá tồn kho. Còn lại: " . $product['quantity'];
-                header("Location: ?controller=order&action=viewCart");
-                exit;
-            }
-
-            $total_price = $product['price'] * $item['quantity'];
-            $order_id = $this->order->create($_SESSION['user_id'], $item['product_id'], $item['quantity'], $total_price);
-
-            if ($order_id === false) {
-                $_SESSION['error'] = "Không thể tạo đơn hàng cho sản phẩm {$product['name']}.";
-                header("Location: ?controller=order&action=viewCart");
-                exit;
-            }
-
-            $new_quantity = $product['quantity'] - $item['quantity'];
-            $this->product->update($item['product_id'], $product['name'], $product['img'], $product['price'], $new_quantity, $product['description']);
-
-            $user = $this->user->getById($_SESSION['user_id']);
-            if ($user && isset($user['email'])) {
-                $this->sendOrderEmail($user['email'], $product['name'], $item['quantity'], $total_price, $order_id);
-            }
-        }
-
-        // Clear the cart after successful order
-        $this->cart->clearCart($_SESSION['user_id']);
-        $_SESSION['success'] = "Đơn hàng đã được tạo thành công từ giỏ hàng!";
-        header("Location: ?controller=order&action=myOrders");
-        exit;
-    }
+    
 
     public function myOrders()
     {
@@ -300,172 +254,6 @@ class OrderController
         exit;
     }
 
-    private function sendOrderEmail($email, $products, $total_price, $order_id)
-    {
-        require_once 'PHPMailer-master/src/Exception.php';
-        require_once 'PHPMailer-master/src/PHPMailer.php';
-        require_once 'PHPMailer-master/src/SMTP.php';
-
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'mailleduc05122004@gmail.com';
-            $mail->Password = 'guezbvjtsdwubjlt'; // Gợi ý: nên dùng biến môi trường để bảo mật hơn
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port = 465;
-
-            $mail->setFrom('mailleduc05122004@gmail.com', 'Shop Admin');
-            $mail->addAddress($email);
-
-            $mail->isHTML(true);
-            $mail->Subject = 'Xác nhận đơn hàng #' . $order_id;
-
-            // Build product list for the email
-            $product_list_html = '';
-            $product_list_text = '';
-            foreach ($products as $product) {
-                $subtotal = $product['price'] * $product['quantity'];
-                $product_list_html .= "
-                <tr>
-                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>{$product['name']}</td>
-                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>{$product['quantity']}</td>
-                    <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>" . number_format($subtotal, 0, ',', '.') . " VND</td>
-                </tr>";
-                $product_list_text .= "Sản phẩm: {$product['name']}, Số lượng: {$product['quantity']}, Tổng: " . number_format($subtotal, 0, ',', '.') . " VND\n";
-            }
-
-            // Enhanced email template with modern design
-            $mail->Body = "
-        <!DOCTYPE html>
-        <html lang='vi'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Xác nhận đơn hàng</title>
-        </head>
-        <body style='margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Arial, sans-serif; background-color: #f1f5f9;'>
-            <div style='max-width: 640px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>
-                <!-- Header -->
-                <div style='background: linear-gradient(135deg, #2a9d8f, #34d399); padding: 20px; text-align: center;'>
-                    <h1 style='color: #ffffff; font-size: 24px; margin: 0; font-weight: 600;'>Shop Name</h1>
-                    <p style='color: #e6fffa; font-size: 14px; margin: 5px 0 0;'>Xác nhận đơn hàng của bạn</p>
-                </div>
-
-                <!-- Content -->
-                <div style='padding: 24px;'>
-                    <h2 style='color: #1f2937; font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 16px;'>🎉 Cảm ơn bạn đã mua sắm!</h2>
-                    <p style='color: #4b5563; font-size: 15px; line-height: 1.5; margin-bottom: 20px;'>Chúng tôi đã nhận được đơn hàng của bạn với thông tin chi tiết như sau:</p>
-                    
-                    <!-- Order Details Table -->
-                    <table style='width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;'>
-                        <tr style='background-color: #f8fafc;'>
-                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Mã đơn hàng</td>
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>#$order_id</td>
-                        </tr>
-                        <tr>
-                          
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>
-                                <table style='width: 100%; border-collapse: collapse;'>
-                                    <tr style='background-color: #f8fafc;'>
-                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Tên sản phẩm</th>
-                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Số lượng</th>
-                                        <th style='padding: 12px; font-weight: 600; text-align: left;'>Tổng</th>
-                                    </tr>
-                                    $product_list_html
-                                </table>
-                            </td>
-                        </tr>
-                        <tr style='background-color: #f8fafc;'>
-                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Tổng tiền</td>
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>" . number_format($total_price, 0, ',', '.') . " VND</td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;'>Trạng thái</td>
-                            <td style='padding: 12px; border-bottom: 1px solid #e5e7eb;'>Đang xử lý</td>
-                        </tr>
-                    </table>
-
-                    <!-- Call to Action -->
-                    <p style='color: #4b5563; font-size: 15px; line-height: 1.5; margin: 20px 0;'>Bạn có thể theo dõi trạng thái đơn hàng trong tài khoản cá nhân của mình.</p>
-                    <div style='text-align: center; margin: 24px 0;'>
-                        <a href='http://localhost:3000/orders' style='display: inline-block; background-color: #2a9d8f; color: #ffffff; font-size: 15px; font-weight: 500; padding: 12px 24px; text-decoration: none; border-radius: 8px; transition: background-color 0.2s;'>Xem đơn hàng</a>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div style='background-color: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;'>
-                    <p style='color: #6b7280; font-size: 13px; margin: 0;'>Cần hỗ trợ? <a href='mailto:support@shopname.com' style='color: #2a9d8f; text-decoration: none;'>Liên hệ chúng tôi</a></p>
-                    <p style='color: #6b7280; font-size: 13px; margin: 8px 0 0;'>© 2025 Shop Name. All rights reserved.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        ";
-
-            // Plain text alternative
-            $mail->AltBody = "Cảm ơn bạn đã mua hàng!\n"
-                . "Đơn hàng của bạn đã được ghi nhận:\n"
-                . "Mã đơn hàng: #$order_id\n"
-                . $product_list_text
-                . "Tổng tiền: " . number_format($total_price, 0, ',', '.') . " VND\n"
-                . "Trạng thái: Đang xử lý\n"
-                . "Vui lòng kiểm tra đơn hàng trong tài khoản của bạn.";
-
-            $mail->send();
-            $_SESSION['success'] = "Email xác nhận đơn hàng đã được gửi!";
-        } catch (Exception $e) {
-            error_log("Failed to send order email: {$mail->ErrorInfo}");
-            $_SESSION['error'] = "Không thể gửi email xác nhận: " . $mail->ErrorInfo;
-        }
-    }
-    public function buy()
-    {
-        $product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
-        $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
-
-        if (!$product_id || !$quantity || $quantity < 1) {
-            $_SESSION['error'] = "Số lượng không hợp lệ.";
-            header("Location: ?controller=product&action=detail&id=$product_id");
-            exit;
-        }
-
-        $product = $this->product->getById($product_id);
-        if (!$product) {
-            $_SESSION['error'] = "Sản phẩm không tồn tại.";
-            header("Location: ?controller=product&action=index");
-            exit;
-        }
-
-        if ($quantity > $product['quantity']) {
-            $_SESSION['error'] = "Số lượng yêu cầu vượt quá tồn kho. Còn lại: " . $product['quantity'];
-            header("Location: ?controller=product&action=detail&id=$product_id");
-            exit;
-        }
-
-        // Initialize cart if it doesn't exist
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
-        }
-
-        // Add or update product in cart
-        if (isset($_SESSION['cart'][$product_id])) {
-            $_SESSION['cart'][$product_id]['quantity'] += $quantity;
-        } else {
-            $_SESSION['cart'][$product_id] = [
-                'name' => $product['name'],
-                'price' => $product['price'],
-                'quantity' => $quantity,
-                'img' => $product['img']
-            ];
-        }
-
-        $_SESSION['success'] = "Sản phẩm đã được thêm vào giỏ hàng!";
-        header("Location: ?controller=product&action=detail&id=$product_id");
-        exit;
-    }
 
 
     public function admin()
@@ -518,137 +306,7 @@ class OrderController
         // require '../view/admin_manager.php';
         require '../view/admin.php';
     }
-    public function checkout()
-    {
-        // Kiểm tra giỏ hàng có tồn tại và không rỗng
-        if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-            $_SESSION['error'] = "Giỏ hàng trống.";
-            header("Location: ?controller=order&action=viewCart");
-            exit;
-        }
 
-        // Kiểm tra xem có sản phẩm nào được chọn hay không
-        if (!isset($_POST['selected_products']) || empty($_POST['selected_products'])) {
-            $_SESSION['error'] = "Vui lòng chọn ít nhất một sản phẩm để thanh toán.";
-            header("Location: ?controller=order&action=viewCart");
-            exit;
-        }
-
-        // Fetch user details
-        $user = $this->user->getById($_SESSION['user_id']);
-        if (!$user) {
-            $_SESSION['error'] = "Không thể lấy thông tin người dùng.";
-            header("Location: ?controller=order&action=viewCart");
-            exit;
-        }
-
-        $name = $user['name'] ?? '';
-        $address = $user['address'] ?? '';
-        $phone = $user['phone'] ?? '';
-        $email = $user['email'] ?? '';
-
-        // Lọc giỏ hàng dựa trên các sản phẩm được chọn
-        $selected_products = $_POST['selected_products']; // Mảng chứa product_id được chọn
-        $products = [];
-        $total_price = 0;
-
-        // Validate products and stock
-        foreach ($selected_products as $product_id) {
-            if (!isset($_SESSION['cart'][$product_id])) {
-                continue; // Bỏ qua nếu product_id không có trong giỏ hàng
-            }
-
-            $item = $_SESSION['cart'][$product_id];
-            $product = $this->product->getById($product_id);
-            if (!$product) {
-                unset($_SESSION['cart'][$product_id]);
-                continue;
-            }
-
-            if ($item['quantity'] > $product['quantity']) {
-                $_SESSION['error'] = "Số lượng {$product['name']} vượt quá tồn kho.";
-                header("Location: ?controller=order&action=viewCart");
-                exit;
-            }
-
-            // Add product to the order
-            $subtotal = $product['price'] * $item['quantity'];
-            $products[] = [
-                'product_id' => $product_id,
-                'name' => $product['name'],
-                'quantity' => $item['quantity'],
-                'price' => $product['price'],
-                'subtotal' => $subtotal
-            ];
-            $total_price += $subtotal;
-        }
-
-        if (empty($products)) {
-            $_SESSION['error'] = "Không có sản phẩm hợp lệ được chọn.";
-            header("Location: ?controller=order&action=viewCart");
-            exit;
-        }
-
-        // Create a single order for all selected products
-        $order_id = false;
-        foreach ($products as $product) {
-            $order_id = $this->order->create(
-                $_SESSION['user_id'],
-                $product['product_id'],
-                $product['quantity'],
-                $product['subtotal'],
-                $name,
-                $address,
-                $phone
-            );
-
-            if ($order_id === false) {
-                $_SESSION['error'] = "Không thể tạo đơn hàng cho {$product['name']}.";
-                header("Location: ?controller=order&action=viewCart");
-                exit;
-            }
-
-            // Update product quantity
-            $current_product = $this->product->getById($product['product_id']);
-            $new_quantity = $current_product['quantity'] - $product['quantity'];
-            $this->product->update(
-                $product['product_id'],
-                $current_product['name'],
-                $current_product['img'],
-                $current_product['price'],
-                $new_quantity,
-                $current_product['description']
-            );
-        }
-
-        // Prepare products for email
-        $email_products = array_map(function ($product) {
-            return [
-                'name' => $product['name'],
-                'quantity' => $product['quantity'],
-                'price' => $product['price']
-            ];
-        }, $products);
-
-        // Send order confirmation email
-        if (!empty($email)) {
-            $this->sendOrderEmail($email, $email_products, $total_price, $order_id);
-        }
-
-        // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
-        foreach ($selected_products as $product_id) {
-            unset($_SESSION['cart'][$product_id]);
-        }
-
-        // Nếu giỏ hàng rỗng sau khi xóa, xóa luôn session cart
-        if (empty($_SESSION['cart'])) {
-            unset($_SESSION['cart']);
-        }
-
-        $_SESSION['success'] = "Đơn hàng đã được tạo thành công!";
-        header("Location: ?controller=product&action=index");
-        exit;
-    }
 
     public function updateStatus($order_id, $status)
     {
@@ -674,5 +332,91 @@ class OrderController
             echo json_encode(['success' => false, 'message' => 'Failed to update status']);
         }
         exit;
+    }
+    public function create()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Content-Type: application/json');
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Phương thức không được phép']);
+            exit;
+        }
+
+        $product_id = isset($_POST['product_id']) ? filter_var($_POST['product_id'], FILTER_VALIDATE_INT) : null;
+        $phone = isset($_POST['phone']) ? filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING) : '';
+        $note = isset($_POST['note']) ? filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING) : '';
+
+        // Validate inputs
+        if (!$product_id || !$phone) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Số điện thoại và sản phẩm là bắt buộc']);
+            exit;
+        }
+
+        // Validate phone number (Vietnamese format: 10 digits, starts with 0)
+        if (!preg_match('/^0[0-9]{9}$/', $phone)) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Số điện thoại không hợp lệ']);
+            exit;
+        }
+
+        // Create order
+        $user_id = 1; // Default guest user ID (adjust if authenticated)
+        $quantity = 1; // Default quantity
+        $result = $this->order->createOrder($user_id, $product_id, $quantity, 0, $phone, $note); // total_price fetched in model
+        header('Content-Type: application/json');
+        if ($result['success']) {
+            // Initialize PHPMailer
+            require_once 'PHPMailer-master/src/Exception.php';
+            require_once 'PHPMailer-master/src/PHPMailer.php';
+            require_once 'PHPMailer-master/src/SMTP.php';
+
+            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+
+            try {
+                // SMTP configuration
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'mailleduc05122004@gmail.com';
+                $mail->Password = 'unicbkpxtmahtuzn'; // Consider using environment variables for security
+                $mail->SMTPSecure = 'ssl';
+                $mail->Port = 465;
+
+                // Email configuration
+                $mail->setFrom('mailleduc05122004@gmail.com', 'Shop Admin');
+                $mail->addAddress('mailleduc05122004@gmail.com'); // Hardcoded recipient email
+                $mail->isHTML(true);
+                $mail->Subject = 'Lien he tu van';
+                $mail->Body = '
+    <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; border: 2px dashed #ff9900; padding: 20px; background: #fffbe6; border-radius: 10px;">
+        <h2 style="color: #d35400; text-align: center;">🐔 Có khách cần tư vấn liền tay! 🐔</h2>
+        <p style="font-size: 16px; color: #333;"><strong>Tên sản phẩm:</strong> <span style="color: #c0392b;">' . htmlspecialchars($result['product_name']) . '</span></p>
+        <p style="font-size: 16px; color: #333;"><strong>Mã sản phẩm:</strong> <span style="color: #2980b9;">' . htmlspecialchars($product_id) . '</span></p>
+        <p style="font-size: 16px; color: #333;"><strong>Số điện thoại khách:</strong> <span style="color: #27ae60;">' . htmlspecialchars($phone) . '</span></p>
+        <p style="font-size: 16px; color: #333;"><strong>Ghi chú:</strong> ' . nl2br(htmlspecialchars($note)) . '</p>
+        <p style="font-size: 16px; color: #e74c3c; font-weight: bold;">📞 Hãy gọi cho khách ngay – kẻo mất đơn nha! 📞</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="tel:' . htmlspecialchars($phone) . '" style="background: #e67e22; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">GỌI NGAY</a>
+        </div>
+    </div>
+';
+
+                $mail->AltBody = 'Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được ghi nhận. Tên sản phẩm: ' . htmlspecialchars($result['product_name']) . ', Mã sản phẩm: ' . htmlspecialchars($product_id) . ', Số điện thoại: ' . htmlspecialchars($phone) . ', Ghi chú: ' . htmlspecialchars($note) . '.';
+
+                // Send email
+                $mail->send();
+                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo và email xác nhận đã được gửi']);
+            } catch (Exception $e) {
+                // Log the error (optional) and return success for order creation but note email failure
+                error_log('PHPMailer Error: ' . $mail->ErrorInfo);
+                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo nhưng gửi email thất bại']);
+            }
+        } else {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $result['message']]);
+        }
     }
 }

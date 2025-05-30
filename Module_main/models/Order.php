@@ -163,4 +163,52 @@ class Order
             return false;
         }
     }
+    public function createOrder($user_id, $product_id, $quantity, $total_price, $phone, $note)
+    {
+        try {
+            // Fetch product name
+            $stmt = $this->conn->prepare("SELECT name, price FROM products WHERE ID = :product_id");
+            $stmt->execute([':product_id' => $product_id]);
+            $product = $stmt->fetch();
+            if (!$product) {
+                return ['success' => false, 'message' => 'Sản phẩm không tồn tại'];
+            }
+
+            $product_name = $product['name'];
+            $total_price = $product['price']; // Ensure total_price is from DB
+
+            // Insert order with product_name
+            $stmt = $this->conn->prepare("
+                INSERT INTO orders (user_id, product_id, product_name, quantity, total_price, status, phone, note, created_at)
+                VALUES (:user_id, :product_id, :product_name, :quantity, :total_price, :status, :phone, :note, :created_at)
+            ");
+            $stmt->execute([
+                ':user_id' => $user_id,
+                ':product_id' => $product_id,
+                ':product_name' => $product_name,
+                ':quantity' => $quantity,
+                ':total_price' => $total_price,
+                ':status' => 'pending',
+                ':phone' => $phone,
+                ':note' => $note,
+                ':created_at' => date('Y-m-d')
+            ]);
+            return ['success' => true, 'product_name' => $product_name]; // Add product_name to response
+        } catch (PDOException $e) {
+            error_log("Lỗi khi tạo đơn hàng: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()];
+        }
+    }
+    public function getProductPrice($product_id)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT price FROM products WHERE ID = :product_id");
+            $stmt->execute([':product_id' => $product_id]);
+            $product = $stmt->fetch();
+            return $product ? $product['price'] : null;
+        } catch (PDOException $e) {
+            error_log("Lỗi khi lấy giá sản phẩm: " . $e->getMessage());
+            return null;
+        }
+    }
 }

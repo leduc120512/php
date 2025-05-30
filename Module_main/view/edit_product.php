@@ -519,72 +519,81 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     </ul>
                 </div>
             </nav>
-            <div id="page-wrapper">
-                <div id="page-inner">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h1 class="page-head-line">Chỉnh sửa sản phẩm</h1>
-                            <h1 class="page-subhead-line">Cập nhật thông tin sản phẩm</h1>
+            <div class="container">
+                <h2>Chỉnh sửa sản phẩm</h2>
+
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger">
+                        <?php echo $_SESSION['error'];
+                        unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success">
+                        <?php echo $_SESSION['success'];
+                        unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="update_product" value="1">
+                    <div class="form-group">
+                        <label for="name">Tên sản phẩm:</label>
+                        <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($product['name']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Giá:</label>
+                        <input type="number" step="0.01" class="form-control" id="price" name="price" value="<?php echo $product['price']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Số lượng:</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="<?php echo $product['quantity']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Mô tả:</label>
+                        <textarea class="form-control" id="description" name="description"><?php echo htmlspecialchars($product['description']); ?></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="category_id">Danh mục:</label>
+                        <select class="form-control" id="category_id" name="category_id" required>
+                            <option value="">Chọn danh mục</option>
+                            <?php foreach ($this->category->getAll() as $category): ?>
+                                <option value="<?php echo $category['ID']; ?>" <?php echo $product['category_id'] == $category['ID'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hình ảnh hiện tại:</label>
+                        <div class="row">
+                            <?php foreach ($product['images'] as $index => $image): ?>
+                                <div class="col-md-2">
+                                    <div class="thumbnail">
+                                        <img src="../public/img/<?php echo htmlspecialchars($image['image_url']); ?>" alt="Product Image" style="width:100%">
+                                        <div class="caption">
+                                            <label>
+                                                <input type="radio" name="main_image" value="<?php echo $index; ?>" <?php echo $image['is_main'] ? 'checked' : ''; ?>>
+                                                Ảnh chính
+                                            </label>
+                                            <button type="button" class="btn btn-danger btn-sm btn-remove-image" data-image-url="<?php echo $image['image_url']; ?>">Xóa</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                    <!-- Chỉ phần form với CSS Bootstrap -->
-                    <div class="container mt-4">
-                        <div class="card p-4">
-                            <h2 class="card-title mb-4">CẬP NHẬT SẢN PHẨM</h2>
-                            <form action="" method="POST" enctype="multipart/form-data">
-                                <div class="row mb-3">
-                                    <label for="name" class="col-sm-2 col-form-label">Tên sản phẩm</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" name="name"
-                                            value="<?= htmlspecialchars($product['name']) ?>" required>
-                                    </div>
-                                </div>
 
-                                <div class="row mb-3">
-                                    <label for="price" class="col-sm-2 col-form-label">Giá</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="price" name="price"
-                                            step="0.01" value="<?= htmlspecialchars($product['price']) ?>" required>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="quantity" class="col-sm-2 col-form-label">Số lượng</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="quantity" name="quantity"
-                                            value="<?= htmlspecialchars($product['quantity']) ?>" required>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="description" class="col-sm-2 col-form-label">Mô tả</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="description" name="description"
-                                            rows="4" required><?= htmlspecialchars($product['description']) ?></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label for="img" class="col-sm-2 col-form-label">Hình ảnh</label>
-                                    <div class="col-sm-10">
-                                        <input type="file" class="form-control" id="img" name="img">
-                                        <img src="../public/img/<?= htmlspecialchars($product['img']) ?>"
-                                            alt="Product Image" class="mt-2" style="max-width: 200px; border-radius: 5px;">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-sm-10 offset-sm-2">
-                                        <button type="submit" name="update_product"
-                                            class="btn btn-primary me-2">Cập nhật</button>
-                                        <a href="?controller=order&action=admin"
-                                            class="btn btn-outline-secondary">Hủy</a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                    <div class="form-group">
+                        <label for="images">Thêm hình ảnh mới:</label>
+                        <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
                     </div>
-                </div>
+
+                    <button type="submit" class="btn btn-primary">Cập nhật sản phẩm</button>
+                    <a href="?controller=product&action=manage" class="btn btn-default">Hủy</a>
+                </form>
             </div>
 
             <main class="content">
@@ -762,88 +771,83 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-12 d-flex">
-                            <div class="card flex-fill">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Quản lý đơn hàng</h5>
-                                    <div class="revenue-summary mt-2">
-                                        <?php
-                                        $revenue = calculateTotalRevenue($orders);
-                                        echo "<h4>Tổng doanh thu: " . number_format($revenue) . " VND</h4>";
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover my-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tên người dùng</th>
-                                                    <th class="d-none d-md-table-cell">Tên người mua</th>
-                                                    <th class="d-none d-xl-table-cell">Địa chỉ</th>
-                                                    <th class="d-none d-xl-table-cell">Số điện thoại</th>
-                                                    <th>Tên sản phẩm</th>
-                                                    <th>Số lượng</th>
-                                                    <th>Tổng tiền</th>
-                                                    <th class="d-none d-md-table-cell">Thời gian tạo</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Hành động</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($orders as $order): ?>
-                                                    <tr>
-                                                        <td><?php echo htmlspecialchars($order['username']); ?></td>
-                                                        <td class="d-none d-md-table-cell"><?php echo htmlspecialchars($order['name'] ?? ''); ?></td>
-                                                        <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['address'] ?? ''); ?></td>
-                                                        <td class="d-none d-xl-table-cell"><?php echo htmlspecialchars($order['phone'] ?? ''); ?></td>
-                                                        <td><?php echo htmlspecialchars($order['product_name']); ?></td>
-                                                        <td><?php echo $order['quantity']; ?></td>
-                                                        <td><?php echo number_format($order['total_price']); ?> VND</td>
-                                                        <td class="d-none d-md-table-cell"><?php echo date('H:i d/m/Y', strtotime($order['created_at'])); ?></td>
-                                                        <td>
-                                                            <span class="badge <?php
-                                                                                switch ($order['status']) {
-                                                                                    case 'pending':
-                                                                                        echo 'bg-warning';
-                                                                                        break;
-                                                                                    case 'completed':
-                                                                                        echo 'bg-success';
-                                                                                        break;
-                                                                                    case 'cancelled':
-                                                                                        echo 'bg-danger';
-                                                                                        break;
-                                                                                    default:
-                                                                                        echo 'bg-secondary';
-                                                                                }
-                                                                                ?>">
-                                                                <?php echo htmlspecialchars(ucfirst($order['status'])); ?>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <form method="POST" class="update-status-form" data-order-id="<?php echo $order['order_id']; ?>">
-                                                                <div class="d-flex align-items-center">
-                                                                    <select name="status" class="form-select form-select-sm me-2" style="width: 120px;">
-                                                                        <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
-                                                                        <option value="completed" <?php if ($order['status'] === 'completed') echo 'selected'; ?>>Completed</option>
-                                                                        <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
-                                                                    </select>
-                                                                    <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
-                                                                </div>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <a href="?controller=product&action=index" class="btn btn-secondary mt-3">Quay lại</a>
+
+                    <div class="container">
+                        <h2>Chỉnh sửa sản phẩm</h2>
+
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <div class="alert alert-danger">
+                                <?php echo $_SESSION['error'];
+                                unset($_SESSION['error']); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($_SESSION['success'])): ?>
+                            <div class="alert alert-success">
+                                <?php echo $_SESSION['success'];
+                                unset($_SESSION['success']); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="update_product" value="1">
+                            <div class="form-group">
+                                <label for="name">Tên sản phẩm:</label>
+                                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($product['name']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Giá:</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" value="<?php echo $product['price']; ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Số lượng:</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" value="<?php echo $product['quantity']; ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Mô tả:</label>
+                                <textarea class="form-control" id="description" name="description"><?php echo htmlspecialchars($product['description']); ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="category_id">Danh mục:</label>
+                                <select class="form-control" id="category_id" name="category_id" required>
+                                    <option value="">Chọn danh mục</option>
+                                    <?php foreach ($this->category->getAll() as $category): ?>
+                                        <option value="<?php echo $category['ID']; ?>" <?php echo $product['category_id'] == $category['ID'] ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($category['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Hình ảnh hiện tại:</label>
+                                <div class="row">
+                                    <?php foreach ($product['images'] as $index => $image): ?>
+                                        <div class="col-md-2">
+                                            <div class="thumbnail">
+                                                <img src="../public/img/<?php echo htmlspecialchars($image['image_url']); ?>" alt="Product Image" style="width:100%">
+                                                <div class="caption">
+                                                    <label>
+                                                        <input type="radio" name="main_image" value="<?php echo $index; ?>" <?php echo $image['is_main'] ? 'checked' : ''; ?>>
+                                                        Ảnh chính
+                                                    </label>
+                                                    <button type="button" class="btn btn-danger btn-sm btn-remove-image" data-image-url="<?php echo $image['image_url']; ?>">Xóa</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
+                            <div class="form-group">
+                                <label for="images">Thêm hình ảnh mới:</label>
+                                <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Cập nhật sản phẩm</button>
+                            <a href="?controller=product&action=manage" class="btn btn-default">Hủy</a>
+                        </form>
+                    </div>
                 </div>
             </main>
 
@@ -1100,147 +1104,32 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             });
         });
     </script>
+
     <script>
-        $(document).ready(function() {
-            $('.update-status-form').on('submit', function(e) {
-                e.preventDefault();
-
-                let form = $(this);
-                let orderId = form.data('order-id');
-                let newStatus = form.find('select[name="status"]').val();
-                let row = form.closest('tr');
-                let productName = row.find('td:nth-child(2)').text();
-
-                console.log('Sending AJAX: orderId=', orderId, 'newStatus=', newStatus);
-
-                if (!orderId || !newStatus) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Dữ liệu không hợp lệ.',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-
-                $.ajax({
-                    url: '?controller=order&action=updateStatus',
-                    method: 'POST',
-                    data: {
-                        order_id: orderId,
-                        status: newStatus
-                    },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        form.find('button').prop('disabled', true).text('Đang cập nhật...');
-                    },
-                    success: function(response) {
-                        console.log('AJAX Response:', response);
-                        if (response.success) {
-                            row.find('td:nth-child(6)').text(newStatus);
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Cập nhật thành công!',
-                                html: `Đơn hàng cho sản phẩm <strong>${productName}</strong><br>` +
-                                    `Trạng thái mới: <strong>${newStatus}</strong>`,
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            console.log('Server error response:', response);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi!',
-                                text: response.message || 'Đã xảy ra lỗi khi cập nhật trạng thái.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', status, error, 'Response:', xhr.responseText);
-                        let errorMessage = 'Không thể xử lý phản hồi từ server.';
-                        try {
-                            let response = JSON.parse(xhr.responseText);
-                            if (response.message) {
-                                errorMessage = response.message;
+        document.querySelectorAll('.btn-remove-image').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                    const imageUrl = this.getAttribute('data-image-url');
+                    fetch('?controller=product&action=remove_image', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `image_url=${encodeURIComponent(imageUrl)}&product_id=<?php echo $product['ID']; ?>`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                this.closest('.thumbnail').remove();
+                            } else {
+                                alert('Xóa ảnh thất bại: ' + data.message);
                             }
-                        } catch (e) {
-                            errorMessage += ' Phản hồi không phải JSON: ' + xhr.responseText;
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: errorMessage,
-                            confirmButtonText: 'OK'
+                        })
+                        .catch(error => {
+                            alert('Lỗi: ' + error.message);
                         });
-                    },
-                    complete: function() {
-                        form.find('button').prop('disabled', false).text('Cập nhật');
-                    }
-                });
+                }
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Xử lý submit form tìm kiếm
-            document.getElementById('searchForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const orderId = document.getElementById('orderId').value;
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
-
-                fetchOrders(orderId, startDate, endDate);
-            });
-
-            // Xử lý nút reset
-            document.getElementById('resetSearch').addEventListener('click', function() {
-                document.getElementById('searchForm').reset();
-                fetchOrders('', '', '');
-            });
-
-            function fetchOrders(orderId, startDate, endDate) {
-                fetch('?controller=order&action=search', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `order_id=${encodeURIComponent(orderId)}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        updateTable(data);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            function updateTable(orders) {
-                const tbody = document.querySelector('tbody');
-                tbody.innerHTML = ''; // Xóa nội dung cũ
-
-                orders.forEach(order => {
-                    const row = `
-                <tr>
-                    <td>${order.username}</td>
-                    <td>${order.product_name}</td>
-                    <td>${order.quantity}</td>
-                    <td>${new Intl.NumberFormat().format(order.total_price)} VND</td>
-                    <td>${order.status}</td>
-                    <td>
-                        <form method="POST" class="update-status-form" data-order-id="${order.order_id}">
-                            <select name="status" class="form-control d-inline-block" style="width: 120px; display: inline;">
-                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
-                        </form>
-                    </td>
-                </tr>
-            `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-            }
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

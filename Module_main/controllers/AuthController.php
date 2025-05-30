@@ -12,35 +12,7 @@ class AuthController
         $this->user = new User($db->getConnection());
     }
 
-    // public function login()
-    // {
-    //     if (isset($_POST['login'])) {
-    //         $username = $_POST['username'];
-    //         $password = $_POST['password'];
-
-    //         // In ra các input
-    //         echo "Username: " . htmlspecialchars($username) . "<br>";
-    //         echo "Password: " . htmlspecialchars($password) . "<br>";
-
-    //         $user = $this->user->login($username, $password);
-
-    //         if ($user) {
-    //             $_SESSION['user_id'] = $user['ID'];
-    //             $_SESSION['role'] = $user['role'];
-
-    //             if ($user['role'] === 'admin') {
-    //                 header("Location: http://localhost:3000/bs-advance-admin/advance-admin/index.php");
-    //             } else {
-    //                 header("Location: ?controller=product&action=index");
-    //             }
-    //             exit;
-    //         } else {
-    //             $error = "Sai thông tin đăng nhập!";
-    //             echo $error . "<br>";
-    //         }
-    //     }
-    //     require dirname(__DIR__) . '/view/login.php';
-    // }
+  
 
     public function register()
     {
@@ -68,56 +40,7 @@ class AuthController
         }
         require '../view/register.php';
     }
-    // public function updateUser()
-    // {
-    //     // Check if user is logged in
-    //     if (!isset($_SESSION['user_id'])) {
-    //         header("Location: ?controller=auth&action=login");
-    //         exit;
-    //     }
-
-    //     if (isset($_POST['update'])) {
-    //         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    //         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
-    //         $address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_SPECIAL_CHARS);
-    //         $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_SPECIAL_CHARS);
-    //         $password = $_POST['password'] ?? '';
-
-    //         if (!$email || !$name || !$address || !$phone) {
-    //             echo "Vui lòng điền đầy đủ thông tin!";
-    //             require '../view/update_user.php';
-    //             return;
-    //         }
-
-    //         // Check if email exists in the database
-    //         if (!$this->user->userExists($email)) {
-    //             echo "Email không tồn tại trong hệ thống!";
-    //             require '../view/update_user.php';
-    //             return;
-    //         }
-
-    //         // Update user with or without password
-    //         if ($password) {
-    //             $result = $this->user->updateUser($email, $name, $address, password_hash($password, PASSWORD_DEFAULT), $phone);
-    //         } else {
-    //             $result = $this->user->updateUserWithoutPassword($email, $name, $address, $phone);
-    //         }
-
-    //         if ($result) {
-    //             $_SESSION['user']['email'] = $email;
-    //             $_SESSION['user']['name'] = $name;
-    //             $_SESSION['user']['address'] = $address;
-    //             $_SESSION['user']['phone'] = $phone;
-    //             header("Location: ?controller=auth&action=profile&success=1");
-    //             exit;
-    //         } else {
-    //             echo "Cập nhật thất bại!";
-    //             require '../view/update_user.php';
-    //         }
-    //     } else {
-    //         require '../view/update_user.php';
-    //     }
-    // }
+    
     public function login()
     {
         if (isset($_POST['login'])) {
