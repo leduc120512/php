@@ -280,51 +280,44 @@
         </div>
     </section> -->
 
-    <label for="categorySelect">Select Category:</label>
-    <select id="categorySelect" onchange="changeCategory()">
-        <option value="" <?php echo !isset($_GET['category_id']) ? 'selected' : ''; ?>>All Categories</option>
-        <?php foreach ($categoryArt as $cat): ?>
-            <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
-                <?php echo (isset($_GET['category_id']) && $_GET['category_id'] == $cat['id']) ? 'selected' : ''; ?>>
-                <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
 
-    <section id="latest-blog" class="section-padding pt-0">
+    <section id="news-articles" class="section-padding pt-0">
         <div class="container-lg">
             <div class="row">
-                <div class="section-header d-flex align-items-center justify-content-between mb-lg-2">
-                    <h2 class="section-title">Bài báo</h2>
-                    <a href="?controller=product&action=index" class="btn btn-primary">View All</a>
+                <div class="section-header d-flex align-items-center justify-content-between mb-4">
+                    <h2 class="section-title text-primary">Tin tức & Bài báo</h2>
+                    <a href="?controller=product&action=index" class="btn btn-outline-primary">Xem tất cả</a>
                 </div>
             </div>
-            <div class="row" id="articles-container">
+            <div class="row" id="articles-container-art">
                 <?php if (empty($articles)): ?>
-                    <p>Không có bài báo nào trong danh mục này.</p>
+                    <p class="text-muted">Không có bài báo nào trong danh mục này.</p>
                 <?php else: ?>
                     <?php foreach ($articles as $article): ?>
-                        <div class="col-md-4">
-                            <article class="post-item card border-1 border-light shadow-sm p-3">
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <article class="post-item card border-0 shadow-lg h-100">
                                 <div class="image-holder zoom-effect">
-                                    <a href="?controller=product&action=detail&id=<?= htmlspecialchars($article['id'] ?? '') ?>">
-                                        <img src="<?= htmlspecialchars($article['image_url'] ?? '../public/img/default.jpg') ?>" alt="post" class="card-img-top" loading="lazy" />
+                                    <a href="?controller=product&action=detail&id=<?= htmlspecialchars($article['id'] ?? '') ?>" aria-label="Xem chi tiết bài báo">
+                                        <img src="<?= htmlspecialchars($article['image_url'] ?? '/public/img/default.jpg') ?>"
+                                            alt="<?= htmlspecialchars($article['title'] ?? 'Hình ảnh bài báo') ?>"
+                                            class="card-img-top" loading="lazy" />
                                     </a>
                                 </div>
                                 <div class="card-body">
                                     <div class="post-meta d-flex text-uppercase gap-3 my-3 align-items-center">
-                                        <div class="meta-date">
-                                            <a href="#" class="text-decoration-none"><?= date("d M Y", strtotime($article['created_at'] ?? 'now')) ?></a>
-                                        </div>
-                                        <div class="meta-categories">
-                                            <a href="#" class="text-decoration-none"><?= htmlspecialchars($article['note'] ?? '') ?></a>
-                                        </div>
+                                        <span class="meta-date text-muted">
+                                            <?= date("d M Y", strtotime($article['created_at'] ?? 'now')) ?>
+                                        </span>
+                                        <span class="meta-categories text-muted">
+                                            <?= htmlspecialchars($article['note'] ?? '') ?>
+                                        </span>
                                     </div>
                                     <div class="post-header">
-                                        <h3 class="fs-5 fw-normal">
-                                            <a href="#" class="text-decoration-none"><?= htmlspecialchars($article['title'] ?? '') ?></a>
+                                        <h3 class="fs-5 fw-bold">
+                                            <a href="?controller=product&action=detail&id=<?= htmlspecialchars($article['id'] ?? '') ?>"
+                                                class="post-title"><?= htmlspecialchars($article['title'] ?? '') ?></a>
                                         </h3>
-                                        <p><?= htmlspecialchars($article['description'] ?? '') ?></p>
+                                        <p class="text-muted"><?= htmlspecialchars($article['description'] ?? '') ?></p>
                                     </div>
                                 </div>
                             </article>
@@ -333,28 +326,38 @@
                 <?php endif; ?>
             </div>
         </div>
-        <script>
-            function changeCategory() {
-                const select = document.getElementById('categorySelect');
-                const categoryId = select.value;
-                // Build the new URL with category_id
-                let url = 'http://localhost:3000/Module_main/public/index.php?controller=product&action=index';
-                if (categoryId) {
-                    url += '&category_id=' + encodeURIComponent(categoryId);
+    </section>
+
+    <script>
+        function changeCategoryArt() {
+            const select = document.getElementById('categorySelect_art');
+            const categoryId = select.value;
+            Swal.fire({
+                title: 'Đang tải...',
+                text: 'Vui lòng chờ trong khi tải danh mục mới.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
-                // Redirect to the new URL
-                window.location.href = url;
+            });
+            let url = '?controller=product&action=index';
+            if (categoryId) {
+                url += '&category_id_art=' + encodeURIComponent(categoryId);
             }
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="../view/js/jquery-1.11.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-            crossorigin="anonymous"></script>
-        <script src="../view/js/plugins.js"></script>
-        <script src="../view/js/script.js"></script>
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../view/js/jquery-1.11.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <script src="../view/js/plugins.js"></script>
+    <script src="../view/js/script.js"></script>
 </body>
 
 </html>

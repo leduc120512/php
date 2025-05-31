@@ -355,8 +355,25 @@ $revenue = calculateTotalRevenue($orders);
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=order&action=admin">
+                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=manage">
                                 <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí sản đơn hàng</span>
+                            </a>
+                        <?php endif; ?>
+
+                    </li>
+
+                    <li class="sidebar-item">
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=article&action=manage">
+                                <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí Bài báo</span>
+                            </a>
+                        <?php endif; ?>
+
+                    </li>
+                    <li class="sidebar-item">
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=manage">
+                                <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí cách chăn nuôi </span>
                             </a>
                         <?php endif; ?>
 

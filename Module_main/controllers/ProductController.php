@@ -5,6 +5,7 @@ require_once '../models/ProductReview.php';
 require_once '../models/ProductComment.php';
 require_once '../models/CommentReply.php';
 require_once '../models/ArticleModel.php';
+require_once '../models/FarmingProcessModel.php';
 class ProductController
 {
     private $product;
@@ -12,6 +13,7 @@ class ProductController
     private $productComment;
     private $commentReply;
     private $article;
+    private $FarmingProcess;
     public function __construct()
     {
         $db = Database::getInstance();
@@ -20,12 +22,13 @@ class ProductController
         $this->productComment = new ProductComment($db->getConnection());
         $this->commentReply = new CommentReply($db->getConnection());
         $this->article = new ArticleModel($db->getConnection());
+        $this->FarmingProcess = new FarmingProcessModel($db->getConnection());
     }
     public function index()
     {
         // Lấy 3 sản phẩm mới nhất
         $latestProducts = $this->product->getLatest();
-    
+
         // Thiết lập phân trang, tìm kiếm, sắp xếp và danh mục
         $itemsPerPage = 9;
         $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -34,7 +37,7 @@ class ProductController
         $sort = isset($_GET['sort']) && strtoupper($_GET['sort']) === 'DESC' ? 'DESC' : 'ASC';
         $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' && is_numeric($_GET['category_id']) ? (int)$_GET['category_id'] : null;
         $offset = ($currentPage - 1) * $itemsPerPage;
-    
+
         if (!empty($keyword) || $category_id !== null) {
             $allProducts = $this->product->searchByName($keyword, $itemsPerPage, $offset, $sort, $category_id);
             $totalItems = $this->product->getTotalByNameAndCategory($keyword, $category_id);
@@ -42,20 +45,22 @@ class ProductController
             $allProducts = $this->product->getPaginated($itemsPerPage, $offset, $sort);
             $totalItems = $this->product->getTotal();
         }
-    
+
         $totalPages = ceil($totalItems / $itemsPerPage);
         if ($currentPage > $totalPages) $currentPage = $totalPages;
-    
+
+        // Lấy dữ liệu cho bài báo
+        $category_id_art = isset($_GET['category_id_art']) && is_numeric($_GET['category_id_art']) ? (int)$_GET['category_id_art'] : null;
+        $articles = $this->article->getAllAt($category_id_art);
+        $categoryArt = $this->article->CatergorygetAllAt();
+
+        // Lấy dữ liệu cho quy trình chăn nuôi
+        $category_id_fm = isset($_GET['category_id_fm']) && is_numeric($_GET['category_id_fm']) ? (int)$_GET['category_id_fm'] : null;
+        $FarmingProcess = $this->FarmingProcess->getAll($category_id_fm);
+        $categoryFm = $this->FarmingProcess->CatergorygetAllfm();
+
         // Chuyển dữ liệu sang view
         $products = $allProducts;
-        $articles = $this->article->getAllAt();
-        $categoryArt = $this->article->CatergorygetAllAt();
-        $category = $this->product->getAllCategory();
-        $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
-
-        // Gọi ArticleModel để lấy dữ liệu
-        $articles = $this->article->getAllAt($category_id);
-        $categoryArt = $this->article->CatergorygetAllAt();
         require '../view/index.php';
     }
     public function inventory()

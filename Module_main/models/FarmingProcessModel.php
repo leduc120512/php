@@ -7,23 +7,44 @@ class FarmingProcessModel
     {
         $this->conn = $db;
     }
-    public function getAll()
+    public function getAll($category_id_fm = null)
     {
         try {
-            $stmt = $this->conn->prepare("
-                SELECT ID, title, decription, image_url, created_at, note
-                FROM articles
+            if ($category_id_fm) {
+                $stmt = $this->conn->prepare("
+                SELECT ID, title, description, image_url, created_at, note
+                FROM farming_process
+                WHERE category_id = :category_id_fm
                 ORDER BY created_at DESC
             ");
+                $stmt->bindParam(':category_id_fm', $category_id_fm, PDO::PARAM_INT);
+            } else {
+                $stmt = $this->conn->prepare("
+                SELECT ID, title, description, image_url, created_at, note
+                FROM farming_process
+                ORDER BY created_at DESC
+            ");
+            }
+
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error fetching articles: " . $e->getMessage());
+            error_log("Error fetching farming processes: " . $e->getMessage());
+            return [];
+        }
+    }
+    public function CatergorygetAllfm()
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT id, name FROM category_faming;");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching categories: " . $e->getMessage());
             return [];
         }
     }
 
-    
     public function getById($id)
     {
         try {
@@ -41,46 +62,38 @@ class FarmingProcessModel
         }
     }
 
-    public function add($title, $description, $process_order, $start_day, $end_day, $note, $image_url)
+    public function add($title, $description, $process_order, $start_day, $end_day, $note, $image_url = null, $video_url = null, $category_id = 1)
     {
         try {
+            $this->conn->beginTransaction();
             $stmt = $this->conn->prepare("
-                INSERT INTO farming_process (title, description, process_order, start_day, end_day, note, image_url)
-                VALUES (:title, :description, :process_order, :start_day, :end_day, :note, :image_url)
+                INSERT INTO farming_process (title, description, process_order, start_day, end_day, note, image_url, video_url, category_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
             ");
-            $stmt->bindParam(':title', $title);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':process_order', $process_order, PDO::PARAM_INT);
-            $stmt->bindParam(':start_day', $start_day, PDO::PARAM_INT);
-            $stmt->bindParam(':end_day', $end_day, PDO::PARAM_INT);
-            $stmt->bindParam(':note', $note);
-            $stmt->bindParam(':image_url', $image_url);
-            return $stmt->execute();
+            $stmt->execute([$title, $description, $process_order, $start_day, $end_day, $note, $image_url, $video_url, $category_id]);
+            $this->conn->commit();
+            return true;
         } catch (PDOException $e) {
+            $this->conn->rollBack();
             error_log("Error adding farming process: " . $e->getMessage());
-            return false;
+            return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 
-    public function update($id, $title, $description, $process_order, $start_day, $end_day, $note, $image_url)
+    public function update($id, $title, $description, $process_order, $start_day, $end_day, $note, $image_url = null, $video_url = null, $category_id = 1)
     {
         try {
+            $this->conn->beginTransaction();
             $stmt = $this->conn->prepare("
                 UPDATE farming_process
-                SET title = :title, description = :description, process_order = :process_order,
-                    start_day = :start_day, end_day = :end_day, note = :note, image_url = :image_url
-                WHERE ID = :id
+                SET title = ?, description = ?, process_order = ?, start_day = ?, end_day = ?, note = ?, image_url = ?, video_url = ?, category_id = ?
+                WHERE id = ?
             ");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':title', $title);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':process_order', $process_order, PDO::PARAM_INT);
-            $stmt->bindParam(':start_day', $start_day, PDO::PARAM_INT);
-            $stmt->bindParam(':end_day', $end_day, PDO::PARAM_INT);
-            $stmt->bindParam(':note', $note);
-            $stmt->bindParam(':image_url', $image_url);
-            return $stmt->execute();
+            $stmt->execute([$title, $description, $process_order, $start_day, $end_day, $note, $image_url, $video_url, $category_id, $id]);
+            $this->conn->commit();
+            return true;
         } catch (PDOException $e) {
+            $this->conn->rollBack();
             error_log("Error updating farming process: " . $e->getMessage());
             return false;
         }
@@ -91,8 +104,8 @@ class FarmingProcessModel
             if ($this->conn === null) {
                 throw new Exception("Không thể kết nối cơ sở dữ liệu.");
             }
-            $stmt = $this->conn->prepare(" DELETE FROM farming_process WHERE ID = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt = $this->conn->prepare("DELETE FROM farming_process WHERE ID = :ID");
+            $stmt->bindParam(':ID', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (Exception $e) {
             error_log("Lỗi khi quy trình chăn nuôi: " . $e->getMessage());

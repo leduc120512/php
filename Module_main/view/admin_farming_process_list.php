@@ -1,112 +1,95 @@
-<?php
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ?controller=auth&action=login");
-    exit;
-}
-$processes = isset($processes) ? $processes : [];
-?>
+<div class="container mt-4">
+    <h2>Manage Farming Processes</h2>
 
-<!DOCTYPE html>
-<html lang="vi">
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success">
+            <?php
+            if ($_GET['success'] === 'added') echo 'Farming process added successfully!';
+            if ($_GET['success'] === 'updated') echo 'Farming process updated successfully!';
+            if ($_GET['success'] === 'deleted') echo 'Farming process deleted successfully!';
+            ?>
+        </div>
+    <?php endif; ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý giai đoạn chăn nuôi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
+    <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert-danger">
+            <?php
+            if ($_GET['error'] === 'notfound') echo 'Farming process not found!';
+            if ($_GET['error'] === 'delete_failed') echo 'Failed to delete farming process!';
+            ?>
+        </div>
+    <?php endif; ?>
 
-        .alert {
-            margin-bottom: 20px;
-        }
-
-        .action-buttons a,
-        .action-buttons form {
-            display: inline-block;
-        }
-
-        .action-buttons form button {
-            margin-left: 5px;
-        }
-
-        .image-preview {
-            max-width: 100px;
-            max-height: 100px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h2 class="mb-4">Danh sách giai đoạn chăn nuôi</h2>
-
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-                <?php echo $_SESSION['success'];
-                unset($_SESSION['success']); ?>
-            </div>
-        <?php endif; ?>
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?php echo $_SESSION['error'];
-                unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
-
-        <a href="?controller=farming_process&action=add" class="btn btn-primary mb-3">Thêm giai đoạn mới</a>
-
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Tiêu đề</th>
-                    <th>Mô tả</th>
-                    <th>Thứ tự</th>
-                    <th>Ngày bắt đầu</th>
-                    <th>Ngày kết thúc</th>
-                    <th>Ghi chú</th>
-                    <th>Hình ảnh</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($processes)): ?>
-                    <tr>
-                        <td colspan="9" class="text-center">Không có giai đoạn chăn nuôi nào.</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($processes as $process): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($process['ID']); ?></td>
-                            <td><?php echo htmlspecialchars($process['title']); ?></td>
-                            <td><?php echo htmlspecialchars($process['description'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($process['process_order']); ?></td>
-                            <td><?php echo htmlspecialchars($process['start_day']); ?></td>
-                            <td><?php echo htmlspecialchars($process['end_day']); ?></td>
-                            <td><?php echo htmlspecialchars($process['note'] ?? ''); ?></td>
-                            <td>
-                                <?php if (!empty($process['image_url'])): ?>
-                                    <img src="<?php echo htmlspecialchars($process['image_url']); ?>" alt="Hình ảnh" class="image-preview">
-                                <?php else: ?>
-                                    Không có hình
-                                <?php endif; ?>
-                            </td>
-                            <td class="action-buttons">
-                                <a href="?controller=farming_process&action=edit&id=<?php echo $process['ID']; ?>" class="btn btn-sm btn-warning">Sửa</a>
-                                <form action="?controller=farming_process&action=delete&id=<?php echo $process['ID']; ?>" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa giai đoạn này?');">
-                                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+    <div class="mb-3">
+        <a href="?controller=farming_process&action=add" class="btn btn-primary">Add New Process</a>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
-</html>
+    <div class="mb-3">
+        <form method="GET">
+            <input type="hidden" name="controller" value="farming_process">
+            <input type="hidden" name="action" value="manage">
+            <select name="category_id" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?php echo htmlspecialchars($category['id'] ?? ''); ?>" <?php echo isset($_GET['category_id']) && $_GET['category_id'] == ($category['id'] ?? '') ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($category['name'] ?? ''); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Order</th>
+                <th>Duration (Days)</th>
+                <th>Image</th>
+                <th>Video</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($processes as $process): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($process['ID'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($process['title'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($process['description'] ?? ''); ?></td>
+                    <td><?php echo isset($process['process_order']) ? $process['process_order'] : 'N/A'; ?></td>
+                    <td>
+                        <?php
+                        $start_day = isset($process['start_day']) ? $process['start_day'] : 'N/A';
+                        $end_day = isset($process['end_day']) ? $process['end_day'] : 'N/A';
+                        echo "$start_day - $end_day";
+                        ?>
+                    </td>
+                    <td>
+                        <?php if (!empty($process['image_url'])): ?>
+                            <img src="<?php echo htmlspecialchars($process['image_url']); ?>" alt="Process Image" width="100">
+                        <?php else: ?>
+                            No Image
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if (!empty($process['video_url'])): ?>
+                            <video width="100" controls>
+                                <source src="<?php echo htmlspecialchars($process['video_url']); ?>" type="video/mp4">
+                            </video>
+                        <?php else: ?>
+                            No Video
+                        <?php endif; ?>
+                    </td>
+                    <td><?php echo isset($process['created_at']) ? $process['created_at'] : 'N/A'; ?></td>
+                    <td>
+                        <a href="?controller=farming_process&action=edit&id=<?php echo isset($process['ID']) ? $process['ID'] : ''; ?>" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="?controller=farming_process&action=delete&id=<?php echo isset($process['ID']) ? $process['ID'] : ''; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this farming process?')">Delete</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

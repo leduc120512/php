@@ -8,21 +8,21 @@ class ArticleModel
         $this->conn = $db;
     }
 
-    public function getAllAt($category_id = null)
+    public function getAllAt($category_id_art = null)
     {
         try {
-            if ($category_id) {
+            if ($category_id_art) {
                 $stmt = $this->conn->prepare("
                     SELECT id, title, decription, note, image_url, created_at 
                     FROM articles 
-                    WHERE category_id = :category_id
+                    WHERE category_id = :category_id_art
                 ");
-                $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+                $stmt->bindParam(':category_id_art', $category_id_art, PDO::PARAM_INT);
             } else {
                 $stmt = $this->conn->prepare("
                     SELECT id, title, decription, note, image_url, created_at 
                     FROM articles 
-                    LIMIT 3
+                
                 ");
             }
             $stmt->execute();
@@ -64,39 +64,53 @@ class ArticleModel
         }
     }
 
-    public function add($title, $content, $author, $description, $note, $image_url = null)
+    public function add($title, $content, $author, $decription, $note, $image_url = null, $category_id = 1)
     {
         try {
             $this->conn->beginTransaction();
             $stmt = $this->conn->prepare("
-                INSERT INTO articles (title, content, author, description, note, image_url, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, NOW())
+                INSERT INTO articles (title, content, author, decription, note, image_url, created_at, category_id)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
             ");
-            $stmt->execute([$title, $content, $author, $description, $note, $image_url]);
+            $stmt->execute([$title, $content, $author, $decription, $note, $image_url, $category_id]);
             $this->conn->commit();
             return true;
         } catch (PDOException $e) {
             $this->conn->rollBack();
             error_log("Error adding article: " . $e->getMessage());
-            return false;
+            return ['success' => false, 'message' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage()];
         }
     }
-
-    public function update($id, $title, $content, $author, $description, $note, $image_url = null)
+    public function update($id, $title, $content, $author, $decription, $note, $image_url = null)
     {
         try {
             $this->conn->beginTransaction();
             $stmt = $this->conn->prepare("
                 UPDATE articles
-                SET title = ?, content = ?, author = ?, description = ?, note = ?, image_url = ?
+                SET title = ?, content = ?, author = ?, decription = ?, note = ?, image_url = ?
                 WHERE ID = ?
             ");
-            $stmt->execute([$title, $content, $author, $description, $note, $image_url, $id]);
+            $stmt->execute([$title, $content, $author, $decription, $note, $image_url, $id]);
             $this->conn->commit();
             return true;
         } catch (PDOException $e) {
             $this->conn->rollBack();
             error_log("Error updating article: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            if ($this->conn === null) {
+                throw new Exception("Không thể kết nối cơ sở dữ liệu.");
+            }
+            $stmt = $this->conn->prepare("DELETE FROM articles WHERE ID = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            error_log("Lỗi khi xóa sản phẩm: " . $e->getMessage());
             return false;
         }
     }

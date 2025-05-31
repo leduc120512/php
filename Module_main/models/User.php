@@ -161,4 +161,86 @@ class User
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function updateAccount($id, $username, $email, $password = null, $role, $name = null, $address = null, $phone = null)
+    {
+        // Start building the query
+        $query = "UPDATE " . $this->table_name . " SET 
+              username = :username, 
+              email = :email, 
+              role = :role,
+              name = :name,
+              address = :address,
+              phone = :phone";
+
+        // Add password to the query if it's provided
+        if ($password !== null) {
+            $query .= ", password = :password";
+        }
+
+        $query .= " WHERE ID = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':address', $address);
+        $stmt->bindParam(':phone', $phone);
+
+        // Bind password if it's provided
+        if ($password !== null) {
+            $stmt->bindParam(':password', $password);
+        }
+
+        return $stmt->execute();
+    }
+    public function deleteAccount($id)
+    {
+        $query = "DELETE FROM " . $this->table_name . " WHERE ID = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+
+        return $stmt->execute();
+    }
+    public function getUserById($id)
+    {
+        $query = "SELECT ID, username, email, role, created_at, name, address, phone 
+              FROM " . $this->table_name . " 
+              WHERE ID = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+
+        if (!$stmt->execute()) {
+            error_log("SQL Error in getUserById: " . json_encode($stmt->errorInfo()));
+            return null;
+        }
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function searchAccounts($search = '')
+    {
+        $search = "%$search%";
+
+        $query = "SELECT ID, username, email, role, created_at, name, address, phone 
+                  FROM " . $this->table_name . " 
+                  WHERE username LIKE ? 
+                     OR email LIKE ? 
+                     OR role LIKE ? 
+                     OR name LIKE ?
+                     OR CAST(created_at AS CHAR) LIKE ?
+                  ORDER BY ID";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$search, $search, $search, $search, $search]);
+
+        if (!$stmt) {
+            error_log("SQL Error in searchAccounts: " . json_encode($this->conn->errorInfo()));
+            return [];
+        }
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -23,6 +23,9 @@ switch ($controller) {
     case 'auth':
         $ctrl = new AuthController();
         if ($action === 'login') $ctrl->login();
+        elseif ($action === 'list_accounts') $ctrl->list_accounts();
+        elseif ($action === 'edit_account') $ctrl->edit_account();
+        elseif ($action === 'delete_account') $ctrl->delete_account();
         elseif ($action === 'register') $ctrl->register();
         elseif ($action === 'forgotPassword') $ctrl->forgotPassword();
         elseif ($action === 'updateUser') $ctrl->updateUser();
@@ -78,7 +81,6 @@ switch ($controller) {
         elseif ($action === 'add') $ctrl->add();
         elseif ($action === 'edit' && $id) $ctrl->edit($id);
         elseif ($action === 'delete' && $id) $ctrl->delete($id);
-        elseif ($action === 'getAll') $ctrl->getAll();
         else {
             header("Location: ?controller=farming_process&action=manage");
             exit;
@@ -89,6 +91,7 @@ switch ($controller) {
         if ($action === 'manage') $ctrl->manage();
         elseif ($action === 'add') $ctrl->add();
         elseif ($action === 'edit' && $id) $ctrl->edit($id);
+        elseif ($action === 'delete' && $id) $ctrl->delete($id);
         else {
             header("Location: ?controller=article&action=manage");
             exit;

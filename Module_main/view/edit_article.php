@@ -1,48 +1,49 @@
-<?php
-require_once '../view/templates/header.php';
-?>
+<div class="container mt-4">
+    <h2>Edit Article</h2>
 
-<div class="container mt-5">
-    <h2>Sửa bài báo</h2>
-
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?php echo $_SESSION['error'];
-                                        unset($_SESSION['error']); ?></div>
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?php echo $error; ?></div>
     <?php endif; ?>
 
-    <form action="?controller=article&action=edit&id=<?php echo htmlspecialchars($article['ID']); ?>" method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="existing_image" value="<?php echo htmlspecialchars($article['image_url'] ?? ''); ?>">
         <div class="mb-3">
-            <label for="title" class="form-label">Tiêu đề</label>
+            <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($article['title']); ?>" required>
         </div>
         <div class="mb-3">
-            <label for="content" class="form-label">Nội dung</label>
-            <textarea class="form-control" id="content" name="content" rows="10" required><?php echo htmlspecialchars($article['content']); ?></textarea>
+            <label for="content" class="form-label">Content</label>
+            <textarea class="form-control" id="content" name="content" rows="5" required><?php echo htmlspecialchars($article['content']); ?></textarea>
         </div>
         <div class="mb-3">
-            <label for="author" class="form-label">Tác giả</label>
-            <input type="text" class="form-control" id="author" name="author" value="<?php echo htmlspecialchars($article['author']); ?>">
+            <label for="author" class="form-label">Author</label>
+            <input type="text" class="form-control" id="author" name="author" value="<?php echo htmlspecialchars($article['author']); ?>" required>
         </div>
         <div class="mb-3">
-            <label for="description" class="form-label">Mô tả</label>
-            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars($article['description']); ?>">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars($article['decription']); ?>" required>
         </div>
         <div class="mb-3">
-            <label for="note" class="form-label">Ghi chú</label>
-            <input type="text" class="form-control" id="note" name="note" value="<?php echo htmlspecialchars($article['note']); ?>">
+            <label for="note" class="form-label">Note</label>
+            <input type="text" class="form-control" id="note" name="note" value="<?php echo htmlspecialchars($article['note'] ?? ''); ?>">
         </div>
         <div class="mb-3">
-            <label for="img" class="form-label">Ảnh đại diện</label>
-            <input type="file" class="form-control" id="img" name="img" accept="image/*">
+            <label for="category_id" class="form-label">Category</label>
+            <select class="form-control" id="category_id" name="category_id">
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?php echo $category['id']; ?>" <?php echo $article['category_id'] == $category['id'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($category['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
             <?php if ($article['image_url']): ?>
-                <img src="../public/img/<?php echo htmlspecialchars($article['image_url']); ?>" alt="Current Image" width="100" class="mt-2">
+                <img src="<?php echo htmlspecialchars($article['image_url']); ?>" alt="Current Image" width="100" class="mb-2">
             <?php endif; ?>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
         </div>
-        <button type="submit" name="update_article" class="btn btn-primary">Cập nhật</button>
-        <a href="?controller=article&action=manage" class="btn btn-secondary">Hủy</a>
+        <button type="submit" class="btn btn-primary">Update Article</button>
     </form>
 </div>
-
-<?php
-require_once '../view/templates/footer.php';
-?>

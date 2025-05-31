@@ -40,22 +40,18 @@ class AuthController
         }
         require '../view/register.php';
     }
-    
     public function login()
     {
         if (isset($_POST['login'])) {
             $username = $_POST['username'];
             $password = $_POST['password'];
 
-            // In ra các input
-            echo "Username: " . htmlspecialchars($username) . "<br>";
-            echo "Password: " . htmlspecialchars($password) . "<br>";
-
             $user = $this->user->login($username, $password);
 
             if ($user) {
                 $_SESSION['user_id'] = $user['ID'];
                 $_SESSION['role'] = $user['role'];
+
                 // Initialize $_SESSION['user'] with user data
                 $_SESSION['user'] = [
                     'email' => $user['email'] ?? '',
@@ -64,10 +60,17 @@ class AuthController
                     'phone' => $user['phone'] ?? ''
                 ];
 
-                if ($user['role'] === 'admin') {
-                    header("Location: http://localhost:3000/adminkit/static/index.php");
-                } else {
+                // Add the new session variable when role is 'create'
+                if (!empty($user['role']) && $user['role'] === 'create') {
+                    $_SESSION['can_create_accounts'] = true;
+                }
+
+                if (!empty($user['role']) && $user['role'] === 'admin') {
+                    header("Location: http://localhost:3000/AdminLTE-master/index.php");
+                } else if ($user['role'] === 'customer') {
                     header("Location: ?controller=product&action=index");
+                } else {
+                    header("Location: ?controller=auth&action=list_accounts");
                 }
                 exit;
             } else {
@@ -75,9 +78,160 @@ class AuthController
                 echo $error . "<br>";
             }
         }
-        require dirname(__DIR__) . '/view/login.php';
+        require dirname(__DIR__) . '../view/login.php';
     }
+    // public function login()
+    // {
+    //     if (isset($_POST['login'])) {
+    //         $username = $_POST['username'];
+    //         $password = $_POST['password'];
 
+    //         // In ra các input
+    //         echo "Username: " . htmlspecialchars($username) . "<br>";
+    //         echo "Password: " . htmlspecialchars($password) . "<br>";
+
+    //         $user = $this->user->login($username, $password);
+
+    //         if ($user) {
+    //             $_SESSION['user_id'] = $user['ID'];
+    //             $_SESSION['role'] = $user['role'];
+    //             // Initialize $_SESSION['user'] with user data
+    //             $_SESSION['user'] = [
+    //                 'email' => $user['email'] ?? '',
+    //                 'name' => $user['name'] ?? '',
+    //                 'address' => $user['address'] ?? '',
+    //                 'phone' => $user['phone'] ?? ''
+    //             ];
+
+    //             if ($user['role'] === 'admin') {
+    //                 header("Location: http://localhost:3000/adminkit/static/index.php");
+    //             } else {
+    //                 header("Location: ?controller=product&action=index");
+    //             }
+    //             exit;
+    //         } else {
+    //             $error = "Sai thông tin đăng nhập!";
+    //             echo $error . "<br>";
+    //         }
+    //     }
+    //     require dirname(__DIR__) . '/view/login.php';
+    // }
+    public function list_accounts()
+    {
+        // Check if user is logged in and has admin permissions
+        if (
+            !isset($_SESSION['user_id']) ||
+            ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'create' && !isset($_SESSION['can_create_accounts']))
+        ) {
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
+
+        // Get all user accounts
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+
+        // Get accounts based on search term
+        $accounts = $this->user->searchAccounts($search);
+
+        // Load the view
+        require dirname(__DIR__) . '../view/list_accounts.php';
+    }
+    public function edit_account()
+    {
+        // Check if user is logged in and has required permissions
+        if (
+            !isset($_SESSION['user_id']) ||
+            ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'create' && !isset($_SESSION['can_create_accounts']))
+        ) {
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
+
+        $error = '';
+        $success = '';
+        $user = null;
+
+        // Get user ID from URL
+        $id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+
+        if (!$id) {
+            header("Location: ?controller=auth&action=list_accounts");
+            exit;
+        }
+
+        // Get user data for editing
+        $user = $this->user->getUserById($id);
+
+        if (!$user) {
+            header("Location: ?controller=auth&action=list_accounts");
+            exit;
+        }
+
+        // Handle form submission
+        if (isset($_POST['update_account'])) {
+            $username = htmlspecialchars(trim($_POST['username']));
+            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+            $role = htmlspecialchars(trim($_POST['role']));
+            $name = htmlspecialchars(trim($_POST['name']));
+            $address = htmlspecialchars(trim($_POST['address']));
+            $phone = htmlspecialchars(trim($_POST['phone']));
+
+
+            // Check if password should be updated
+            $password = !empty($_POST['password']) ? $_POST['password'] : null;
+
+            // Validate inputs
+            if (empty($username) || empty($email) || empty($role)) {
+                $error = "Vui lòng điền đầy đủ thông tin cần thiết!";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = "Email không hợp lệ!";
+            } else {
+                // Attempt to update the account
+                if ($this->user->updateAccount($id, $username, $email, $password, $role, $name, $address, $phone)) {
+                    $success = "Cập nhật tài khoản thành công!";
+                    // Refresh user data
+                    $user = $this->user->getUserById($id);
+                } else {
+                    $error = "Cập nhật tài khoản thất bại! Tên đăng nhập hoặc email có thể đã tồn tại.";
+                }
+            }
+        }
+
+        // Load the view
+        require dirname(__DIR__) . '../view/edit_account.php';
+    }
+    
+    public function delete_account()
+    {
+        // Check if user is logged in and has admin permissions
+
+
+        // Get user ID from URL
+        $id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+
+        if (!$id) {
+            header("Location: ?controller=auth&action=list_accounts");
+            exit;
+        }
+
+        // Prevent deleting your own account
+        if ($id == $_SESSION['user_id']) {
+            $_SESSION['delete_error'] = "Không thể xóa tài khoản của chính bạn!";
+            header("Location: ?controller=auth&action=list_accounts");
+            exit;
+        }
+
+        // Delete the account
+        if ($this->user->deleteAccount($id)) {
+            $_SESSION['delete_success'] = "Xóa tài khoản thành công!";
+        } else {
+            $_SESSION['delete_error'] = "Xóa tài khoản thất bại!";
+        }
+
+        header("Location: ?controller=auth&action=list_accounts");
+        exit;
+    }
+  
     public function updateUser()
     {
         // Check if user is logged in

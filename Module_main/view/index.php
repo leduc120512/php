@@ -800,6 +800,31 @@
                   <?php endforeach; ?>
                 </div>
               </div>
+
+              <label for="categorySelect_art" class="form-label fw-bold">Chọn danh mục bài báo:</label>
+              <select id="categorySelect_art" class="form-select mb-4" onchange="changeCategoryArt()">
+                <option value="" <?php echo !isset($_GET['category_id_art']) ? 'selected' : ''; ?>>Tất cả danh mục</option>
+                <?php if (!empty($categoryArt) && is_array($categoryArt)): ?>
+                  <?php foreach ($categoryArt as $cat): ?>
+                    <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                      <?php echo (isset($_GET['category_id_art']) && $_GET['category_id_art'] == $cat['id']) ? 'selected' : ''; ?>>
+                      <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                    </option>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </select>
+              <label for="categorySelect_fm" class="form-label fw-bold">Chọn danh mục chăn nuôi:</label>
+              <select id="categorySelect_fm" class="form-select mb-4" onchange="changeCategoryFm()">
+                <option value="" <?php echo !isset($_GET['category_id_fm']) ? 'selected' : ''; ?>>Tất cả danh mục</option>
+                <?php if (!empty($categoryFm) && is_array($categoryFm)): ?>
+                  <?php foreach ($categoryFm as $cat): ?>
+                    <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                      <?php echo (isset($_GET['category_id_fm']) && $_GET['category_id_fm'] == $cat['id']) ? 'selected' : ''; ?>>
+                      <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                    </option>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </select>
               <div class="dropdown">
                 <button class="dropdown-toggle">Danh mục art</button>
                 <div class="dropdown-menu">
@@ -1807,6 +1832,7 @@
   </section>
 
   <?php include 'Art.php'; ?>
+  <?php include 'farming.php'; ?>
 
   <section class="mt-5 bg-light">
     <div class="container">
@@ -2234,6 +2260,49 @@
 
       searchProducts();
     });
+
+
+    //art
+    function changeCategoryArt() {
+      const select = document.getElementById('categorySelect_art');
+      const categoryId = select.value;
+      Swal.fire({
+        title: 'Đang tải...',
+        text: 'Vui lòng chờ trong khi tải danh mục mới.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      let url = '?controller=product&action=index';
+      if (categoryId) {
+        url += '&category_id_art=' + encodeURIComponent(categoryId);
+      }
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500);
+    }
+
+    //fm
+    function changeCategoryFm() {
+      const select = document.getElementById('categorySelect_fm');
+      const categoryId = select.value;
+      Swal.fire({
+        title: 'Đang tải...',
+        text: 'Vui lòng chờ trong khi tải danh mục mới.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      let url = '?controller=product&action=index';
+      if (categoryId) {
+        url += '&category_id_fm=' + encodeURIComponent(categoryId);
+      }
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500);
+    }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
