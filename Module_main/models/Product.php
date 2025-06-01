@@ -265,7 +265,7 @@ class Product
             return false;
         }
     }
-    public function update($id, $name, $price, $quantity, $description, $category_id, $image_urls = [], $main_image_index = null)
+    public function edit($product_id, $name, $price, $quantity, $description, $category_id, $is_locked, $image_urls = [])
     {
         try {
             if ($this->conn === null) {
@@ -275,72 +275,116 @@ class Product
 
             // Update product details
             $stmt = $this->conn->prepare("
-                UPDATE products
-                SET name = :name, price = :price, quantity = :quantity, 
-                    description = :description, category_id = :category_id
-                WHERE ID = :id
+                UPDATE products 
+                SET name = :name, price = :price, quantity = :quantity, description = :description, 
+                    category_id = :category_id, is_locked = :is_locked
+                WHERE ID = :product_id
             ");
             $stmt->bindParam(':name', $name, PDO::PARAM_STR);
             $stmt->bindParam(':price', $price, PDO::PARAM_STR);
             $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
             $stmt->bindParam(':description', $description, PDO::PARAM_STR);
             $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':is_locked', $is_locked, PDO::PARAM_BOOL);
+            $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
             $stmt->execute();
 
-            // Handle multiple images
+            // Insert new images if any
             if (!empty($image_urls)) {
-                // Reset existing main image flag
                 $stmt = $this->conn->prepare("
-                    UPDATE product_images 
-                    SET is_main = FALSE 
-                    WHERE product_id = :id
+                    INSERT INTO product_images (product_id, image_url, is_main, created_at)
+                    VALUES (:product_id, :image_url, :is_main, NOW())
                 ");
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                // Insert new images
                 foreach ($image_urls as $index => $image_url) {
-                    $is_main = ($index == $main_image_index) ? true : false;
-                    $stmt = $this->conn->prepare("
-                        INSERT INTO product_images (product_id, image_url, is_main, created_at)
-                        VALUES (:product_id, :image_url, :is_main, NOW())
-                    ");
-                    $stmt->bindParam(':product_id', $id, PDO::PARAM_INT);
+                    $is_main = ($index === 0 && !$this->hasMainImage($product_id)) ? true : false;
+                    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
                     $stmt->bindParam(':image_url', $image_url, PDO::PARAM_STR);
                     $stmt->bindParam(':is_main', $is_main, PDO::PARAM_BOOL);
                     $stmt->execute();
                 }
-            } elseif ($main_image_index !== null) {
-                // Update main image if no new images uploaded but main image index changed
-                $stmt = $this->conn->prepare("
-                    UPDATE product_images 
-                    SET is_main = FALSE 
-                    WHERE product_id = :id
-                ");
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $stmt = $this->conn->prepare("
-                    UPDATE product_images 
-                    SET is_main = TRUE 
-                    WHERE product_id = :id 
-                    AND image_url = (SELECT image_url FROM product_images WHERE product_id = :id LIMIT 1 OFFSET :offset)
-                ");
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->bindParam(':offset', $main_image_index, PDO::PARAM_INT);
-                $stmt->execute();
             }
 
             $this->conn->commit();
             return true;
         } catch (Exception $e) {
             $this->conn->rollBack();
-            error_log("Lỗi khi cập nhật sản phẩm: " . $e->getMessage());
+            error_log("Lỗi khi sửa sản phẩm: " . $e->getMessage());
             return false;
         }
     }
 
+    // Helper method to check if a product has a main image
+    private function hasMainImage($product_id)
+    {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM product_images WHERE product_id = ? AND is_main = 1");
+        $stmt->execute([$product_id]);
+        return $stmt->fetchColumn() > 0;
+    }
+    public function getById($product_id)
+    {
+        try {
+            if ($this->conn === null) {
+                throw new Exception("Không thể kết nối cơ sở dữ liệu.");
+            }
+            $stmt = $this->conn->prepare("
+                SELECT p.*, pi.ID as image_id, pi.image_url, pi.is_main
+                FROM products p
+                LEFT JOIN product_images pi ON p.ID = pi.product_id
+                WHERE p.ID = :product_id
+            ");
+            $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $product = [];
+            if (!empty($result)) {
+                $product = $result[0];
+                $product['images'] = [];
+                foreach ($result as $row) {
+                    $product['images'][] = [
+                        'ID' => $row['image_id'],
+                        'image_url' => $row['image_url'],
+                        'is_main' => $row['is_main']
+                    ];
+                }
+            } else {
+                $product = ['ID' => $product_id, 'images' => []]; // Default empty product if not found
+            }
+            return $product;
+        } catch (Exception $e) {
+            error_log("Lỗi khi lấy sản phẩm: " . $e->getMessage());
+            return ['ID' => $product_id, 'images' => []]; // Return empty structure on error
+        }
+    }
+   
+    public function deleteImage($image_id)
+    {
+        try {
+            if ($this->conn === null) {
+                throw new Exception("Không thể kết nối cơ sở dữ liệu.");
+            }
+            $stmt = $this->conn->prepare("DELETE FROM product_images WHERE ID = ?");
+            $stmt->execute([$image_id]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $e) {
+            error_log("Lỗi khi xóa ảnh: " . $e->getMessage());
+            return false;
+        }
+    }
+    public function getImageById($image_id)
+    {
+        try {
+            if ($this->conn === null) {
+                throw new Exception("Không thể kết nối cơ sở dữ liệu.");
+            }
+            $stmt = $this->conn->prepare("SELECT * FROM product_images WHERE ID = ?");
+            $stmt->execute([$image_id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Lỗi khi lấy ảnh: " . $e->getMessage());
+            return false;
+        }
+    }
     public function removeImage($product_id, $image_url)
     {
         try {
@@ -363,50 +407,66 @@ class Product
         }
     }
 
-    public function getById($id)
+    // public function getById($id)
+    // {
+    //     try {
+    //         if ($this->conn === null) {
+    //             throw new Exception("Không thể kết nối cơ sở dữ liệu.");
+    //         }
+    //         $stmt = $this->conn->prepare("
+    //             SELECT p.*, pi.image_url, pi.is_main
+    //             FROM products p
+    //             LEFT JOIN product_images pi ON p.ID = pi.product_id
+    //             WHERE p.ID = :id
+    //             ORDER BY pi.is_main DESC, pi.created_at ASC
+    //         ");
+    //         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    //         $stmt->execute();
+    //         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    //         if (empty($rows)) {
+    //             return false;
+    //         }
+
+    //         $product = [
+    //             'ID' => $rows[0]['ID'],
+    //             'name' => $rows[0]['name'],
+    //             'price' => $rows[0]['price'],
+    //             'quantity' => $rows[0]['quantity'],
+    //             'description' => $rows[0]['description'],
+    //             'created_at' => $rows[0]['created_at'],
+    //             'category_id' => $rows[0]['category_id'],
+    //             'is_locked' => $rows[0]['is_locked'],
+    //             'images' => []
+    //         ];
+
+    //         foreach ($rows as $row) {
+    //             if ($row['image_url']) {
+    //                 $product['images'][] = [
+    //                     'image_url' => $row['image_url'],
+    //                     'is_main' => $row['is_main']
+    //                 ];
+    //             }
+    //         }
+    //         return $product;
+    //     } catch (Exception $e) {
+    //         error_log("Lỗi khi lấy sản phẩm: " . $e->getMessage());
+    //         return false;
+    //     }
+    // }
+    public function deleteImages($product_id, $image_ids)
     {
         try {
             if ($this->conn === null) {
                 throw new Exception("Không thể kết nối cơ sở dữ liệu.");
             }
-            $stmt = $this->conn->prepare("
-                SELECT p.*, pi.image_url, pi.is_main
-                FROM products p
-                LEFT JOIN product_images pi ON p.ID = pi.product_id
-                WHERE p.ID = :id
-                ORDER BY pi.is_main DESC, pi.created_at ASC
-            ");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($rows)) {
-                return false;
-            }
-
-            $product = [
-                'ID' => $rows[0]['ID'],
-                'name' => $rows[0]['name'],
-                'price' => $rows[0]['price'],
-                'quantity' => $rows[0]['quantity'],
-                'description' => $rows[0]['description'],
-                'created_at' => $rows[0]['created_at'],
-                'category_id' => $rows[0]['category_id'],
-                'is_locked' => $rows[0]['is_locked'],
-                'images' => []
-            ];
-
-            foreach ($rows as $row) {
-                if ($row['image_url']) {
-                    $product['images'][] = [
-                        'image_url' => $row['image_url'],
-                        'is_main' => $row['is_main']
-                    ];
-                }
-            }
-            return $product;
+            $placeholders = implode(',', array_fill(0, count($image_ids), '?'));
+            $stmt = $this->conn->prepare("DELETE FROM product_images WHERE product_id = ? AND ID IN ($placeholders)");
+            $stmt->bindParam(1, $product_id, PDO::PARAM_INT);
+            $stmt->execute($image_ids);
+            return true;
         } catch (Exception $e) {
-            error_log("Lỗi khi lấy sản phẩm: " . $e->getMessage());
+            error_log("Lỗi khi xóa ảnh: " . $e->getMessage());
             return false;
         }
     }

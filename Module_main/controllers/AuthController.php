@@ -12,7 +12,7 @@ class AuthController
         $this->user = new User($db->getConnection());
     }
 
-  
+
 
     public function register()
     {
@@ -66,7 +66,7 @@ class AuthController
                 }
 
                 if (!empty($user['role']) && $user['role'] === 'admin') {
-                    header("Location: http://localhost:3000/AdminLTE-master/index.php");
+                    header("Location: http://localhost:3000/adminkit/static/index.php");
                 } else if ($user['role'] === 'customer') {
                     header("Location: ?controller=product&action=index");
                 } else {
@@ -200,7 +200,7 @@ class AuthController
         // Load the view
         require dirname(__DIR__) . '../view/edit_account.php';
     }
-    
+
     public function delete_account()
     {
         // Check if user is logged in and has admin permissions
@@ -231,7 +231,7 @@ class AuthController
         header("Location: ?controller=auth&action=list_accounts");
         exit;
     }
-  
+
     public function updateUser()
     {
         // Check if user is logged in
