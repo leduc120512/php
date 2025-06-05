@@ -287,4 +287,76 @@ class ArticleController
         // Load view và truyền dữ liệu
         require '../view/Art.php';
     }
+    public function detail2($id)
+    {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        error_log("Received ID: " . var_export($id, true));
+        $article = $this->article->getById($id);
+        error_log("Fetched Article: " . var_export($article, true));
+        require_once '../view/detailArt.php';
+    }
+//category
+
+
+    public function index_category()
+    {
+        $top_only = isset($_GET['top_only']) && $_GET['top_only'] == 1;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+        if ($search) {
+            $categories = $this->article->searchByName($search);
+        } else {
+            $categories = $this->article->getAllCategory($top_only);
+        }
+
+        require '../view/art/index.php';
+    }
+
+    public function create()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $top = isset($_POST['top']) ? 1 : 0;
+            if ($this->article->create($name, $description, $top)) {
+                header("Location: ?controller=categories_art&action=index");
+                exit;
+            } else {
+                echo "Lỗi khi tạo danh mục.";
+            }
+        }
+        $category = null; // For create form
+        require '../view/art/form.php';
+    }
+
+    public function edit_catergory($id)
+    {
+        $category = $this->article->getById_category($id);
+        if (!$category) {
+            echo "Danh mục không tồn tại.";
+            return;
+        }
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $top = isset($_POST['top']) ? 1 : 0;
+            if ($this->article->update_category($id, $name, $description, $top)) {
+                header("Location: ?controller=categories_art&action=index");
+                exit;
+            } else {
+                echo "Lỗi khi cập nhật danh mục.";
+            }
+        }
+        require '../view/art/form.php';
+    }
+
+    public function delete_category($id)
+    {
+        if ($this->article->delete_category($id)) {
+            header("Location: ?controller=categories_art&action=index");
+            exit;
+        } else {
+            echo "Lỗi khi xóa danh mục.";
+        }
+    }
 }

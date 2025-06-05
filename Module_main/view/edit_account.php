@@ -269,7 +269,6 @@
                 <!-- Main row -->
 
 
-
                 <div class="container mt-4">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
@@ -326,6 +325,11 @@
                                         <div class="form-group">
                                             <label for="phone">Số điện thoại</label>
                                             <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
+                                        </div>
+
+                                        <div class="form-group form-check">
+                                            <input type="checkbox" class="form-check-input" id="mail_send" name="mail_send" value="1" <?= $user['mail_send'] == 1 ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="mail_send">Nhận email thông báo</label>
                                         </div>
 
                                         <div class="form-group">

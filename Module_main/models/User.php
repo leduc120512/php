@@ -90,6 +90,35 @@ class User
 
         return $stmt->execute();
     }
+    public function createAccount($username, $email, $password, $role, $name, $address, $phone, $mail_send = 0)
+    {
+        // Kiểm tra username hoặc email đã tồn tại
+        $check_query = "SELECT ID FROM " . $this->table_name . " WHERE username = :username OR email = :email";
+        $check_stmt = $this->conn->prepare($check_query);
+        $check_stmt->bindParam(':username', $username);
+        $check_stmt->bindParam(':email', $email);
+        $check_stmt->execute();
+
+        if ($check_stmt->rowCount() > 0) {
+            return false; // User đã tồn tại
+        }
+
+        // Chèn user mới
+        $query = "INSERT INTO " . $this->table_name . " (username, email, password, role, name, address, phone, mail_send, created_at) 
+                  VALUES (:username, :email, :password, :role, :name, :address, :phone, :mail_send, CURRENT_DATE())";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $password); // Nên băm mật khẩu trong môi trường sản xuất
+        $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':address', $address);
+        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':mail_send', $mail_send, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
     public function findByEmail($email)
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email";
@@ -125,7 +154,57 @@ class User
         }
         return $stmt->rowCount() > 0;
     }
+    public function getAdminEmails()
+    {
+        try {
+            $query = "SELECT  *  FROM users WHERE role = 'admin' and mail_send =1";
+            $stmt = $this->conn->prepare($query);
 
+            if ($stmt === false) {
+                error_log('User Model: Prepare failed');
+                return ['success' => false, 'message' => 'Lỗi chuẩn bị truy vấn', 'emails' => []];
+            }
+
+            if (!$stmt->execute()) {
+                error_log('User Model: Execute failed');
+                return ['success' => false, 'message' => 'Lỗi thực thi truy vấn', 'emails' => []];
+            }
+
+            $emails = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if (filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
+                    $emails[] = $row['email'];
+                }
+            }
+
+            return ['success' => true, 'emails' => $emails, 'message' => empty($emails) ? 'Không tìm thấy email admin' : ''];
+        } catch (PDOException $e) {
+            error_log('User Model: PDO Error: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Lỗi cơ sở dữ liệu: ' . $e->getMessage(), 'emails' => []];
+        }
+    }
+    public function getAllAt($category_id_art = null)
+    {
+        try {
+            if ($category_id_art) {
+                $stmt = $this->conn->prepare("
+                   SELECT email FROM users WHERE role = 'admin'
+                ");
+                $stmt->bindParam(':category_id_art', $category_id_art, PDO::PARAM_INT);
+            } else {
+                $stmt = $this->conn->prepare("
+                    SELECT id, title, decription, note, image_url, created_at 
+                    FROM articles 
+                
+                ");
+            }
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching articles: " . $e->getMessage());
+            return [];
+        }
+    }
     public function updateUserWithoutPassword($email, $name, $address, $phone)
     {
         $query = "UPDATE " . $this->table_name . " 
@@ -161,18 +240,19 @@ class User
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function updateAccount($id, $username, $email, $password = null, $role, $name = null, $address = null, $phone = null)
+    public function updateAccount($id, $username, $email, $password = null, $role, $name = null, $address = null, $phone = null, $mail_send = 0)
     {
-        // Start building the query
+        // Xây dựng truy vấn
         $query = "UPDATE " . $this->table_name . " SET 
-              username = :username, 
-              email = :email, 
-              role = :role,
-              name = :name,
-              address = :address,
-              phone = :phone";
+                  username = :username, 
+                  email = :email, 
+                  role = :role,
+                  name = :name,
+                  address = :address,
+                  phone = :phone,
+                  mail_send = :mail_send";
 
-        // Add password to the query if it's provided
+        // Thêm password nếu có
         if ($password !== null) {
             $query .= ", password = :password";
         }
@@ -181,15 +261,16 @@ class User
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':role', $role);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':address', $address);
         $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':mail_send', $mail_send, PDO::PARAM_INT);
 
-        // Bind password if it's provided
+        // Bind password nếu có
         if ($password !== null) {
             $stmt->bindParam(':password', $password);
         }
@@ -206,7 +287,7 @@ class User
     }
     public function getUserById($id)
     {
-        $query = "SELECT ID, username, email, role, created_at, name, address, phone 
+        $query = "SELECT ID, username, email, role, created_at, name, address, phone ,mail_send
               FROM " . $this->table_name . " 
               WHERE ID = :id";
 

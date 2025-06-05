@@ -477,6 +477,10 @@
                                             <label for="phone">Số điện thoại</label>
                                             <input type="text" class="form-control" id="phone" name="phone" required>
                                         </div>
+                                        <div class="form-group form-check">
+                                            <input type="checkbox" class="form-check-input" id="mail_send" name="mail_send" value="1">
+                                            <label class="form-check-label" for="mail_send">Nhận email thông báo</label>
+                                        </div>
                                         <div class="form-group">
                                             <label for="role">Quyền</label>
                                             <select class="form-control" id="role" name="role" required>

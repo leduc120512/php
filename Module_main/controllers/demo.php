@@ -261,6 +261,7 @@ class ProductController
             header("Location: ?controller=product&action=index&redirected=1");
             exit;
         }
+        $categoryFmProductsone = $this->FarmingProcess->getAllMain();
         require_once '../view/detail.php';
     }
 

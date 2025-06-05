@@ -138,7 +138,7 @@ class AuthController
     }
     public function edit_account()
     {
-        // Check if user is logged in and has required permissions
+        // Kiểm tra đăng nhập và quyền
         if (
             !isset($_SESSION['user_id']) ||
             ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'create' && !isset($_SESSION['can_create_accounts']))
@@ -151,7 +151,7 @@ class AuthController
         $success = '';
         $user = null;
 
-        // Get user ID from URL
+        // Lấy ID từ URL
         $id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
 
         if (!$id) {
@@ -159,7 +159,7 @@ class AuthController
             exit;
         }
 
-        // Get user data for editing
+        // Lấy dữ liệu user
         $user = $this->user->getUserById($id);
 
         if (!$user) {
@@ -167,7 +167,7 @@ class AuthController
             exit;
         }
 
-        // Handle form submission
+        // Xử lý form
         if (isset($_POST['update_account'])) {
             $username = htmlspecialchars(trim($_POST['username']));
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
@@ -175,30 +175,29 @@ class AuthController
             $name = htmlspecialchars(trim($_POST['name']));
             $address = htmlspecialchars(trim($_POST['address']));
             $phone = htmlspecialchars(trim($_POST['phone']));
+            $mail_send = isset($_POST['mail_send']) ? 1 : 0; // Checkbox: 1 nếu checked, 0 nếu không
 
-
-            // Check if password should be updated
+            // Kiểm tra mật khẩu
             $password = !empty($_POST['password']) ? $_POST['password'] : null;
 
-            // Validate inputs
+            // Kiểm tra dữ liệu
             if (empty($username) || empty($email) || empty($role)) {
                 $error = "Vui lòng điền đầy đủ thông tin cần thiết!";
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = "Email không hợp lệ!";
             } else {
-                // Attempt to update the account
-                if ($this->user->updateAccount($id, $username, $email, $password, $role, $name, $address, $phone)) {
+                // Cập nhật tài khoản
+                if ($this->user->updateAccount($id, $username, $email, $password, $role, $name, $address, $phone, $mail_send)) {
                     $success = "Cập nhật tài khoản thành công!";
-                    // Refresh user data
-                    $user = $this->user->getUserById($id);
+                    $user = $this->user->getUserById($id); // Làm mới dữ liệu
                 } else {
                     $error = "Cập nhật tài khoản thất bại! Tên đăng nhập hoặc email có thể đã tồn tại.";
                 }
             }
         }
 
-        // Load the view
-        require dirname(__DIR__) . '../view/edit_account.php';
+        // Tải view
+        require dirname(__DIR__) . '/view/edit_account.php';
     }
 
     public function delete_account()
@@ -332,7 +331,129 @@ class AuthController
         return $password;
     }
 
+    public function role_create_account()
+    {
+        // Kiểm tra đăng nhập và quyền admin
+        if (
+            !isset($_SESSION['user_id']) ||
+            ($_SESSION['role'] !== 'admin' && !isset($_SESSION['can_create_accounts']))
+        ) {
+            header("Location: ?controller=auth&action=login");
+            exit;
+        }
 
+        $error = '';
+        $success = '';
+
+        if (isset($_POST['create_account'])) {
+            // Làm sạch dữ liệu
+            $username = filter_input(INPUT_POST, 'username', FILTER_UNSAFE_RAW);
+            $username = $username !== null ? htmlspecialchars(strip_tags($username), ENT_QUOTES, 'UTF-8') : '';
+
+            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+
+            $password = $_POST['password'] ?? '';
+
+            $role = filter_input(INPUT_POST, 'role', FILTER_UNSAFE_RAW);
+            $role = $role !== null ? htmlspecialchars(strip_tags($role), ENT_QUOTES, 'UTF-8') : '';
+
+            $name = filter_input(INPUT_POST, 'name', FILTER_UNSAFE_RAW);
+            $name = $name !== null ? htmlspecialchars(strip_tags($name), ENT_QUOTES, 'UTF-8') : '';
+
+            $address = filter_input(INPUT_POST, 'address', FILTER_UNSAFE_RAW);
+            $address = $address !== null ? htmlspecialchars(strip_tags($address), ENT_QUOTES, 'UTF-8') : '';
+
+            $phone = filter_input(INPUT_POST, 'phone', FILTER_UNSAFE_RAW);
+            $phone = $phone !== null ? htmlspecialchars(strip_tags($phone), ENT_QUOTES, 'UTF-8') : '';
+
+            $mail_send = isset($_POST['mail_send']) ? 1 : 0; // Checkbox: 1 nếu checked, 0 nếu không
+
+            // Kiểm tra dữ liệu
+            if (empty($username) || empty($email) || empty($password) || empty($role) || empty($name) || empty($address) || empty($phone)) {
+                $error = "Vui lòng điền đầy đủ thông tin!";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = "Email không hợp lệ!";
+            } elseif ($role !== 'admin' && $role !== 'user' && $role !== 'create') {
+                $error = "Quyền không hợp lệ!";
+            } elseif (!preg_match('/^[0-9]{10,11}$/', $phone)) {
+                $error = "Số điện thoại không hợp lệ!";
+            } else {
+                // Tạo tài khoản
+                if ($this->user->createAccount($username, $email, $password, $role, $name, $address, $phone, $mail_send)) {
+                    $success = "Tạo tài khoản thành công!";
+                } else {
+                    $error = "Tạo tài khoản thất bại! Tên đăng nhập hoặc email có thể đã tồn tại.";
+                }
+            }
+        }
+
+        // Tải view
+        require dirname(__DIR__) . '/view/create_account.php';
+    }
+    // public function edit_account()
+    // {
+    //     // Check if user is logged in and has required permissions
+    //     if (
+    //         !isset($_SESSION['user_id']) ||
+    //         ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'create' && !isset($_SESSION['can_create_accounts']))
+    //     ) {
+    //         header("Location: ?controller=auth&action=login");
+    //         exit;
+    //     }
+
+    //     $error = '';
+    //     $success = '';
+    //     $user = null;
+
+    //     // Get user ID from URL
+    //     $id = isset($_GET['id']) ? filter_var($_GET['id'], FILTER_VALIDATE_INT) : null;
+
+    //     if (!$id) {
+    //         header("Location: ?controller=auth&action=list_accounts");
+    //         exit;
+    //     }
+
+    //     // Get user data for editing
+    //     $user = $this->user->getUserById($id);
+
+    //     if (!$user) {
+    //         header("Location: ?controller=auth&action=list_accounts");
+    //         exit;
+    //     }
+
+    //     // Handle form submission
+    //     if (isset($_POST['update_account'])) {
+    //         $username = htmlspecialchars(trim($_POST['username']));
+    //         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    //         $role = htmlspecialchars(trim($_POST['role']));
+    //         $name = htmlspecialchars(trim($_POST['name']));
+    //         $address = htmlspecialchars(trim($_POST['address']));
+    //         $phone = htmlspecialchars(trim($_POST['phone']));
+
+
+    //         // Check if password should be updated
+    //         $password = !empty($_POST['password']) ? $_POST['password'] : null;
+
+    //         // Validate inputs
+    //         if (empty($username) || empty($email) || empty($role)) {
+    //             $error = "Vui lòng điền đầy đủ thông tin cần thiết!";
+    //         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    //             $error = "Email không hợp lệ!";
+    //         } else {
+    //             // Attempt to update the account
+    //             if ($this->user->updateAccount($id, $username, $email, $password, $role, $name, $address, $phone)) {
+    //                 $success = "Cập nhật tài khoản thành công!";
+    //                 // Refresh user data
+    //                 $user = $this->user->getUserById($id);
+    //             } else {
+    //                 $error = "Cập nhật tài khoản thất bại! Tên đăng nhập hoặc email có thể đã tồn tại.";
+    //             }
+    //         }
+    //     }
+
+    //     // Load the view
+    //     require dirname(__DIR__) . '../view/edit_account.php';
+    // }
     private function sendPasswordEmail($email, $newPassword)
     {
         require 'PHPMailer-master/src/Exception.php';

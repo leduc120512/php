@@ -106,6 +106,14 @@ class FarmingProcessController
     //     // Tải view chỉnh sửa giai đoạn
     //     require '../view/edit_farming_process.php';
     // }
+    public function detail2($id)
+    {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        error_log("Received ID: " . var_export($id, true));
+        $farmingProcess = $this->farmingProcess->getById($id);
+        error_log("Fetched Article: " . var_export($farmingProcess, true));
+        require_once '../view/detailfm.php';
+    }
     public function add()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -243,5 +251,121 @@ class FarmingProcessController
         require '../view/admin_farming_process_list.php';
     
     }
-    
+
+
+
+
+
+
+
+
+
+
+
+
+/// category
+    public function index2()
+    {
+        $top_only = isset($_GET['top_only']) && $_GET['top_only'] == 1;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+        if ($search) {
+            $categories = $this->farmingProcess->searchByName($search);
+        } else {
+            $categories = $this->farmingProcess->getAllCategory($top_only);
+        }
+
+        require '../view/far/index.php';
+    }
+
+    // public function create()
+    // {
+    //     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    //         $name = $_POST['name'];
+    //         $description = $_POST['description'];
+    //         $top = isset($_POST['top']) ? 1 : 0;
+    //         if ($this->farmingProcess->create($name, $description, $top)) {
+    //             header("Location: ?controller=category_faming&action=index");
+    //             exit;
+    //         } else {
+    //             echo "Lỗi khi tạo danh mục.";
+    //         }
+    //     }
+    //     $category = null; // For create form
+    //     require '../view/far/form.php';
+    // }
+
+    // public function edit_category($id)
+    // {
+    //     $category = $this->farmingProcess->getById_category($id);
+    //     if (!$category) {
+    //         echo "Danh mục không tồn tại.";
+    //         return;
+    //     }
+    //     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    //         $name = $_POST['name'];
+    //         $description = $_POST['description'];
+    //         $top = isset($_POST['top']) ? 1 : 0;
+    //         if ($this->farmingProcess->update_category($id, $name, $description, $top)) {
+    //             header("Location: ?controller=category_faming&action=index");
+    //             exit;
+    //         } else {
+    //             echo "Lỗi khi cập nhật danh mục.";
+    //         }
+    //     }
+    //     require '../view/far/form.php';
+    // }
+    public function create()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = $_POST['name'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $top = isset($_POST['top']) ? 1 : 0;
+
+            if ($this->create($name, $description, $top)) {
+                header("Location: ?controller=category_art&action=index");
+                exit;
+            } else {
+                // Xử lý lỗi, ví dụ hiển thị thông báo
+                echo "Lỗi khi tạo danh mục.";
+            }
+        } else {
+            // Hiển thị form thêm mới
+            require '../view/far/form.php';
+        }
+    }
+
+    public function edit_category($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = $_POST['name'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $top = isset($_POST['top']) ? 1 : 0;
+
+            if ($this->farmingProcess->update_category($id, $name, $description, $top)) {
+                header("Location: ?controller=category_art&action=index");
+                exit;
+            } else {
+                // Xử lý lỗi
+                echo "Lỗi khi cập nhật danh mục.";
+            }
+        } else {
+            // Lấy dữ liệu danh mục để hiển thị form chỉnh sửa
+            $category = $this->farmingProcess->getById_category($id);
+            if ($category) {
+                require '../view/far/form.php';;
+            } else {
+                echo "Danh mục không tồn tại.";
+            }
+        }
+    }
+    public function delete_category($id)
+    {
+        if ($this->farmingProcess->delete_category($id)) {
+            header("Location: ?controller=category_faming&action=index");
+            exit;
+        } else {
+            echo "Lỗi khi xóa danh mục.";
+        }
+    }
 }

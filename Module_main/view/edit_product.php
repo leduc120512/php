@@ -8,6 +8,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -31,6 +34,22 @@
             <div class="form-group">
                 <label for="description" class="font-semibold">Mô tả</label>
                 <textarea name="description" class="form-control" rows="4"><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
+                <p data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" style="color: red; font-size: 10px;cursor: pointer;"> Xem chi tiết các nhập mô tả(Hãy bấm vào đây để xem)</p>
+
+
+                <div class="collapse" id="collapseExample">
+                    <p style="font-size: 15px;font-weight: bold;"> * Hướng dẫn sử dụng copy vào AI nó sẽ hiểu:</p>
+                    <p style="margin-top: 20px;"> * - Dùng $text$ để tạo chữ đậm, màu đen, kích thước 18px (ví dụ: $Phần 1$).</p>
+                    <p> * - Dùng | để tạo bảng (ví dụ: "Tiêu đề 1|Tiêu đề 2\nGiá trị 1|Giá trị 2").</p>
+                    <p>* - Dùng *text* để tạo danh sách gạch đầu dòng (ví dụ: *Mục 1*).</p>
+                    <p> * - Mỗi dòng mới (\n) sẽ tạo một đoạn văn bản riêng, kích thước chữ tự động điều chỉnh:</p>
+
+                    <p>* + Dưới 50 ký tự: 16px (text-base).</p>
+                    <p> * + 50-100 ký tự: 14px (text-sm).</p>
+                    <p> * + Trên 100 ký tự: 12px (text-xs).</p>
+                    <p> * - Các ký tự HTML sẽ được mã hóa để tránh lỗi bảo mật.</p>
+
+                </div>
             </div>
             <div class="form-group">
                 <label for="category_id" class="font-semibold">Danh mục</label>
@@ -61,6 +80,11 @@
             <div class="form-group">
                 <label for="img" class="font-semibold">Ảnh sản phẩm mới (có thể chọn nhiều)</label>
                 <input type="file" name="img[]" class="form-control-file" accept="image/*" multiple>
+            </div>
+            <div class="form-group">
+                <label for="top" class="font-semibold">Sản phẩm nổi bật</label>
+                <input type="checkbox" name="top" value="1" <?php echo isset($product['top']) && $product['top'] ? 'checked' : ''; ?> class="form-check-input">
+                <small class="form-text text-muted">Chọn để đánh dấu sản phẩm là nổi bật.</small>
             </div>
             <div class="form-group">
                 <label class="font-semibold">Ảnh hiện tại (chọn để xóa)</label>

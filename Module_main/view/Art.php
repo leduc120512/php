@@ -297,9 +297,9 @@
                         <div class="col-lg-3 col-md-6 mb-4">
                             <article class="post-item card border-0 shadow-lg h-100">
                                 <div class="image-holder zoom-effect">
-                                    <a href="?controller=product&action=detail&id=<?= htmlspecialchars($article['id'] ?? '') ?>" aria-label="Xem chi tiết bài báo">
+                                    <a href="?controller=article&action=detail_Art&id=<?= htmlspecialchars($article['id']) ?>" aria-label="Xem chi tiết bài báo">
                                         <img src="<?= htmlspecialchars($article['image_url'] ?? '/public/img/default.jpg') ?>"
-                                            alt="<?= htmlspecialchars($article['title'] ?? 'Hình ảnh bài báo') ?>"
+                                            alt="<?= htmlspecialchars($article['title'] ?? 'Hình ảnh bài báo1') ?>"
                                             class="card-img-top" loading="lazy" />
                                     </a>
                                 </div>
@@ -314,10 +314,10 @@
                                     </div>
                                     <div class="post-header">
                                         <h3 class="fs-5 fw-bold">
-                                            <a href="?controller=product&action=detail&id=<?= htmlspecialchars($article['id'] ?? '') ?>"
+                                            <a href="?controller=article&action=detail_Art&id=<?= htmlspecialchars($article['id']) ?>"
                                                 class="post-title"><?= htmlspecialchars($article['title'] ?? '') ?></a>
                                         </h3>
-                                        <p class="text-muted"><?= htmlspecialchars($article['description'] ?? '') ?></p>
+
                                     </div>
                                 </div>
                             </article>

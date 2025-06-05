@@ -30,7 +30,7 @@ class ProductController
         $latestProducts = $this->product->getLatest();
 
         // Thiết lập phân trang, tìm kiếm, sắp xếp và danh mục
-        $itemsPerPage = 9;
+        $itemsPerPage = 8;
         $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($currentPage < 1) $currentPage = 1;
         $keyword = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -51,17 +51,31 @@ class ProductController
 
         // Lấy dữ liệu cho bài báo
         $category_id_art = isset($_GET['category_id_art']) && is_numeric($_GET['category_id_art']) ? (int)$_GET['category_id_art'] : null;
-        $articles = $this->article->getAllAt($category_id_art);
+        $articles = $this->article->getAllAttop3($category_id_art);
         $categoryArt = $this->article->CatergorygetAllAt();
 
         // Lấy dữ liệu cho quy trình chăn nuôi
         $category_id_fm = isset($_GET['category_id_fm']) && is_numeric($_GET['category_id_fm']) ? (int)$_GET['category_id_fm'] : null;
         $FarmingProcess = $this->FarmingProcess->getAll($category_id_fm);
         $categoryFm = $this->FarmingProcess->CatergorygetAllfm();
+        $productsTop =  $this->product->getAlltop();
+
+        $categoryFmProducts = $this->product->getAllCategory();
 
         // Chuyển dữ liệu sang view
         $products = $allProducts;
         require '../view/index.php';
+    }
+    public function index2()
+    {
+      
+
+
+        $categoryFmProductsone = $this->FarmingProcess->getAllMain();
+
+        // Chuyển dữ liệu sang view
+     
+        require '../view/detailList.php';
     }
     public function inventory()
     {
@@ -71,7 +85,7 @@ class ProductController
         }
 
         // Thiết lập phân trang
-        $itemsPerPage = 9; // Số sản phẩm mỗi trang
+        $itemsPerPage = 8; // Số sản phẩm mỗi trang
         $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Trang hiện tại
         if ($currentPage < 1) $currentPage = 1;
         $offset = ($currentPage - 1) * $itemsPerPage; // Vị trí bắt đầu
@@ -91,8 +105,101 @@ class ProductController
             header("Location: ?controller=product&action=index");
             exit;
         }
+
+        // Get search parameters from GET request
+        $name = isset($_GET['name']) ? trim($_GET['name']) : '';
+        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null;
+        $start_date = isset($_GET['start_date']) ? trim($_GET['start_date']) : null;
+        $end_date = isset($_GET['end_date']) ? trim($_GET['end_date']) : null;
+
+        // Validate dates
+        if ($start_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+            $start_date = null;
+        }
+        if ($end_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+            $end_date = null;
+        }
+
+        // Fetch products with search parameters
+        $products = $this->product->getAllAdmin($name, $id, $start_date, $end_date);
+
+        // Load the view
         require '../view/admin_manager.php';
     }
+    // public function add()
+    // {
+    //     header('Content-Type: application/json');
+    //     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    //         echo json_encode(['success' => false, 'message' => 'Bạn không có quyền truy cập.']);
+    //         exit;
+    //     }
+
+    //     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
+    //         // Debug: Log toàn bộ $_FILES
+    //         error_log('$_FILES: ' . print_r($_FILES, true));
+
+    //         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
+    //         $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
+    //         $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
+    //         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
+    //         $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT, ['options' => ['default' => null]]);
+
+    //         if (!$name || $price === false || $quantity === false) {
+    //             echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ và đúng các trường bắt buộc.']);
+    //             exit;
+    //         }
+
+    //         $image_urls = [];
+    //         $upload_dir = "../public/img/";
+    //         if (!is_writable($upload_dir)) {
+    //             echo json_encode(['success' => false, 'message' => 'Thư mục img không có quyền ghi.']);
+    //             exit;
+    //         }
+
+    //         if (isset($_FILES['img']) && is_array($_FILES['img']['name'])) {
+    //             $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+    //             $file_count = count($_FILES['img']['name']);
+    //             error_log("Number of files uploaded: $file_count");
+
+    //             for ($i = 0; $i < $file_count; $i++) {
+    //                 if ($_FILES['img']['error'][$i] === UPLOAD_ERR_OK) {
+    //                     $img_name = $_FILES['img']['name'][$i];
+    //                     $img_tmp = $_FILES['img']['tmp_name'][$i];
+    //                     $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
+    //                     error_log("Processing file $i: $img_name, Extension: $img_ext");
+
+    //                     if (!in_array($img_ext, $allowed_exts)) {
+    //                         echo json_encode(['success' => false, 'message' => "Định dạng ảnh $img_name không hợp lệ. Chỉ chấp nhận JPG, PNG, hoặc GIF."]);
+    //                         exit;
+    //                     }
+
+    //                     $img_new_name = uniqid() . '.' . $img_ext;
+    //                     $target = $upload_dir . $img_new_name;
+    //                     if (move_uploaded_file($img_tmp, $target)) {
+    //                         $image_urls[] = $img_new_name;
+    //                         error_log("Uploaded file $i: $img_new_name");
+    //                     } else {
+    //                         error_log("Failed to upload file $i: $img_name");
+    //                         echo json_encode(['success' => false, 'message' => "Tải ảnh $img_name lên thất bại."]);
+    //                         exit;
+    //                     }
+    //                 } else {
+    //                     error_log("File $i error code: " . $_FILES['img']['error'][$i]);
+    //                 }
+    //             }
+    //         }
+
+    //         error_log('Image URLs to insert: ' . print_r($image_urls, true));
+    //         if ($this->product->add($name, $price, $quantity, $description, $category_id, $image_urls)) {
+    //             echo json_encode(['success' => true, 'message' => 'Thêm sản phẩm thành công.']);
+    //         } else {
+    //             echo json_encode(['success' => false, 'message' => 'Thêm sản phẩm thất bại.']);
+    //         }
+    //         exit;
+    //     }
+
+    //     require '../view/admin_manager.php';
+    // }
     public function add()
     {
         header('Content-Type: application/json');
@@ -102,7 +209,6 @@ class ProductController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
-            // Debug: Log toàn bộ $_FILES
             error_log('$_FILES: ' . print_r($_FILES, true));
 
             $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -110,6 +216,7 @@ class ProductController
             $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT);
             $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
             $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT, ['options' => ['default' => null]]);
+            $top = isset($_POST['top']) && $_POST['top'] == '1' ? true : false;
 
             if (!$name || $price === false || $quantity === false) {
                 echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ và đúng các trường bắt buộc.']);
@@ -157,7 +264,7 @@ class ProductController
             }
 
             error_log('Image URLs to insert: ' . print_r($image_urls, true));
-            if ($this->product->add($name, $price, $quantity, $description, $category_id, $image_urls)) {
+            if ($this->product->add($name, $price, $quantity, $description, $category_id, $top, $image_urls)) {
                 echo json_encode(['success' => true, 'message' => 'Thêm sản phẩm thành công.']);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Thêm sản phẩm thất bại.']);
@@ -167,7 +274,7 @@ class ProductController
 
         require '../view/admin_manager.php';
     }
-
+    
     public function edit($id)
     {
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -211,6 +318,7 @@ class ProductController
             $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_SPECIAL_CHARS);
             $category_id = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT);
             $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+            $top = isset($_POST['top']) && $_POST['top'] == '1' ? true : false;
 
             // Validate required fields
             if (!$name || $price === false || $quantity === false || !$category_id) {
@@ -268,7 +376,7 @@ class ProductController
             }
 
             // Call model’s edit method
-            if ($this->product->edit($product_id, $name, $price, $quantity, $description, $category_id, $is_locked, $image_urls)) {
+            if ($this->product->edit($product_id, $name, $price, $quantity, $description, $category_id, $is_locked, $top, $image_urls)) {
                 if ($this->isAjaxRequest()) {
                     echo json_encode(['success' => true, 'message' => 'Cập nhật sản phẩm thành công.']);
                     exit;
@@ -338,7 +446,7 @@ class ProductController
             $sort = isset($_GET['sort']) && strtoupper($_GET['sort']) === 'DESC' ? 'DESC' : 'ASC';
             // Explicitly cast category_id to int, treat empty string or invalid as null
             $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' && is_numeric($_GET['category_id']) ? (int)$_GET['category_id'] : null;
-            $itemsPerPage = 9;
+            $itemsPerPage = 8;
             $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
             if ($currentPage < 1) $currentPage = 1;
             $offset = ($currentPage - 1) * $itemsPerPage;
@@ -418,6 +526,7 @@ class ProductController
         foreach ($comments as &$comment) {
             $comment['replies'] = $this->commentReply->getByCommentId($comment['ID']);
         }
+        $categoryFmProductsone = $this->FarmingProcess->getAllMain();
 
         require_once '../view/detail.php';
     }
@@ -500,5 +609,30 @@ class ProductController
         if ($_SESSION['role'] !== 'admin') return;
         $this->product->delete($id);
         header("Location: ?controller=product&action=manage");
+    }
+    public function searchAjax_2()
+    {
+        header('Content-Type: application/json');
+
+        // Get search parameters from POST request
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int)$_POST['id'] : null;
+        $start_date = isset($_POST['start_date']) ? trim($_POST['start_date']) : null;
+        $end_date = isset($_POST['end_date']) ? trim($_POST['end_date']) : null;
+
+        // Validate dates
+        if ($start_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+            $start_date = null;
+        }
+        if ($end_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+            $end_date = null;
+        }
+
+        // Fetch products
+        $products = $this->product->getAllAdmin($name, $id, $start_date, $end_date);
+
+        // Return JSON response
+        echo json_encode(['success' => true, 'products' => $products]);
+        exit;
     }
 }

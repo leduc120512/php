@@ -280,50 +280,51 @@
         </div>
     </section> -->
 
-  
+
 
     <section id="farming-process" class="section-padding pt-0">
         <div class="container-lg">
             <div class="row">
                 <div class="section-header d-flex align-items-center justify-content-between mb-4">
                     <h2 class="section-title text-success">Quy trình chăn nuôi</h2>
-                    <a href="?controller=product&action=index" class="btn btn-outline-success">Xem tất cả</a>
+
                 </div>
             </div>
             <div class="row" id="farming-container">
                 <?php if (empty($FarmingProcess)): ?>
                     <p class="text-muted">Không có bài Quy trình chăn nuôi trong danh mục này.</p>
                 <?php else: ?>
-                    <?php foreach ($FarmingProcess as $process): ?>
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <article class="post-item card border-1 border-success shadow-sm h-100">
-                                <div class="image-holder zoom-effect">
-                                    <a href="?controller=product&action=detail&id=<?= htmlspecialchars($process['id'] ?? '') ?>" aria-label="Xem chi tiết quy trình">
-                                        <img src="<?= htmlspecialchars($process['image_url'] ?? '/public/img/default.jpg') ?>"
-                                            alt="<?= htmlspecialchars($process['title'] ?? 'Hình ảnh quy trình chăn nuôi') ?>"
-                                            class="card-img-top" loading="lazy" />
-                                    </a>
-                                </div>
-                                <div class="card-body">
-                                    <div class="post-meta d-flex text-uppercase gap-3 my-3 align-items-center">
-                                        <span class="meta-date text-muted">
-                                            <?= date("d M Y", strtotime($process['created_at'] ?? 'now')) ?>
-                                        </span>
-                                        <span class="meta-categories text-muted">
-                                            <?= htmlspecialchars($process['note'] ?? '') ?>
-                                        </span>
-                                    </div>
-                                    <div class="post-header">
-                                        <h3 class="fs-5 fw-bold">
-                                            <a href="?controller=product&action=detail&id=<?= htmlspecialchars($process['id'] ?? '') ?>"
-                                                class="post-title"><?= htmlspecialchars($process['title'] ?? '') ?></a>
-                                        </h3>
-                                        <p class="text-muted"><?= htmlspecialchars($process['description'] ?? '') ?></p>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    <?php endforeach; ?>
+           
+    <?php foreach ($FarmingProcess as $process): ?>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <article class="post-item card border-1 border-success shadow-sm h-100">
+                <div class="image-holder zoom-effect">
+                    <a href="/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID'] ?? '') ?>" aria-label="Xem chi tiết quy trình">
+                        <img src="<?= htmlspecialchars($process['image_url'] ?? '/public/img/default.jpg') ?>"
+                            alt="<?= htmlspecialchars($process['title'] ?? 'Hình ảnh quy trình chăn nuôi') ?>"
+                            class="card-img-top" loading="lazy" />
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="post-meta d-flex text-uppercase gap-3 my-3 align-items-center">
+                        <span class="meta-date text-muted">
+                            <?= date("d M Y", strtotime($process['created_at'] ?? 'now')) ?>
+                        </span>
+                        <span class="meta-categories text-muted">
+                            <?= htmlspecialchars($process['note'] ?? '') ?>
+                        </span>
+                    </div>
+                    <div class="post-header">
+                        <h3 class="fs-5 fw-bold">
+                            <a href="/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID'] ?? '') ?>"
+                                class="post-title"><?= htmlspecialchars($process['title'] ?? '') ?></a>
+                        </h3>
+                        <p class="text-muted"><?= htmlspecialchars($process['description'] ?? '') ?></p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </div>

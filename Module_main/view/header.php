@@ -1,3 +1,9 @@
+<?php
+$keyword = isset($_GET['search']) ? $_GET['search'] : '';
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -104,6 +110,293 @@
         color: #007bff;
         background-color: rgba(0, 123, 255, 0.05);
         border-radius: 4px;
+    }
+
+    .search-bar {
+        background-color: #fff !important;
+        /* Nền trắng */
+        border: 1px solid #e0e0e0;
+        /* Viền mờ */
+        border-radius: 50px !important;
+        /* Bo tròn lớn hơn */
+        padding: 5px 10px;
+        /* Giảm padding */
+    }
+
+    .search-sort-form {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        /* Giảm khoảng cách */
+    }
+
+    .search-container {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container input {
+        border: none;
+        /* Bỏ viền input */
+        border-radius: 50px 0 0 50px;
+        /* Bo tròn bên trái */
+        padding: 5px 10px;
+        /* Giảm padding */
+        font-size: 0.9rem;
+        /* Giảm kích thước chữ */
+        outline: none;
+        /* Bỏ outline khi focus */
+        background-color: transparent;
+        /* Trong suốt */
+    }
+
+    .search-container button {
+        border-radius: 0 50px 50px 0;
+        /* Bo tròn bên phải */
+        padding: 5px 15px;
+        /* Giảm padding */
+        font-size: 0.9rem;
+        /* Giảm kích thước chữ */
+
+        /* Màu xanh giống hình mẫu */
+        border: none;
+        /* Bỏ viền nút */
+        color: #fff;
+    }
+
+    #categorySelect_art {
+        border: none;
+        /* Loại bỏ border */
+        background: transparent;
+        /* Loại bỏ background mặc định */
+        appearance: none;
+        /* Loại bỏ kiểu dropdown mặc định */
+
+
+        /* Tùy chỉnh padding nếu cần */
+    }
+
+    #categorySelect_art:focus {
+        outline: none;
+        /* Loại bỏ outline khi focus */
+    }
+
+    .category_id {
+        border: none;
+        /* Loại bỏ border */
+        background: transparent;
+        /* Loại bỏ background mặc định */
+        appearance: none;
+    }
+
+    .category_id:focus {
+        outline: none;
+        /* Loại bỏ outline khi focus */
+    }
+
+    #categorySelect_fm {
+        border: none;
+        /* Loại bỏ border */
+        background: transparent;
+        /* Loại bỏ background mặc định */
+        appearance: none;
+        /* Loại bỏ kiểu dropdown mặc định */
+
+        /* Tùy chỉnh padding nếu cần */
+    }
+
+    #categorySelect_fm:focus {
+        outline: none;
+        /* Loại bỏ outline khi focus */
+    }
+
+    /* Đảm bảo các nav-link và select có cùng kiểu dáng */
+    .navbar-nav .nav-link,
+    .form-select {
+        font-size: 16px;
+        /* Kích thước chữ */
+        font-weight: bold;
+        /* Độ đậm chữ */
+        padding: 0.75rem 1rem;
+        /* Padding đồng nhất */
+        color: #333;
+        /* Màu chữ */
+        transition: all 0.3s ease;
+        /* Hiệu ứng chuyển đổi mượt mà */
+        border-radius: 4px;
+        /* Bo góc nhẹ */
+    }
+
+    /* Định dạng select để trông giống nav-link */
+    .form-select {
+        background-color: transparent;
+        /* Nền trong suốt */
+        border: 1px solid #ddd;
+        /* Viền nhẹ */
+        cursor: pointer;
+        /* Con trỏ chuột */
+    }
+
+    /* Hiệu ứng hover cho cả nav-link và select */
+    .navbar-nav .nav-link:hover,
+    .form-select:hover {
+        background-color: #f8f9fa;
+        /* Màu nền khi hover */
+        color: #007bff;
+        /* Màu chữ khi hover */
+    }
+
+    /* Định dạng dropdown-toggle */
+    .navbar-nav .dropdown-toggle::after {
+        margin-left: 0.5rem;
+        /* Khoảng cách mũi tên dropdown */
+    }
+
+    /* Đảm bảo select có chiều cao đồng bộ với nav-link */
+    .form-select {
+        height: calc(1.5em + 1.5rem);
+        /* Chiều cao tương ứng với nav-link */
+        line-height: 1.5;
+        /* Căn giữa chữ theo chiều dọc */
+    }
+
+    /* Định dạng cụ thể cho các select để phù hợp với nav */
+    #categorySelect_art,
+    #categorySelect_fm,
+    #categoryOnlySelect {
+        width: auto;
+        /* Chiều rộng tự động */
+        display: inline-block;
+        /* Hiển thị inline với các nav-item */
+    }
+
+    /* Định dạng nav-item để căn giữa và đồng bộ */
+    .nav-item {
+        display: flex;
+        align-items: center;
+        /* Căn giữa theo chiều dọc */
+    }
+
+    /* Định dạng dropdown menu */
+    .dropdown-menu.megamenu {
+        padding: 2rem;
+        /* Padding lớn hơn cho megamenu */
+        border: none;
+        /* Xóa viền */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Hiệu ứng bóng */
+    }
+
+    /* Đảm bảo form-search không phá vỡ bố cục */
+    .search-sort-form .form-select {
+        margin-bottom: 0;
+        /* Xóa margin-bottom mặc định */
+    }
+
+    /* Responsive: Điều chỉnh padding cho màn hình nhỏ */
+    @media (max-width: 992px) {
+
+        .navbar-nav .nav-link,
+        .form-select {
+            padding: 0.5rem 0.75rem;
+            /* Padding nhỏ hơn trên mobile */
+        }
+    }
+
+    /* Đảm bảo các nav-link và select có cùng kiểu dáng */
+    .navbar-nav .nav-link,
+    .form-select {
+        font-size: 16px;
+        /* Kích thước chữ */
+        font-weight: bold;
+        /* Độ đậm chữ */
+        padding: 0.75rem 1rem;
+        /* Padding đồng nhất */
+        color: #333;
+        /* Màu chữ */
+        transition: all 0.3s ease;
+        /* Hiệu ứng chuyển đổi mượt mà */
+        border-radius: 0;
+        /* Xóa bo góc để giống hình */
+        background: none;
+        /* Xóa nền mặc định */
+        border: none;
+        /* Xóa viền mặc định */
+        text-transform: uppercase;
+        /* Chữ in hoa giống trong hình */
+    }
+
+    /* Định dạng select để trông giống nav-link */
+    .form-select {
+        -webkit-appearance: none;
+        /* Xóa giao diện mặc định của select trên Webkit */
+        -moz-appearance: none;
+        /* Xóa giao diện mặc định của select trên Firefox */
+        appearance: none;
+        /* Xóa giao diện mặc định của select */
+        cursor: pointer;
+        /* Con trỏ chuột */
+        position: relative;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="5" viewBox="0 0 10 5"><path fill="%23333" d="M0 0h10L5 5z"/></svg>') no-repeat right 1rem center;
+        /* Thêm mũi tên tùy chỉnh */
+        background-size: 10px;
+        /* Kích thước mũi tên */
+    }
+
+    /* Hiệu ứng hover cho cả nav-link và select */
+    .navbar-nav .nav-link:hover,
+    .form-select:hover {
+        color: #007bff;
+        /* Màu chữ khi hover giống hình */
+    }
+
+    /* Định dạng dropdown-toggle */
+    .navbar-nav .dropdown-toggle::after {
+        margin-left: 0.5rem;
+        /* Khoảng cách mũi tên dropdown */
+        border: none;
+        /* Xóa viền mặc định của mũi tên */
+        content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="5" viewBox="0 0 10 5"><path fill="%2333" d="M0 0h10L5 5z"/></svg>');
+        /* Thêm mũi tên tùy chỉnh */
+        vertical-align: middle;
+    }
+
+    /* Đảm bảo select có chiều cao đồng bộ với nav-link */
+    .form-select {
+        height: auto;
+        /* Chiều cao tự động */
+        line-height: 1.5;
+        /* Căn giữa chữ theo chiều dọc */
+        padding-right: 2rem;
+        /* Đảm bảo không đè lên mũi tên */
+    }
+
+    /* Định dạng cụ thể cho các select để phù hợp với nav */
+    #categorySelect_art,
+    #categorySelect_fm,
+    #categoryOnlySelect {
+        width: auto;
+        /* Chiều rộng tự động */
+        display: inline-block;
+        /* Hiển thị inline với các nav-item */
+    }
+
+    /* Định dạng nav-item để căn giữa và đồng bộ */
+    .nav-item {
+        display: inline-flex;
+        align-items: center;
+        /* Căn giữa theo chiều dọc */
+    }
+
+    /* Responsive: Điều chỉnh padding cho màn hình nhỏ */
+    @media (max-width: 992px) {
+
+        .navbar-nav .nav-link,
+        .form-select {
+            padding: 0.5rem 0.75rem;
+            /* Padding nhỏ hơn trên mobile */
+        }
     }
 </style>
 
@@ -454,9 +747,7 @@
         </defs>
     </svg>
 
-    <div class="preloader-wrapper">
-        <div class="preloader"></div>
-    </div>
+
 
 
 
@@ -479,17 +770,32 @@
                 </h4>
                 <form
                     role="search"
-                    action="index.html"
+                    action="index.php"
                     method="get"
                     class="d-flex mt-3 gap-0">
-                    <input
-                        class="form-control rounded-start rounded-0 bg-light"
-                        type="email"
-                        placeholder="What are you looking for?"
-                        aria-label="What are you looking for?" />
-                    <button class="btn btn-dark rounded-end rounded-0" type="submit">
-                        Search
-                    </button>
+                    <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
+
+                        <!-- PHẦN 1: Từ khóa ở vị trí đầu (ví dụ bên trái) -->
+                        <div class="col-md-12">
+                            <div class="search-container position-relative">
+                                <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($keyword); ?>">
+                                <button type="submit" style="color: black;" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="#search"></use>
+                                    </svg>
+                                </button>
+
+                            </div>
+                        </div>
+
+
+
+                        <!-- Hidden values -->
+                        <input type="hidden" name="sort" id="sort-input" value="<?= $sort ?>">
+                        <input type="hidden" name="page" id="page-input" value="<?= $currentPage ?>">
+
+                    </form>
+
                 </form>
             </div>
         </div>
@@ -501,9 +807,10 @@
                 <div
                     class="col-sm-6 col-md-5 col-lg-3 justify-content-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
                     <div class="d-flex align-items-center gap-3">
-                        <a href="index.html">
+                        <a href="?controller=product&action=index" onclick="sessionStorage.removeItem('hideEl')">
                             <img src="../view/images/logomain.jpg" alt="logo" class="img-fluid logo-img" />
                         </a>
+
                         <a href="https://zalo.me/0965777705" target="_blank" class="btn-zalo">
                             <img src="../public/img/tải xuống.png" alt="Zalo" />
                         </a>
@@ -512,39 +819,37 @@
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
-                    <div
-                        class="search-bar row justify-content-between bg-light p-2 rounded-4">
-                        <div class="col-11">
-                            <form id="searchSortForm" method="GET" action="">
-                                <div class="search-container">
-                                    <label for="search-input">Tìm kiếm sản phẩm:</label>
-                                    <input type="text" id="search-input" name="search" value="<?php echo htmlspecialchars($keyword); ?>" placeholder="Nhập tên sản phẩm...">
-                                    <button type="button" onclick="searchProducts(1)">Tìm kiếm</button>
+                    <div class="search-bar row justify-content-between p-2 rounded-4">
+                        <div class="col-12"> <!-- Đổi thành col-12 để full width -->
+                            <!-- Mở form 1 lần duy nhất -->
+                            <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
+
+                                <!-- PHẦN 1: Từ khóa ở vị trí đầu (ví dụ bên trái) -->
+                                <div class="col-md-12">
+                                    <div class="search-container position-relative">
+                                        <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($keyword); ?>">
+                                        <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
+                                            <svg width="24" height="24">
+                                                <use xlink:href="#search"></use>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="sort-container">
-                                    <label for="sort">Sắp xếp theo giá:</label>
-                                    <select name="sort" id="sort" onchange="searchProducts(1)">
-                                        <option value="ASC" <?php echo $sort === 'ASC' ? 'selected' : ''; ?>>Từ bé đến lớn</option>
-                                        <option value="DESC" <?php echo $sort === 'DESC' ? 'selected' : ''; ?>>Từ lớn đến bé</option>
-                                    </select>
-                                </div>
-                                <input type="hidden" name="page" id="page-input" value="<?php echo $currentPage; ?>">
+
+
+
+                                <!-- Hidden values -->
+                                <input type="hidden" name="sort" id="sort-input" value="<?= $sort ?>">
+                                <input type="hidden" name="page" id="page-input" value="<?= $currentPage ?>">
+
                             </form>
-                        </div>
-                        <div class="col-1">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z" />
-                            </svg>
+
+
+
+
                         </div>
                     </div>
                 </div>
-
                 <div
                     class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
                     <ul class="d-flex justify-content-end list-unstyled m-0">
@@ -567,18 +872,28 @@
                                 </svg>
                             </a>
                         </li>
-                        <li class="d-md-none">
-                            <a
-                                href="#"
-                                class="p-2 mx-1"
-                                data-bs-toggle="offcanvas"
-                                data-bs-target="#offcanvasSearch"
-                                aria-controls="offcanvasSearch">
-                                <svg width="24" height="24">
-                                    <use xlink:href="#search"></use>
-                                </svg>
-                            </a>
-                        </li>
+                        <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
+
+                            <!-- PHẦN 1: Từ khóa ở vị trí đầu (ví dụ bên trái) -->
+                            <div class="col-md-12">
+                                <div class="search-container position-relative">
+                                    <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($keyword); ?>">
+                                    <button type="submit" style="color: black;" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
+                                        <svg width="24" height="24">
+                                            <use xlink:href="#search"></use>
+                                        </svg>
+                                    </button>
+
+                                </div>
+                            </div>
+
+
+
+                            <!-- Hidden values -->
+                            <input type="hidden" name="sort" id="sort-input" value="<?= $sort ?>">
+                            <input type="hidden" name="page" id="page-input" value="<?= $currentPage ?>">
+
+                        </form>
                     </ul>
                 </div>
             </div>
@@ -600,47 +915,104 @@
                     </div>
                     <div class="offcanvas-body justify-content-center">
                         <ul class="navbar-nav mb-0">
-                            <li
-                                class="nav-item border-end-0 border-lg-end-0 border-lg-end active">
-                                <a href="#" class="nav-link fw-bold px-4 py-3">Home</a>
-                            </li>
-                            <li
-                                class="nav-item border-end-0 border-lg-end-0 border-lg-end dropdown has-megamenu">
-                                <a
-                                    class="nav-link fw-bold px-4 py-3 dropdown-toggle"
-                                    href="#"
-                                    data-bs-toggle="dropdown">
-                                    All Products
-                                </a>
-                                <div
-                                    class="dropdown-menu megamenu p-lg-5 border-0 rounded-0 animate slide shadow"
-                                    role="menu">
 
-                                    <!-- end row -->
+                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
+                                <a href="?controller=product&action=index" class="nav-link fw-bold px-4 py-3"> Trang chủ</a>
+                            </li>
+
+
+
+                            <select id="categorySelect_art" class="form-selectfw-bold nav-link px-4 py-3 dropdown-toggle" onchange="changeCategoryArt()">
+                                <option value="" <?php echo !isset($_GET['category_id_art']) ? 'selected' : ''; ?>>TIN TỨC</option>
+                                <?php if (!empty($categoryArt) && is_array($categoryArt)): ?>
+                                    <?php foreach ($categoryArt as $cat): ?>
+                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                                            <?php echo (isset($_GET['category_id_art']) && $_GET['category_id_art'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+
+                            <select id="categorySelect_fm" class="form-select  fw-bold nav-link  dropdown-toggle" onchange="changeCategoryFm()">
+                                <option value="" <?php echo !isset($_GET['category_id_fm']) ? 'selected' : ''; ?>>QUY TRÌNH</option>
+                                <?php if (!empty($categoryFm) && is_array($categoryFm)): ?>
+                                    <?php foreach ($categoryFm as $cat): ?>
+                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                                            <?php echo (isset($_GET['category_id_fm']) && $_GET['category_id_fm'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+
+                            <form id="searchSortOnlycategory" class="search-sort-form row g-3 align-items-center" method="GET" action="" style="display: flex; justify-content: center;">
+                                <!-- Ẩn các trường khác nếu có -->
+                                <input type="hidden" name="search" value="">
+                                <input type="hidden" name="sort" value="">
+                                <input type="hidden" name="page" value="1">
+
+                                <!-- Danh mục -->
+                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                    <select name="category_id" id="categoryOnlySelect" class="form-select  fw-bold nav-link  dropdown-toggle">
+                                        <option value="">Gà tây tạng</option>
+                                        <?php foreach ($categoryFmProducts as $cat): ?>
+                                            <option value="<?= htmlspecialchars($cat['ID']) ?>" <?= isset($category_id) && $category_id == $cat['ID'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat['name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
-                                <!-- dropdown-mega-menu.// -->
-                            </li>
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="#sale" class="nav-link fw-bold px-4 py-3">Free Delivery</a>
-                            </li>
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="#blog" class="nav-link fw-bold px-4 py-3">Blog</a>
-                            </li>
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="#shop" class="nav-link fw-bold px-4 py-3">Shop</a>
-                            </li>
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="#blog" class="nav-link fw-bold px-4 py-3">Offers</a>
-                            </li>
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="#sale" class="nav-link fw-bold px-4 py-3">Sale</a>
-                            </li>
 
-                            <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a
-                                    href="https://templatesjungle.gumroad.com/l/furry"
-                                    class="nav-link fw-bold px-4 py-3 text-danger">Get PRO</a>
-                            </li>
+                            </form>
+
+                            <form id="searchSortOnlycategory1" class="search-sort-form row g-3 align-items-center" method="GET" action="" style="display: flex; justify-content: center;">
+                                <!-- Ẩn các trường khác nếu có -->
+                                <input type="hidden" name="search" value="">
+                                <input type="hidden" name="sort" value="">
+                                <input type="hidden" name="page" value="1">
+
+                                <!-- Danh mục -->
+                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                    <select name="category_id" id="categoryOnlySelect1" class="form-select  fw-bold nav-link  dropdown-toggle">
+                                        <option value="">Vịt nam phi</option>
+                                        <?php foreach ($categoryFmProducts as $cat): ?>
+                                            <option value="<?= htmlspecialchars($cat['ID']) ?>" <?= isset($category_id) && $category_id == $cat['ID'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat['name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                            </form>
+                            <form id="searchSortOnlycategory2" class="search-sort-form row g-3 align-items-center" method="GET" action="" style="display: flex; justify-content: center;">
+                                <!-- Ẩn các trường khác nếu có -->
+                                <input type="hidden" name="search" value="">
+                                <input type="hidden" name="sort" value="">
+                                <input type="hidden" name="page" value="1">
+
+                                <!-- Danh mục -->
+                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                    <select name="category_id" id="categoryOnlySelect2" class="form-select  fw-bold nav-link  dropdown-toggle">
+                                        <option value="">Vịt nam phi</option>
+                                        <?php foreach ($categoryFmProducts as $cat): ?>
+                                            <option value="<?= htmlspecialchars($cat['ID']) ?>" <?= isset($category_id) && $category_id == $cat['ID'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat['name']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                            </form>
+
+
+
+
+
+
+
+
+
                         </ul>
                     </div>
                 </div>
@@ -658,8 +1030,240 @@
 
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('hideEl') === 'true') {
+                document.querySelectorAll('.el').forEach(el => el.style.display = 'none');
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('category_id_art' || 'category_id_fm')) {
+                // Nếu có category_id_art, gán cờ và ẩn
+                document.querySelectorAll('.el').forEach(el => el.style.display = 'none');
+                sessionStorage.setItem('hideEl', 'true');
+            }
+            const modal = document.getElementById('consultModal');
+            const closeBtn = document.querySelector('.close');
+            const consultButtons = document.querySelectorAll('.consult-btn');
+            const form = document.getElementById('consultForm');
+            const formMessage = document.getElementById('formMessage');
+
+            function openModal(productId) {
+                document.getElementById('modalProductId').value = productId;
+                modal.style.display = 'flex';
+            }
 
 
+            function closeModal() {
+                modal.style.display = 'none';
+                formMessage.textContent = '';
+                form.reset();
+            }
+
+            function closeSlide() {
+                document.querySelectorAll('.el').forEach(element => {
+                    element.style.display = 'none';
+                });
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            function attachConsultButtons() {
+                document.querySelectorAll('.consult-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const productId = button.getAttribute('data-product-id');
+                        openModal(productId);
+                    });
+                });
+            }
+
+            attachConsultButtons();
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const formData = new FormData(form);
+
+                fetch('?controller=order&action=create', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.fire({
+                            icon: data.success ? 'success' : 'error',
+                            title: 'Thông báo',
+                            text: data.success ? 'Đặt hàng thành công!' : (data.message || 'Đã có lỗi xảy ra.'),
+                            confirmButtonText: 'OK'
+                        });
+
+                        if (data.success) {
+                            closeModal();
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thông báo',
+                            text: 'Lỗi kết nối, vui lòng thử lại.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            });
+
+            function searchProducts(page = 1) {
+                const searchInput = document.getElementById('search-input').value.trim();
+                const sort = document.getElementById('sort').value;
+                const category_id = document.getElementById('category').value;
+
+                fetch(`?controller=product&action=searchAjax&search=${encodeURIComponent(searchInput)}&page=${page}&sort=${sort}&category_id=${category_id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const productContainer = document.querySelector('.product-container');
+
+                        productContainer.innerHTML = `
+        <div class="product-grid row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 g-4">
+          ${!data.products || data.products.length === 0 ? '<p>Không tìm thấy sản phẩm nào.</p>' : ''}
+        </div>
+      `;
+
+                        if (!data.products || data.products.length === 0) return;
+
+                        const productGrid = productContainer.querySelector('.product-grid');
+
+                        data.products.forEach(product => {
+                            const mainImage = product.images.find(img => img.is_main == 1) || product.images[0];
+                            const imageUrl = mainImage ? `../public/img/${mainImage.image_url}` : '../public/img/placeholder.jpg';
+                            const productHtml = `
+          <div class="col">
+            <div class="product-item mb-4">
+              <figure>
+                <a href="?controller=product&action=detail&id=${product.ID}" title="${product.name}">
+                  <img src="${imageUrl}" class="tab-image img-fluid rounded-3" />
+                </a>
+              </figure>
+              <div class="d-flex flex-column text-center">
+                <h3 class="fs-5 fw-normal">
+                  <a href="?controller=product&action=detail&id=${product.ID}" class="text-decoration-none">
+                    ${product.name}
+                  </a>
+                </h3>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                  ${product.price_old ? `<del>${Number(product.price_old).toLocaleString('vi-VN')} VND</del>` : ''}
+                  <span class="text-dark fw-semibold">${Number(product.price).toLocaleString('vi-VN')} VND</span>
+                </div>
+                <div class="button-area p-3">
+                  <div class="justify-content-center d-flex mb-3">
+                    <div class="input-group product-qty">
+                      <span class="input-group-btn">
+                        <button class="quantity-left-minus btn btn-light btn-number" data-type="minus">
+                          <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                        </button>
+                      </span>
+                      <input type="text" class="quantity form-control input-number text-center" value="1" min="1" max="${product.quantity}" />
+                      <span class="input-group-btn">
+                        <button class="quantity-right-plus btn btn-light btn-number" data-type="plus">
+                          <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <a class="btn btn-primary rounded-1 p-2 fs-7 consult-btn" data-product-id="${product.ID}">
+                    <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Liên hệ tư vấn
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>`;
+                            productGrid.insertAdjacentHTML('beforeend', productHtml);
+                        });
+
+                        attachConsultButtons();
+                    })
+                    .catch(error => console.error('Fetch error:', error));
+            }
+
+
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchProducts();
+            });
+
+            document.querySelector('.search-container button').addEventListener('click', () => searchProducts());
+            document.getElementById('sort').addEventListener('change', () => searchProducts());
+
+            searchProducts();
+        });
+
+
+        //art
+        function changeCategoryArt() {
+            const select = document.getElementById('categorySelect_art');
+            const categoryId = select.value;
+            Swal.fire({
+                title: 'Đang tải...',
+                text: 'Vui lòng chờ trong khi tải danh mục mới.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            let url = '?controller=product&action=index';
+            if (categoryId) {
+                url += '&category_id_art=' + encodeURIComponent(categoryId);
+            }
+            if (url.includes('category_id_art')) {
+                document.querySelectorAll('.el').forEach(element => {
+                    element.style.display = 'none';
+                });
+            }
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        //fm
+        function changeCategoryFm() {
+            const select = document.getElementById('categorySelect_fm');
+            const categoryId = select.value;
+
+            Swal.fire({
+                title: 'Đang tải...',
+                text: 'Vui lòng chờ trong khi tải danh mục mới.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            let url = '?controller=product&action=index';
+            if (categoryId) {
+                url += '&category_id_fm=' + encodeURIComponent(categoryId);
+                document.querySelectorAll('.el').forEach(element => {
+                    element.style.display = 'none';
+                });
+            }
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        function setSort(order) {
+            document.getElementById('sort-input').value = order;
+            searchProducts(1);
+        }
+
+        function searchProducts(page) {
+            document.getElementById('page-input').value = page;
+            document.getElementById('searchSortForm').submit();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../view/js/jquery-1.11.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <script
@@ -669,181 +1273,79 @@
     <script src="../view/js/plugins.js"></script>
     <script src="../view/js/script.js"></script>
     <script>
-        const modal = document.getElementById('consultModal');
-        const closeBtn = document.querySelector('.close');
-        const consultButtons = document.querySelectorAll('.consult-btn');
-        const form = document.getElementById('consultForm');
-        const formMessage = document.getElementById('formMessage');
-
-        function searchProducts(page = 1) {
-            console.log('searchProducts called with page:', page); // Debug log
-            const searchInput = document.getElementById('search-input');
-            const sortSelect = document.getElementById('sort');
-            const pageInput = document.getElementById('page-input');
-
-            const searchKeyword = searchInput ? searchInput.value.trim() : '';
-            const sort = sortSelect ? sortSelect.value : 'ASC';
-            if (pageInput) pageInput.value = page;
-
-            const url = `?controller=product&action=searchAjax&search=${encodeURIComponent(searchKeyword)}&page=${page}&sort=${sort}`;
-            console.log('Fetch URL:', url); // Debug log
-
-            fetch(url)
-                .then(response => {
-                    console.log('Fetch response status:', response.status); // Debug log
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Fetch data:', data); // Debug log
-                    if (data.error) {
-                        console.error('Server error:', data.error);
-                        return;
-                    }
-                    const productContainer = document.querySelector('.product-container');
-                    productContainer.innerHTML = '';
-
-                    if (data.products.length === 0) {
-                        productContainer.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
-                    } else {
-                        data.products.forEach(product => {
-                            const mainImage = product.images.find(img => img.is_main == 1) || product.images[0];
-                            const imageUrl = mainImage ? `../public/img/${mainImage.image_url}` : '../public/img/placeholder.jpg';
-                            const productHtml = `
-                        <div class="product-card">
-                            <img src="${imageUrl}" alt="${product.name}">
-                            <h3>${product.name}</h3>
-                            <p class="price">${Number(product.price).toLocaleString('vi-VN')} VND</p>
-                            <p>Số lượng: ${product.quantity}</p>
-                            <p>${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}</p>
-                            <a href="?controller=product&action=detail&id=${product.ID}">Xem chi tiết</a>
-                            <button class="consult-btn" data-product-id="${product.ID}">Liên hệ tư vấn</button>
-                        </div>`;
-                            productContainer.insertAdjacentHTML('beforeend', productHtml);
-                        });
-                    }
-
-                    // Gắn lại sự kiện cho các nút tư vấn
-                    const newConsultButtons = document.querySelectorAll('.consult-btn');
-                    newConsultButtons.forEach(button => {
-                        button.addEventListener('click', () => {
-                            const productId = button.getAttribute('data-product-id');
-                            document.getElementById('modalProductId').value = productId;
-                            modal.style.display = 'flex';
-                        });
-                    });
-
-                    // Cập nhật phân trang
-                    updatePagination(data.totalPages, data.currentPage, searchKeyword, sort);
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    const productContainer = document.querySelector('.product-container');
-                    productContainer.innerHTML = '<p>Có lỗi xảy ra khi tải dữ liệu.</p>';
-                });
-        }
-
-        // Gắn sự kiện cho các nút tư vấn hiện có
-        consultButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const productId = button.getAttribute('data-product-id');
-                document.getElementById('modalProductId').value = productId;
-                modal.style.display = 'flex';
-            });
-        });
-
-        // Đóng modal
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            formMessage.textContent = '';
-            document.getElementById('message').value = '';
-        });
-
-        // Đóng modal khi click bên ngoài
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-                formMessage.textContent = '';
-                document.getElementById('message').value = '';
-            }
-        });
-
-        // Gửi form qua AJAX
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const formData = new FormData(form);
-
-            fetch('?controller=order&action=create', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thông báo',
-                        text: data.success ? 'Đặt hàng thành công!' : (data.message || 'Đã có lỗi xảy ra.'),
-                        confirmButtonText: 'OK'
-                    });
-
-                    if (data.success) {
-                        document.getElementById('message').value = '';
-                        setTimeout(() => {
-                            modal.style.display = 'none';
-                        }, 2000);
-                    }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: 'success', // Vẫn giữ "success" theo yêu cầu
-                        title: 'Thông báo',
-                        text: 'Lỗi kết nối, nhưng ta vẫn báo thành công 😅',
-                        confirmButtonText: 'OK'
-                    });
-                });
-        });
-
-        // Hàm cập nhật phân trang
-        function updatePagination(totalPages, currentPage, searchKeyword, sort) {
-            const paginationContainer = document.querySelector('.pagination');
-            if (!paginationContainer) return;
-
-            paginationContainer.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const pageLink = `<a href="#" class="${i === currentPage ? 'active' : ''}" onclick="searchProducts(${i})">${i}</a>`;
-                paginationContainer.insertAdjacentHTML('beforeend', pageLink);
-            }
-        }
-
-        // Gọi hàm tìm kiếm khi trang tải
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded triggered'); // Debug log
-            searchProducts(1);
+            const categorySelect = document.getElementById('category'); // Dropdown xa
+            const hiddenInput = document.getElementById('category-hidden'); // Input nằm trong form
+
+            if (categorySelect && hiddenInput) {
+                categorySelect.addEventListener('change', () => {
+                    hiddenInput.value = categorySelect.value;
+                    document.getElementById('searchSortForm').submit();
+                });
+            }
         });
-
-        // Gọi tìm kiếm khi nhấn Enter trong input
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    console.log('Enter key pressed'); // Debug log
-                    searchProducts(1);
-                }
-            });
-        }
-
-        // Gọi tìm kiếm khi nhấn nút
-        const searchButton = document.querySelector('.search-container button');
-        if (searchButton) {
-            searchButton.addEventListener('click', () => {
-                console.log('Search button clicked'); // Debug log
-                searchProducts(1);
-            });
-        }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('categoryOnlySelect');
+            const form = document.getElementById('searchSortOnlycategory');
+
+            if (select && form) {
+                select.addEventListener('change', () => {
+                    // Xóa sessionStorage nếu bạn dùng phần hideEl
+                    sessionStorage.setItem('hideEl', 'true');
+                    form.submit();
+                });
+            }
+
+            // Optional: Ẩn phần tử .el nếu cần
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('category_id')) {
+                document.querySelectorAll('.el').forEach(el => el.style.display = 'none');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('categoryOnlySelect1');
+            const form = document.getElementById('searchSortOnlycategory1');
+
+            if (select && form) {
+                select.addEventListener('change', () => {
+                    // Xóa sessionStorage nếu bạn dùng phần hideEl
+                    sessionStorage.setItem('hideEl', 'true');
+                    form.submit();
+                });
+            }
+
+            // Optional: Ẩn phần tử .el nếu cần
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('category_id')) {
+                document.querySelectorAll('.el').forEach(el => el.style.display = 'none');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('categoryOnlySelect2');
+            const form = document.getElementById('searchSortOnlycategory2');
+
+            if (select && form) {
+                select.addEventListener('change', () => {
+                    // Xóa sessionStorage nếu bạn dùng phần hideEl
+                    sessionStorage.setItem('hideEl', 'true');
+                    form.submit();
+                });
+            }
+
+            // Optional: Ẩn phần tử .el nếu cần
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('category_id')) {
+                document.querySelectorAll('.el').forEach(el => el.style.display = 'none');
+            }
+        });
+    </script>
+
 
 </body>
 

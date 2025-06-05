@@ -333,6 +333,8 @@ class OrderController
         }
         exit;
     }
+
+
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -343,8 +345,8 @@ class OrderController
         }
 
         $product_id = isset($_POST['product_id']) ? filter_var($_POST['product_id'], FILTER_VALIDATE_INT) : null;
-        $phone = isset($_POST['phone']) ? filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING) : '';
-        $note = isset($_POST['note']) ? filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING) : '';
+        $phone = isset($_POST['phone']) ? trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_SPECIAL_CHARS)) : '';
+        $note = isset($_POST['note']) ? filter_input(INPUT_POST, 'note', FILTER_SANITIZE_SPECIAL_CHARS) : '';
 
         // Validate inputs
         if (!$product_id || !$phone) {
@@ -362,11 +364,17 @@ class OrderController
             exit;
         }
 
+        // Format phone number for tel: link (try both local and international)
+        $tel_phone = $phone; // Use local format: 0987654321
+        // $tel_phone = '+84' . substr($phone, 1); // Uncomment to use international format: +84987654321
+        error_log('Tel Phone: ' . $tel_phone); // Debug log
+
         // Create order
         $user_id = 1; // Default guest user ID (adjust if authenticated)
         $quantity = 1; // Default quantity
-        $result = $this->order->createOrder($user_id, $product_id, $quantity, 0, $phone, $note); // total_price fetched in model
+        $result = $this->order->createOrder($user_id, $product_id, $quantity, 0, $phone, $note);
         header('Content-Type: application/json');
+
         if ($result['success']) {
             // Initialize PHPMailer
             require_once 'PHPMailer-master/src/Exception.php';
@@ -381,42 +389,63 @@ class OrderController
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'mailleduc05122004@gmail.com';
-                $mail->Password = 'unicbkpxtmahtuzn'; // Consider using environment variables for security
+                $mail->Password = 'unicbkpxtmahtuzn';
                 $mail->SMTPSecure = 'ssl';
                 $mail->Port = 465;
 
                 // Email configuration
                 $mail->setFrom('mailleduc05122004@gmail.com', 'Shop Admin');
-                $mail->addAddress('mailleduc05122004@gmail.com'); // Hardcoded recipient email
                 $mail->isHTML(true);
                 $mail->Subject = 'Lien he tu van';
                 $mail->Body = '
-    <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; border: 2px dashed #ff9900; padding: 20px; background: #fffbe6; border-radius: 10px;">
-        <h2 style="color: #d35400; text-align: center;">🐔 Có khách cần tư vấn liền tay! 🐔</h2>
-        <p style="font-size: 16px; color: #333;"><strong>Tên sản phẩm:</strong> <span style="color: #c0392b;">' . htmlspecialchars($result['product_name']) . '</span></p>
-        <p style="font-size: 16px; color: #333;"><strong>Mã sản phẩm:</strong> <span style="color: #2980b9;">' . htmlspecialchars($product_id) . '</span></p>
-        <p style="font-size: 16px; color: #333;"><strong>Số điện thoại khách:</strong> <span style="color: #27ae60;">' . htmlspecialchars($phone) . '</span></p>
-        <p style="font-size: 16px; color: #333;"><strong>Ghi chú:</strong> ' . nl2br(htmlspecialchars($note)) . '</p>
-        <p style="font-size: 16px; color: #e74c3c; font-weight: bold;">📞 Hãy gọi cho khách ngay – kẻo mất đơn nha! 📞</p>
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="tel:' . htmlspecialchars($phone) . '" style="background: #e67e22; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">GỌI NGAY</a>
-        </div>
-    </div>
-';
-
+                    <!DOCTYPE html>
+                    <html lang="vi">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Thông báo đơn hàng</title>
+                    </head>
+                    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+                        <div style="max-width: 600px; margin: 20px auto; border: 2px dashed #ff9900; padding: 20px; background: #fffbe6; border-radius: 10px;">
+                            <h2 style="color: #d35400; text-align: center;">🐔 Có khách cần tư vấn liền tay! 🐔</h2>
+                            <p style="font-size: 16px; color: #333;"><strong>Tên sản phẩm:</strong> <span style="color: #c0392b;">' . htmlspecialchars($result['product_name']) . '</span></p>
+                            <p style="font-size: 16px; color: #333;"><strong>Mã sản phẩm:</strong> <span style="color: #2980b9;">' . htmlspecialchars($product_id) . '</span></p>
+                            <p style="font-size: 16px; color: #333;"><strong>Số điện thoại khách:</strong> <span style="color: #27ae60;">' . htmlspecialchars($phone) . '</span></p>
+                            <p style="font-size: 16px; color: #333;"><strong>Ghi chú:</strong> ' . nl2br(htmlspecialchars($note)) . '</p>
+                            <p style="font-size: 16px; color: #e74c3c; font-weight: bold;">📞 Hãy gọi cho khách ngay – kẻo mất đơn nha! 📞</p>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="tel:' . htmlspecialchars($tel_phone) . '" 
+                                   style="display: inline-block; background: #e67e22; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                    GỌI NGAY
+                                </a>
+                            </div>
+                        </div>
+                    </body>
+                    </html>';
                 $mail->AltBody = 'Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được ghi nhận. Tên sản phẩm: ' . htmlspecialchars($result['product_name']) . ', Mã sản phẩm: ' . htmlspecialchars($product_id) . ', Số điện thoại: ' . htmlspecialchars($phone) . ', Ghi chú: ' . htmlspecialchars($note) . '.';
+
+                // Get admin emails
+                $adminEmailsResult = $this->user->getAdminEmails();
+                error_log('Admin Emails: ' . print_r($adminEmailsResult, true)); // Debug log
+                if (!$adminEmailsResult['success'] || empty($adminEmailsResult['emails'])) {
+                    error_log('OrderController: ' . $adminEmailsResult['message']);
+                    $mail->addAddress('mailleduc05122004@gmail.com'); // Fallback email
+                } else {
+                    $mail->clearAddresses();
+                    foreach ($adminEmailsResult['emails'] as $email) {
+                        $mail->addAddress($email);
+                    }
+                }
 
                 // Send email
                 $mail->send();
                 echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo và email xác nhận đã được gửi']);
             } catch (Exception $e) {
-                // Log the error (optional) and return success for order creation but note email failure
                 error_log('PHPMailer Error: ' . $mail->ErrorInfo);
-                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo nhưng gửi email thất bại']);
+                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo nhưng gửi email thất bại: ' . $e->getMessage()]);
             }
         } else {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => $result['message']]);
         }
-    }
-}
+                    }}
