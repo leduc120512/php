@@ -20,7 +20,7 @@ class Order
     // }
     public function getByUserId($user_id)
     {
-        $stmt = $this->conn->prepare("SELECT o.*, p.name AS product_name, p.img AS product_image 
+        $stmt = $this->conn->prepare("SELECT o.*, p.name AS product_name
         FROM orders o 
         JOIN products p ON o.product_id = p.ID 
         WHERE o.user_id = ? 

@@ -398,6 +398,34 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
             /* Padding nhỏ hơn trên mobile */
         }
     }
+
+    @media only screen and (max-width: 768px) {
+
+        .lissđfsdf {
+            justify-content: flex-start !important;
+        }
+    }
+
+    .dropdown-toggle {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .dropdown-toggle:hover,
+    .dropdown-toggle:focus,
+    .dropdown-toggle:active {
+        background-color: transparent !important;
+    }
+
+    .dropdown-toggle svg {
+        fill: currentColor;
+        color: #000 !important;
+        /* Màu đen */
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+    }
 </style>
 
 <body>
@@ -804,9 +832,17 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
     <header>
         <div class="container-lg">
             <div class="row py-4">
-                <div
-                    class="col-sm-6 col-md-5 col-lg-3 justify-content-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
-                    <div class="d-flex align-items-center gap-3">
+                <div class="col-sm-6 col-md-5 col-lg-3 justify-content-between align-items-center justify-content-lg-between text-center text-sm-start d-flex gap-3">
+                    <div class="d-flex align-items-center ">
+                        <button
+                            class="navbar navbar-toggler ms-3 d-block d-lg-none"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                         <a href="?controller=product&action=index" onclick="sessionStorage.removeItem('hideEl')">
                             <img src="../view/images/logomain.jpg" alt="logo" class="img-fluid logo-img" />
                         </a>
@@ -814,18 +850,84 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                         <a href="https://zalo.me/0965777705" target="_blank" class="btn-zalo">
                             <img src="../public/img/tải xuống.png" alt="Zalo" />
                         </a>
-                    </div>
 
+                    </div>
+                    <div
+                        class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center  mt-sm-0 justify-content-center justify-content-sm-end">
+                        <ul class="d-flex justify-content-end  align-items-center  list-unstyled m-0">
+                            <li>
+                                <a
+                                    href="?controller=order&action=myOrders"
+                                    class="p-2 mx-1">
+                                    <svg width="24" height="24">
+                                        <use xlink:href="#shopping-bag"></use>
+                                    </svg>
+                                </a>
+                            </li>
+
+                            <?php if (isset($_SESSION['role'])): ?>
+                                <!-- Nếu đã đăng nhập -->
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle p-2 mx-1" data-bs-toggle="dropdown">
+                                        <svg width="24" height="24">
+                                            <use xlink:href="#user"></use>
+                                        </svg>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="?controller=auth&action=edit_account">Sửa tài khoản</a></li>
+                                        <li><a class="dropdown-item" href="?controller=auth&action=logout">Đăng xuất</a></li>
+                                    </ul>
+                                </li>
+                            <?php else: ?>
+                                <!-- Nếu chưa đăng nhập -->
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle p-2 mx-1" data-bs-toggle="dropdown">
+                                        <svg width="24" height="24">
+                                            <use xlink:href="#user"></use>
+                                        </svg>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="?controller=auth&action=login">Đăng nhập</a></li>
+                                        <li><a class="dropdown-item" href="?controller=auth&action=register">Đăng ký</a></li>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
+
+
+                            <!-- <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
+
+                         
+                                <div class="col-md-12">
+                                    <div class="search-container position-relative">
+                                        <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm...." value="<?php echo htmlspecialchars($keyword); ?>">
+                                        <button type="submit" style="color: black;" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
+                                            <svg width="24" height="24">
+                                                <use xlink:href="#search"></use>
+                                            </svg>
+                                        </button>
+
+                                    </div>
+                                </div>
+
+
+
+                              
+                                <input type="hidden" name="sort" id="sort-input" value="<?= $sort ?>">
+                                <input type="hidden" name="page" id="page-input" value="<?= $currentPage ?>">
+
+                            </form> -->
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="col-sm-12 col-md-4 col-lg-7 d-none d-md-block">
+                <div class="col-sm-12 col-md-4 col-lg-7  d-md-block">
                     <div class="search-bar row justify-content-between p-2 rounded-4">
-                        <div class="col-12"> <!-- Đổi thành col-12 để full width -->
+                        <div class="col-12 col-xs-10"> <!-- Đổi thành col-12 để full width -->
                             <!-- Mở form 1 lần duy nhất -->
                             <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
 
                                 <!-- PHẦN 1: Từ khóa ở vị trí đầu (ví dụ bên trái) -->
-                                <div class="col-md-12">
+                                <div class="col-md-12 col-xs-10">
                                     <div class="search-container position-relative">
                                         <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($keyword); ?>">
                                         <button type="submit" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
@@ -850,52 +952,7 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                         </div>
                     </div>
                 </div>
-                <div
-                    class="col-sm-6 col-md-3 col-lg-2 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
-                    <ul class="d-flex justify-content-end list-unstyled m-0">
-                        <li>
-                            <a href="#" class="p-2 mx-1">
-                                <svg width="24" height="24">
-                                    <use xlink:href="#user"></use>
-                                </svg>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                class="p-2 mx-1"
-                                data-bs-toggle="offcanvas"
-                                data-bs-target="#offcanvasCart"
-                                aria-controls="offcanvasCart">
-                                <svg width="24" height="24">
-                                    <use xlink:href="#shopping-bag"></use>
-                                </svg>
-                            </a>
-                        </li>
-                        <form id="searchSortForm" class="search-sort-form row g-3 align-items-center" method="GET" action="">
 
-                            <!-- PHẦN 1: Từ khóa ở vị trí đầu (ví dụ bên trái) -->
-                            <div class="col-md-12">
-                                <div class="search-container position-relative">
-                                    <input type="text" id="search-input" name="search" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo htmlspecialchars($keyword); ?>">
-                                    <button type="submit" style="color: black;" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-0">
-                                        <svg width="24" height="24">
-                                            <use xlink:href="#search"></use>
-                                        </svg>
-                                    </button>
-
-                                </div>
-                            </div>
-
-
-
-                            <!-- Hidden values -->
-                            <input type="hidden" name="sort" id="sort-input" value="<?= $sort ?>">
-                            <input type="hidden" name="page" id="page-input" value="<?= $currentPage ?>">
-
-                        </form>
-                    </ul>
-                </div>
             </div>
             <nav class="p-0 navbar navbar-expand-lg">
                 <div
@@ -917,34 +974,9 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                         <ul class="navbar-nav mb-0">
 
                             <li class="nav-item border-end-0 border-lg-end-0 border-lg-end">
-                                <a href="?controller=product&action=index" class="nav-link fw-bold px-4 py-3"> Trang chủ</a>
+                                <a href="?controller=product&action=index" class="nav-link fw-bold "> Trang chủ</a>
                             </li>
 
-
-
-                            <select id="categorySelect_art" class="form-selectfw-bold nav-link px-4 py-3 dropdown-toggle" onchange="changeCategoryArt()">
-                                <option value="" <?php echo !isset($_GET['category_id_art']) ? 'selected' : ''; ?>>TIN TỨC</option>
-                                <?php if (!empty($categoryArt) && is_array($categoryArt)): ?>
-                                    <?php foreach ($categoryArt as $cat): ?>
-                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
-                                            <?php echo (isset($_GET['category_id_art']) && $_GET['category_id_art'] == $cat['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-
-                            <select id="categorySelect_fm" class="form-select  fw-bold nav-link  dropdown-toggle" onchange="changeCategoryFm()">
-                                <option value="" <?php echo !isset($_GET['category_id_fm']) ? 'selected' : ''; ?>>QUY TRÌNH</option>
-                                <?php if (!empty($categoryFm) && is_array($categoryFm)): ?>
-                                    <?php foreach ($categoryFm as $cat): ?>
-                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
-                                            <?php echo (isset($_GET['category_id_fm']) && $_GET['category_id_fm'] == $cat['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
 
                             <form id="searchSortOnlycategory" class="search-sort-form row g-3 align-items-center" method="GET" action="" style="display: flex; justify-content: center;">
                                 <!-- Ẩn các trường khác nếu có -->
@@ -953,7 +985,7 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                                 <input type="hidden" name="page" value="1">
 
                                 <!-- Danh mục -->
-                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                <div class="col-md-6 lissđfsdf" style="display: flex; justify-content: center;">
                                     <select name="category_id" id="categoryOnlySelect" class="form-select  fw-bold nav-link  dropdown-toggle">
                                         <option value="">Gà tây tạng</option>
                                         <?php foreach ($categoryFmProducts as $cat): ?>
@@ -973,7 +1005,7 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                                 <input type="hidden" name="page" value="1">
 
                                 <!-- Danh mục -->
-                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                <div class="col-md-12 " style="display: flex; justify-content: center;">
                                     <select name="category_id" id="categoryOnlySelect1" class="form-select  fw-bold nav-link  dropdown-toggle">
                                         <option value="">Vịt nam phi</option>
                                         <?php foreach ($categoryFmProducts as $cat): ?>
@@ -992,9 +1024,9 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                                 <input type="hidden" name="page" value="1">
 
                                 <!-- Danh mục -->
-                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                <div class="col-md-12" style="display: flex; justify-content: center;">
                                     <select name="category_id" id="categoryOnlySelect2" class="form-select  fw-bold nav-link  dropdown-toggle">
-                                        <option value="">Vịt nam phi</option>
+                                        <option value="">GÀ GÔ MÓNG ĐỎ</option>
                                         <?php foreach ($categoryFmProducts as $cat): ?>
                                             <option value="<?= htmlspecialchars($cat['ID']) ?>" <?= isset($category_id) && $category_id == $cat['ID'] ? 'selected' : '' ?>>
                                                 <?= htmlspecialchars($cat['name']) ?>
@@ -1004,6 +1036,31 @@ $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
                                 </div>
 
                             </form>
+
+
+                            <select id="categorySelect_art" class="form-selectfw-bold nav-link  dropdown-toggle" onchange="changeCategoryArt()">
+                                <option value="" <?php echo !isset($_GET['category_id_art']) ? 'selected' : ''; ?>>TIN TỨC HÀNG NGÀY</option>
+                                <?php if (!empty($categoryArt) && is_array($categoryArt)): ?>
+                                    <?php foreach ($categoryArt as $cat): ?>
+                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                                            <?php echo (isset($_GET['category_id_art']) && $_GET['category_id_art'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+
+                            <select id="categorySelect_fm" class="form-select  fw-bold nav-link  dropdown-toggle" onchange="changeCategoryFm()">
+                                <option value="" <?php echo !isset($_GET['category_id_fm']) ? 'selected' : ''; ?>>QUY TRÌNH CHĂN NUÔI</option>
+                                <?php if (!empty($categoryFm) && is_array($categoryFm)): ?>
+                                    <?php foreach ($categoryFm as $cat): ?>
+                                        <option value="<?php echo htmlspecialchars($cat['id'] ?? ''); ?>"
+                                            <?php echo (isset($_GET['category_id_fm']) && $_GET['category_id_fm'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($cat['name'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
 
 
 

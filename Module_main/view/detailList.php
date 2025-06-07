@@ -43,13 +43,13 @@
                     <div class="related-list">
                         <?php foreach ($categoryFmProductsone as $process): ?>
                             <div class="related-item d-flex align-items-start mb-3">
-                                <a href="/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID']) ?>">
+                                <a href="/SHOPGA/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID']) ?>">
                                     <img src="<?= htmlspecialchars($process['image_url'] ?? '/public/img/default.jpg') ?>"
                                         alt="<?= htmlspecialchars($process['title']) ?>"
                                         class="related-img me-3" />
                                 </a>
                                 <div>
-                                    <a href="/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID']) ?>"
+                                    <a href="/SHOPGA/Module_main/public/index.php?controller=farming_process&action=detail_fm&id=<?= htmlspecialchars($process['ID']) ?>"
                                         class="related-title text-primary fw-bold d-block">
                                         <?= htmlspecialchars($process['title']) ?>
                                     </a>

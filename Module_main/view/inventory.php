@@ -381,7 +381,7 @@ if (!isset($_SESSION['user_id'])) {
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=order&action=admin">
+                            <a class="sidebar-link" href="http://localhost/SHOPGA/Module_main/public/index.php?controller=order&action=admin">
                                 <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí sản đơn hàng</span>
                             </a>
                         <?php endif; ?>
@@ -390,7 +390,7 @@ if (!isset($_SESSION['user_id'])) {
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=manage">
+                            <a class="sidebar-link" href="http://localhost/SHOPGA/Module_main/public/index.php?controller=product&action=manage">
                                 <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Quản lí sản sản phẩm</span>
                             </a>
                         <?php endif; ?>
@@ -398,7 +398,7 @@ if (!isset($_SESSION['user_id'])) {
                     </li>
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=inventory">
+                            <a class="sidebar-link" href="http://localhost/SHOPGA/Module_main/public/index.php?controller=product&action=inventory">
                                 <i class="align-middle" data-feather="user-plus"></i>
                                 <pan class="align-middle">Quản lí sản phẩm tồn kho </pan>
                             </a>
@@ -407,7 +407,7 @@ if (!isset($_SESSION['user_id'])) {
                     </li>
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=auth&action=logout">
+                            <a class="sidebar-link" href="http://localhost/SHOPGA/Module_main/public/index.php?controller=auth&action=logout">
                                 <i class="align-middle" data-feather="user-plus"></i>
                                 <pan class="align-middle">Đăng xuất</pan>
                             </a>

@@ -1,26 +1,41 @@
 <?php
-// session_start();
+            if (isset($_POST['login'])) {
+              $username = $_POST['username'];
+              $password = $_POST['password'];
 
-// // Kiểm tra nếu session tồn tại và vai trò đã được lưu
-// if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
-//   $role = $_SESSION['role'];
+              $user = $this->user->login($username, $password);
 
-//   if ($role === 'admin') {
-//     header("Location: http://localhost:3000/adminkit/static/index.php");
-//     exit;
-//   } elseif ($role === 'customer') {
-//     header("Location: ?controller=product&action=index");
-//     exit;
-//   } elseif ($role === 'create') {
-//     header("Location: ?controller=auth&action=list_accounts");
-//     exit;
-//   }
-// }
+              if ($user) {
+                $_SESSION['user_id'] = $user['ID'];
+                $_SESSION['role'] = $user['role'];
 
-// // Nếu không có session, yêu cầu đăng nhập
-// header("Location: ?controller=auth&action=login");
-// exit;
-?>
+                // Initialize $_SESSION['user'] with user data
+                $_SESSION['user'] = [
+                  'email' => $user['email'] ?? '',
+                  'name' => $user['name'] ?? '',
+                  'address' => $user['address'] ?? '',
+                  'phone' => $user['phone'] ?? ''
+                ];
+
+                // Add the new session variable when role is 'create'
+                if (!empty($user['role']) && $user['role'] === 'create') {
+                  $_SESSION['can_create_accounts'] = true;
+                }
+
+                if (!empty($user['role']) && $user['role'] === 'admin') {
+                  header("Location: http://localhost:3000/adminkit/static/index.php");
+                } else if ($user['role'] === 'customer') {
+                  header("Location: ?controller=product&action=index");
+                } else {
+                  header("Location: ?controller=auth&action=list_accounts");
+                }
+                exit;
+              } else {
+                $error = "Sai thông tin đăng nhập!";
+                echo $error . "<br>";
+              }
+            }
+            ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -994,12 +1009,12 @@
         </div>
       </div>
 
-      <div
+      <!-- <div
         class="pagination-wrapper position-absolute z-3 start-0 end-0 bottom-0 text-center">
         <div class="container">
           <div class="product-swiper-pagination light"></div>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
   <section id="shop-categories" class="section-padding">
@@ -1306,7 +1321,7 @@
 
 
 
-  <div class="support-widget">
+  <!-- <div class="support-widget">
     <h4>Hỗ trợ tư vấn</h4>
 
     <div class="support-item">
@@ -1328,7 +1343,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/1024px-Icon_of_Zalo.svg.png" alt="Zalo" />
       </a>
     </div>
-  </div>
+  </div> -->
   <!-- <div>
   <?php include 'Art.php'; ?>
   <?php include 'farming.php'; ?></div> -->
@@ -1545,7 +1560,7 @@
             Swal.fire({
               icon: data.success ? 'success' : 'error',
               title: 'Thông báo',
-              text: data.success ? 'Đặt hàng thành công!' : (data.message || 'Đã có lỗi xảy ra.'),
+              text: data.success ? 'Gửi yêu cầu liên hệ thành công. Nhân viên của shop sẽ sớm liên hệ' : (data.message || 'Đã có lỗi xảy ra.'),
               confirmButtonText: 'OK'
             });
 

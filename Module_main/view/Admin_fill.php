@@ -336,7 +336,7 @@
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=manage">
+                            <a class="sidebar-link" href="?controller=farming_process&action=manage">
                                 <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí sản đơn hàng</span>
                             </a>
                         <?php endif; ?>
@@ -345,7 +345,7 @@
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=article&action=manage">
+                            <a class="sidebar-link" href="?controller=article&action=manage">
                                 <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí Bài báo</span>
                             </a>
                         <?php endif; ?>
@@ -353,7 +353,7 @@
                     </li>
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=farming_process&action=manage">
+                            <a class="sidebar-link" href="?controller=farming_process&action=manage">
                                 <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Quản lí cách chăn nuôi </span>
                             </a>
                         <?php endif; ?>
@@ -362,7 +362,7 @@
 
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=manage">
+                            <a class="sidebar-link" href="?controller=product&action=manage">
                                 <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Quản lí sản sản phẩm</span>
                             </a>
                         <?php endif; ?>
@@ -370,7 +370,7 @@
                     </li>
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=product&action=inventory">
+                            <a class="sidebar-link" href="?controller=product&action=inventory">
                                 <i class="align-middle" data-feather="user-plus"></i>
                                 <pan class="align-middle">Quản lí sản phẩm tồn kho </pan>
                             </a>
@@ -379,7 +379,7 @@
                     </li>
                     <li class="sidebar-item">
                         <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a class="sidebar-link" href="http://localhost/BTL_PHP/Module_main/public/index.php?controller=auth&action=logout">
+                            <a class="sidebar-link" href="?controller=auth&action=logout">
                                 <i class="align-middle" data-feather="user-plus"></i>
                                 <pan class="align-middle">Đăng xuất</pan>
                             </a>
